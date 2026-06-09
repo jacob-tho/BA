@@ -1,0 +1,8 @@
+PWD C:/Users/thorw/Desktop/Bacherlorarbeit/Arbeit/sections
+INPUT c:/texlive/2024/texmf.cnf
+INPUT c:/texlive/2024/texmf-dist/web2c/texmf.cnf
+INPUT c:/texlive/2024/texmf-var/web2c/pdftex/pdflatex.fmt
+INPUT 2-background.tex
+OUTPUT 2-background.log
+INPUT c:/texlive/2024/texmf-dist/fonts/map/fontname/texfonts.map
+INPUT c:/texlive/2024/texmf-dist/fonts/tfm/public/cm/cmti10.tfm

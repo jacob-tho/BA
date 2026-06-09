@@ -1,0 +1,59 @@
+\documentclass[12pt]{article}
+\usepackage[
+top=35pt,
+left=55pt,
+right=55pt
+]{geometry}
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage{amsmath, mathrsfs, amssymb, amsthm, graphicx, mathtools} %
+\newtheorem{theorem}{Theorem} 
+\newtheorem{lemma}[theorem]{Lemma} 
+\newtheorem{corollary}[theorem]{Corollary} 
+\newtheorem{proposition}[theorem]{Proposition} 
+%\hypersetup{
+%    colorlinks,
+%    citecolor=black,
+%    filecolor=black,
+%    linkcolor=black,
+%    urlcolor=black
+%}
+\usepackage[citestyle=alphabetic,
+  bibstyle=alphabetic,
+  backend=bibtex,
+  sorting=none]{biblatex}
+\addbibresource{cite.bib}
+\theoremstyle{definition} 
+\newtheorem{definition}{Definition} 
+\newtheorem{example}{Example} 
+
+\theoremstyle{remark} 
+\newtheorem{remark}{Remark}
+
+\numberwithin{theorem}{subsection}
+\usepackage[english]{babel}
+\usepackage{csquotes}
+\usepackage{microtype}
+
+\MakeOuterQuote{"}
+\setlength\parindent{0pt}
+
+\title{BA}
+\author{Jacob Thorwarth}
+\date{\Today}
+\begin{document}
+%\maketitle
+
+%\renewcommands{\contentsname}{Inhalt}
+\tableofcontents
+\newpage
+
+\input{sections/1-motivation}
+\input{sections/2-background}
+\input{sections/3-DOT}
+\input{sections/4-data_fiting}
+\input{sections/5-numeric}
+
+
+
+\end{document}

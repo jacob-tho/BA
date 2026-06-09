@@ -1,0 +1,21 @@
+\section{Einführung}
+
+
+Wir betrachten das dynamische Transportproblem
+$$
+\inf \int_0^1\int_\Omega \frac{|J_t|^2}{2\rho_t}dxdt + \int_0^1\int_\Omega \frac{|f_t|^2}{2\rho_t}dxdt + \int_0^1\int_\Gamma |\rho(t)-\rho_d|^2dxdt
+$$
+mit Kurve $\Gamma \subset (\Omega \times (0,1))$ und Nebenbedingungen
+\begin{align*}
+	\frac{\partial \rho_t}{\partial t} + \nabla \cdot (J_t + \rho_t v_t) &= f_t \quad auf \Omega\times (0,1)\\
+	(J_t + \rho_t v_t) \cdot n &= 0 \quad \partial\Omega\times(0,1).
+\end{align*}
+
+Dabei bezeichnet $J_t$ das Energiefunktional zum Zeitpunkt $t$, $f_t$ ist die Quelle, $\rho_t$ ist ???, $v_t$ das Vektorfeld und Datenterm. Mit Neumann-Randbedingungen haben wir halt ein abgeschlossenes System.
+
+Um dieses Problem zu lösen, benötigt es einige Grundlagen aus Maßtheorie und Funktionalanalysis, eine Einführung in optimalen Transport und PDE/Variationsrechnung/Konvexe Analysis. Dann erarbeiten wir Existenzresultate und lösen das Problem noch numerisch.
+
+
+Gegeben ein Vektorfeld und einer Datenkurve, welche auch eine Dichte im gewissen Sinne ist: Was war der Ursprung? 
+
+Bisherige Quellen: Santambrogio 4.1.2 (und OT-Theorie), Folland Maßtheorie + Funkana, Alt Funkana, OT von Figalli, Gradient Flows von Ambrosio/Gigli, Evans PDE, Benamou Brenier Paper, Variationsrechnung Skript Schmidt und Struwe

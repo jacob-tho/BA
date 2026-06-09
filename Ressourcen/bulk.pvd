@@ -1,0 +1,46 @@
+<?xml version="1.0"?>
+<VTKFile type ="Collection" version="1.0" byte_order="LittleEndian">
+<Collection>
+<DataSet timestep="0" file="bulk.vtu"/>
+<DataSet timestep="1" file="bulk_step00001.vtu"/>
+<DataSet timestep="2" file="bulk_step00002.vtu"/>
+<DataSet timestep="3" file="bulk_step00003.vtu"/>
+<DataSet timestep="4" file="bulk_step00004.vtu"/>
+<DataSet timestep="5" file="bulk_step00005.vtu"/>
+<DataSet timestep="6" file="bulk_step00006.vtu"/>
+<DataSet timestep="7" file="bulk_step00007.vtu"/>
+<DataSet timestep="8" file="bulk_step00008.vtu"/>
+<DataSet timestep="9" file="bulk_step00009.vtu"/>
+<DataSet timestep="10" file="bulk_step00010.vtu"/>
+<DataSet timestep="11" file="bulk_step00011.vtu"/>
+<DataSet timestep="12" file="bulk_step00012.vtu"/>
+<DataSet timestep="13" file="bulk_step00013.vtu"/>
+<DataSet timestep="14" file="bulk_step00014.vtu"/>
+<DataSet timestep="15" file="bulk_step00015.vtu"/>
+<DataSet timestep="16" file="bulk_step00016.vtu"/>
+<DataSet timestep="17" file="bulk_step00017.vtu"/>
+<DataSet timestep="18" file="bulk_step00018.vtu"/>
+<DataSet timestep="19" file="bulk_step00019.vtu"/>
+<DataSet timestep="20" file="bulk_step00020.vtu"/>
+<DataSet timestep="21" file="bulk_step00021.vtu"/>
+<DataSet timestep="22" file="bulk_step00022.vtu"/>
+<DataSet timestep="23" file="bulk_step00023.vtu"/>
+<DataSet timestep="24" file="bulk_step00024.vtu"/>
+<DataSet timestep="25" file="bulk_step00025.vtu"/>
+<DataSet timestep="26" file="bulk_step00026.vtu"/>
+<DataSet timestep="27" file="bulk_step00027.vtu"/>
+<DataSet timestep="28" file="bulk_step00028.vtu"/>
+<DataSet timestep="29" file="bulk_step00029.vtu"/>
+<DataSet timestep="30" file="bulk_step00030.vtu"/>
+<DataSet timestep="31" file="bulk_step00031.vtu"/>
+<DataSet timestep="32" file="bulk_step00032.vtu"/>
+<DataSet timestep="33" file="bulk_step00033.vtu"/>
+<DataSet timestep="34" file="bulk_step00034.vtu"/>
+<DataSet timestep="35" file="bulk_step00035.vtu"/>
+<DataSet timestep="36" file="bulk_step00036.vtu"/>
+<DataSet timestep="37" file="bulk_step00037.vtu"/>
+<DataSet timestep="38" file="bulk_step00038.vtu"/>
+<DataSet timestep="39" file="bulk_step00039.vtu"/>
+<DataSet timestep="40" file="bulk_step00040.vtu"/>
+</Collection>
+</VTKFile>

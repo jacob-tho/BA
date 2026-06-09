@@ -1,0 +1,14 @@
+\babel@toc {english}{}\relax 
+\contentsline {section}{\numberline {1}Einführung}{2}{}%
+\contentsline {section}{\numberline {2}Mathematical Background}{2}{}%
+\contentsline {subsection}{\numberline {2.1}Maßräume}{2}{}%
+\contentsline {subsubsection}{\numberline {2.1.1}Grundlegende Definitionen und Eigenschaften}{2}{}%
+\contentsline {subsection}{\numberline {2.2}Functional Analysis TODO}{5}{}%
+\contentsline {subsection}{\numberline {2.3}Variationsrechnung}{5}{}%
+\contentsline {section}{\numberline {3}Dynamical Optimal Transport}{5}{}%
+\contentsline {subsection}{\numberline {3.1}Optimal Transport Theorie}{6}{}%
+\contentsline {subsection}{\numberline {3.2}Dynamical Optimal Transport}{6}{}%
+\contentsline {subsection}{\numberline {3.3}Equivalence of the Static and Dynamic Formulation}{8}{}%
+\contentsline {subsection}{\numberline {3.4}Numerical Analysis of the Saddle-Point Problem}{12}{}%
+\contentsline {section}{\numberline {4}Data Fitting}{16}{}%
+\contentsline {section}{\numberline {5}Numerische Ergebnisse}{18}{}%

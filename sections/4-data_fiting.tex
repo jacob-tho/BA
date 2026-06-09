@@ -1,0 +1,117 @@
+\newpage
+\section{Data Fitting}
+
+For our modeling purposes we modify the constraints and rewrite the initial Benamou-Brenier formulation as
+
+	$$\inf_{(v_t,\rho_t)} \int_0^1\int_\Omega \frac{|v_t|^2}{2\rho}\mathrm{d}x\mathrm{d}t$$
+	$$s.t.\begin{cases}\partial_t\rho_t + \nabla \cdot (\rho_t v_t + \rho_tv_t^{wind}) = \alpha_{dif}\Delta\rho_t + f_t\quad \text{on }\Omega\times[0,1]\\
+	(\rho_tv_t + \rho_tv_t^{wind} -\alpha_{dif}\nabla\rho_t) \cdot n = 0\quad \text{on } \partial\Omega\times[0,1]\\
+\rho(0)  = \rho_0,\quad\rho(1) = \rho_1\quad \end{cases}$$
+Hier doch mu und nu verwenden für einheitliche Notation?
+
+If we recall that 
+$$
+-\alpha_{dif}\Delta\rho_t = \nabla \cdot (-\alpha_{dif}\nabla\rho_t ),\quad \nabla\rho_t = \rho_t \nabla \log\rho_t
+$$
+we can reformulate the first constraint as 
+\begin{align*}
+	&\partial_t\rho_t + \nabla \cdot (\rho_tv_t + \rho_tv_t^{wind}) - \alpha_{dif}\Delta\rho_t = f_t\\
+	&\iff \partial_t\rho_t + \nabla \cdot (\underbrace{\rho_t ( v_t - \alpha_{dif}\nabla\log\rho_t)}_{=:J_t} + \rho_tv_t^{wind}) = f_t
+\end{align*}
+Using this notation and rewriting $v_t$ gives us
+$$
+\int_0^1\int_\Omega \frac{|J_t|^2}{2\rho_t} \mathrm{d}xdt + \alpha_{dif}\int_0^1\int_\Omega J_t \cdot \nabla\log\rho_t + \frac{\alpha_{dif}^2}{2}\int_0^1\int_\Omega \underbrace{|\nabla\log\rho_t|^2\rho_t}_{=\frac{|\nabla\rho_t|^2}{\rho_t}}dxdt
+$$
+
+and we simplyfy (dürfen wir das einfach so???) the whole problem as
+$$
+\inf_{(\rho_t,J_t)}\int_0^1\int_\Omega \frac{|J_t|^2}{2\rho_t}dxdt + \alpha_{dif}^2\int_0^1\int_\Omega \frac{|\nabla\rho_t|^2}{\rho_t}\rho_tdxdt
+$$
+$$
+s.t.\begin{cases}
+	\partial_t\rho_t + \nabla \cdot (\rho_tv_t + \rho_tv_t^{wind} = f_t\quad \text{on } \Omega \times (0,1)\\
+	(\rho_tv_t + \rho_tv_t^{wind}) \cdot n = 0 \quad \text{on } \partial\Omega \times (0,1)\\
+	\rho_t(0) = \rho_0\\
+	\rho_t(1) = \rho_1
+\end{cases}
+$$
+
+Adding two terms to complete the model, one for allowing creation of mass and one for fitting data for a given curve, we finally receive
+\begin{align*}
+&\inf_{(f_t, J_t, \rho_t; \rho_0, \rho_1)} \int_0^1\int_\Omega \frac{|J_t|^2}{2\rho_t}dxdt + \alpha_f\int_0^1\int_\Omega \frac{|f_t|^2}{2\rho_t}dxdt \\&+ \alpha_{dif}^2\int_0^1\int_\Omega\frac{|\nabla\rho_t|^2}{\rho_t}dxdt + \frac{\alpha_{in}}{2}\int_0^1\int_{\Gamma}|\rho_t - \rho_{data}|^2dxdt
+\end{align*}
+$$
+s.t. \begin{cases}
+	\partial_t\rho_t + \nabla \cdot (J_t + \rho_tv_t^{wind}) = f_t\quad \text{on } \Omega\times(0,1)\\
+(J_t + \rho_tv_t^{wind}) \cdot n = 0 \quad \text{on }\partial \Omega \times (0,1)
+\end{cases}
+$$
+and we may impose the condition on the initial and final distribution as above. Using the boundary condition we get for the first constraint
+\begin{align*}
+&\int_0^1\int_\Omega \partial_t\rho_t + \int_0^1\int_\Omega \nabla \cdot (J_t + \rho_tv_t^{wind} )dxdt - \int_0^1\int_\Omega f_tdxdt\\
+&= \int_0^1\frac{d}{dt}\left(\int_\Omega \rho_tdx\right)dt - \int_0^1\int_\Omega f_t dxdt\\
+&= \int_\Omega\rho_1 dx - \int_\Omega \rho_0dx - \int_0^1\int_\Omega f_t dxdt = 0
+\end{align*}
+Here, our goal is also to solve the saddle-point problem, for which we need to calculate the Lagrangian in the first place. Taking a smooth test function $\phi_t: [0,1]\times\Omega$ we obtain
+\begin{align*}
+	\mathcal{L}(\rho_t,J_t, f_t, \phi_t, \lambda_t) &= \int_0^1\int_\Omega\frac{|J_t|^2}{2\rho_t}dxdt + \alpha_f\int_0^1\int_\Omega \frac{|f_t|^2}{2\rho_t}dxdt \\
+													&+\alpha_{dif}^2\int_0^1\int_\Omega\frac{|\nabla\rho_t|^2}{\rho_t}dxdt\\
+													&+\frac{\alpha_{inv}}{2} \int_0^1\int_\Omega|\rho_t-\rho_{data}|^2dxdt\\
+													&-\int_0^1\int_\Omega \rho_t\partial_t\phi_t + J_t \cdot \nabla\phi_t + \rho_tv_t^{wind} \cdot \nabla\phi_t + f_t\phi_t dxdt\\
+													&+\int_\Omega [\phi_1\rho_1 - \phi_0\rho_0]dx\\
+													&+\lambda_t\left(\int_\Omega\rho_1dx - \int_\Omega\rho_0dx - \int_0^1\int_\Omega f_tdxdt\right)
+\end{align*}
+ and the saddle point problem then is
+ $$
+ \inf_{(\rho_t, J_t, f_t)}\sup_{(\phi_t, \lambda_t)} \mathcal{L}(\rho_t, J_t, f_t, \phi_t, \lambda_t).
+ $$
+ TODO ADMISIIBLE SET
+
+ For a primal-dual projection algorithm we introduce convex functions and their respective Legendre-Fenchel transform. We define
+ $$
+ \Psi(u,v) := \begin{cases} \frac{|v|^2}{2u}& u>0\\
+ 0& u=0\,, v= 0\\
++\infty&\text{else}\end{cases}
+ $$
+ and the two convex functions
+ \begin{align*}
+	 F^{\alpha_f, \alpha_{dif}}(\rho_t, J_t, f_t, \nabla\rho_t) &:= \Psi(\rho_t, J_t)  + \alpha_f\Psi(\rho_t, f_t) + \alpha_{dif}^2\Psi(\rho_t,\nabla\rho_t)\\
+	 \overline{F}^{\alpha_f,\alpha_{dif}}(\rho_t, J_t, f_t, \nabla\rho_t) &:= F^{\alpha_f}(\rho_t, J_t, f_t, \nabla\rho_t) + \frac{\alpha_{inv}}{2} |\rho_t - \rho_{data}|^2
+ \end{align*}			
+ We recall that for a convex function $F$ the Legendre-Fenchel transform has the form 
+ $$
+ F(x) = \sup_{x^*} \{\langle x,x^*\rangle - F^*(x^*)\},
+ $$
+ where $F^*$ is the convex conjugate of $F$ defined by 
+ $$
+ F^*(x^*) = \sup_x \{\langle x,x^*\rangle - F(x)\}.
+ $$
+
+ Using this principle, we have 
+ $$
+ F^{\alpha_f,\alpha_{dif}}(\rho_t, J_t, f_t, \nabla\rho_t) = \sup_{\rho_t^*, J_t^*, f_t^*, \nabla\rho_t^*} \{\langle (\rho_t, J_t, f_t, \nabla\rho_t), (\rho_t^*, J_t^*, f_t^*, \nabla\rho_t^*)\rangle - (F^{\alpha_f,\alpha_{dif}})^*(\rho_t^*, J_t^*, f_t^*, \nabla\rho_t^*)\}
+ $$
+ $$
+ \overline{F}^{\alpha_f,\alpha_{dif}}(\rho_t, J_t, f_t, \nabla\rho_t) = \sup_{\rho_t^*, J_t^*, f_t^*, \nabla\rho_t^*} \{\langle (\rho_t, J_t, f_t, \nabla\rho_t), (\rho_t^*, J_t*, f_t^*, \nabla\rho_t^*)\rangle - (\overline{F}^{\alpha_f,\alpha_{dif}})^*(\rho_t^*, J_t^*, f_t^*, \nabla\rho_t^*)\},
+ $$
+ where $F^{\alpha_f, \alpha_{dif}}$ is defined on $((0,1)\times\Omega)\setminus\Gamma$ and $\overline{F}^{\alpha_f, \alpha_{dif}}$ on $\Gamma$. We can evaluate the conjugate by the indicator function, that is
+ $$
+	 \iota_C(x) := \begin{cases} 0& x\in C\\+\infty&\text{else}\end{cases}
+ $$
+ by 
+ $$
+ (F^{\alpha_f,\alpha_{dif}})^*(\rho_t^*, J_t^*, f_t^*, \nabla\rho_t^*) = \iota_{\left\{\rho_t^* + \frac{1}{2}\left(|J_t^*| + \frac{|f_t^*|}{\alpha_f} + \frac{|\nabla\rho_t|}{\alpha_{dif}^2}\right) \leq 0\right\}.
+ $$
+ The given set is calculated similarly to what we did for the classical Benamou-Brenier formulation. %, where we wrote the term $\frac{|m|^2}{2\rho}$ as 
+% $$\sup_{(a,b)\in K}(a\rho + b \cdot m),\quad K := \{(a,b)\in \mathbb{R}\times \mathbb{R}^n \mid a + \frac{|b|^2}{2}\leq 0 \}.$$
+ For fixed $\rho_t$, we maximize
+ $$
+ F^* = \sup_{\rho_t, J_t, f_t, \nabla\rho_t} \left\{\rho_t\rho_t^* + J_t \cdot J_t^* + f_tf_t^*+ \nabla\rho_t\nabla\rho_t^* - \frac{|J_t|^2}{2\rho_t} - \alpha_f\frac{|f_t|^2}{2\rho_t} - \alpha_{dif}^2\frac{|\nabla\rho_t|^2}{2\rho_t}\right\}
+ $$
+ seperately in every variable and obtain the set by calculating 
+ $$
+ \begin{cases}\sup_{J_t}\left\{ J_t \cdot J_t^* - \frac{|J_t|^2}{2\rho_t}\right\} = \frac{\rho_t|J_t^*|^2}{2}\\
+	 \sup_{f_t}\left\{ f_t f_t^* - \alpha_f\frac{|f_t|^2}{2\rho_t}\right\} = \frac{\rho_t|f_t^*|^2}{2\alpha_f}\\
+ \sup_{\nabla\rho_t}\left\{ \nabla\rho_t \cdot \nabla\rho_t^* - \alpha_{dif}^2\frac{|\nabla\rho_t|^2}{2\rho_t}\right\} = \frac{\rho_t |\nabla\rho_t|^2}{2\alpha_{dif}^2}\end{cases}
+ $$
+ und ab hier ??? Vorzeichen in G und r>0?

@@ -1,0 +1,43 @@
+\documentclass[12pt]{article}
+\usepackage[
+top=25pt,
+left=40pt,
+right=40pt
+]{geometry}
+\usepackage{amsmath, amssymb, amsthm, graphicx, mathtools} %
+\newtheorem{theorem}{Theorem} 
+\newtheorem{lemma}[theorem]{Lemma} 
+\newtheorem{corollary}[theorem]{Korollar} 
+\newtheorem{proposition}[theorem]{Proposition} 
+
+\theoremstyle{definition} 
+\newtheorem{definition}{Definition} 
+\newtheorem{example}{Beispiel} 
+
+\theoremstyle{remark} 
+\newtheorem{remark}{Bemerkung}
+
+\usepackage[ngerman]{babel}
+\usepackage{csquotes}
+\usepackage{microtype}
+
+\MakeOuterQuote{"}
+\setlength\parindent{0pt}
+
+\title{First Draft}
+\author{Jacob Thorwarth}
+\date{Datum}
+\begin{document}
+\maketitle
+
+
+Umgebung $\Omega$ und Kurve (Auto) $\overline{\rho}(t)\in \mathrm{L}^1(\Omega)$
+$$
+\min \int\int \frac{|E_t|^2}{2\rho_t} + \alpha \int\int\frac{|f_t|^2}{2\rho_t}+\beta\int\int|\rho_t-\overline{\rho}_t|^2
+$$
+$$
+\partial_t\rho_t + \nabla \cdot (E_t + v_t\rho_t) = f_t
+$$
+
+
+\end{document}

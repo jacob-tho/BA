@@ -1,0 +1,140 @@
+\section{Mathematical Background}
+
+Das zu behandelnde Thema benötigt Kenntnisse und Grundlagen aus unterschiedlichsten mathematischen Teilgebieten. So geben wir einen Überblick über Maßtheorie, insbesondere Radonmaße und den Satz von Radon-Nikodym, grundlegende Definitionen aus der Funktionalanalysis - unterschiedliche Konvergenzarten (schwach und schwach-*) und in diesem Zug auch Dualräume. Darüber hinaus brauchen wir noch grundlegende Resultate aus der Funktionalanalysis und PDE-Theorie, etwa Lösungstheorie und Methoden der Variationsrechnung. Hier auch noch Konvexe Analysis?
+
+
+\subsection{Maßräume}
+\subsubsection{Grundlegende Definitionen und Eigenschaften}
+Im Kontext von Transporttheorie, wo uns interessiert, wie wir möglichst effizient Masse von einem zum anderen Standort transportieren können, benötigen wir eine Idee von dem Konzept Masse und wie diese quantifiziert werden kann. Naheliegend finden wir dazu Antworten in der Maßtheorie. Wir beschäftigen uns erst mit dem Begriff eines Maßes und spezielle Klassen dieses Begriffs sowie zentrale Eigenschaften von Elementen, die wir messen können und überlegen uns, in welchem Sinne eine Ableitung für Maße existiert.
+
+\begin{definition}[$\sigma$-Algebra]
+	Sei $X$ eine Menge. Ein Mengensystem $\mathcal{A}$ über $X$ heißt \textbf{$\sigma$-Algebra}, wenn die Eigenschaften
+	\begin{enumerate}
+		\item $\emptyset \in \mathcal{A} $,
+		\item $A\in \mathcal{A} \implies A^C\in \mathcal{A}$,
+		\item $(A_i)_{i\in I} \in \mathcal{A} \implies \bigcup\limits_{i=1}^\infty A_i \in \mathcal{A}$,
+	\end{enumerate}
+	erfüllt sind.
+\end{definition}
+
+\begin{definition}[Signiertes Maß]
+	Eine Abbildung $\mu: \mathcal{A}\to (-\infty,\infty]$ heißt \textbf{signiertes Maß}, wenn gilt 
+	\begin{enumerate}
+		\item $\mu(\emptyset)=0$,
+		\item $\mu\left(\bigcup\limits_{i=1}^\infty A_i\right) = \sum\limits_{i=1}^{\infty} \mu(A_i)$
+		
+	\end{enumerate}
+	für paarweise disjunkte $A_i$. Zusätzlich nennen wir Abbildungen $\tilde{\mu}: \mathcal{A}\to[0,\infty]$ mit den gleichen Eigenschaften \textit{positive Maße} und Abbildungen $\mathbb{P}: \mathcal{A}\to[0,1]$ heißen \textit{Wahrscheinlichkeitsmaße}.
+	
+\end{definition}
+
+Den Raum $(X,\mathcal{A})$ bezeichnen wir als \textbf{Messraum} und Elemente des Maßraums heißen \textit{messbare Mengen}. Messbare Mengen $E$ mit der Eigenschaft $\mu(E) = 0$ heißen \textit{Nullmengen} bezüglich $\mu$ oder auch $\mu-$Nullmengen. Ist es möglich, den Raum $X$ als abzählbare Vereinigung von Mengen $A_1,\dots,A_n$ mit $\mu(A_i)<\infty$ für alle $i\in \mathbb{N}$ zu schreiben, so heißt das Maß \textit{$\sigma$-endlich}. Ein Messraum ausgestattet mit einem Maß, also $(X,\mathcal{A}, \mu)$ heißt \textbf{Maßraum}.
+
+\begin{definition}[Erzeugte $\sigma$-Algebra]
+	Sei $\mathcal{M} \subset \mathcal{P}(X)$. $\sigma(\mathcal{M})=\bigcap\limits_{\mathcal{A}\in\mathcal{F}(\mathcal{M})} \mathcal{A}$ heißt die \textit{erzeugte $\sigma$-Algebra}, wobei $\mathcal{F}(\mathcal{M}) := \{\mathcal{M}\subseteq\mathcal{A} \mid \mathcal{A} \text{ ist } \sigma \text{-Algebra auf } X\}.$
+\end{definition}
+
+\begin{definition}[Borel-$\sigma$-Algebra]
+	Sei $(X, \mathcal{O})$ ein topologischer Raum, wobei $\mathcal{O}$ das Mengensystem der offenen Mengen ist. $\sigma(\mathcal{O})$ ist die \textit{Borelsche-$\sigma$-Algebra} und wir schreiben $\mathcal{B}(X) := \sigma(\mathcal{O}).$
+\end{definition}
+
+Eine Klasse von besonders netten Maßen sind sogenannte Radon-Maße. Diese sind intuitiv, da kompakten Mengen ein endliches Maß zuordnen und sich Mengen auch approximieren lassen.
+
+\begin{definition}[Radon-Maße]
+	Ein signiertes Maß $\mu: \mathcal{A} \to [-\infty,\infty)$ heißt Radon-Maß, wenn gilt
+	\begin{itemize}
+		\item $\mu(K) < \infty$ für $K\in \mathcal{A}$ kompakt
+		\item Für jedes $E\in \mathcal{A}$ existiert ein $B\in \mathcal{B}(X)$ mit $B\supseteq E$ und $\mu(B) = \mu(E)$
+	\end{itemize}
+\end{definition}
+
+TODO sigma-additiv, $X = \mathbb{R}^d$ definieren oder allgemeiner - wollen wir Polish Spaces oder brauchen wir bestimmte Eigenschaften?
+
+\begin{definition}[Variationsmaß]
+	Für ein $\sigma$-additives signiertes Maß $\mu:\mathcal{A}\to[-\infty,\infty)$ definieren wir das Totalvariationsmaß
+	$$
+	|\mu|(B) := \sup\left\{\sum\limits_{i=1}^{\infty} |\mu(B_i)|\, \Bigl\vert \,\dot\bigcup_{i=1}^\infty B_i = B\right\}\quad B\in \mathcal{B}(X).
+	$$
+	Mit $\lVert \mu\rVert_{TV} = |\mu|(X)$ definieren wir die Totalvariations-Norm.
+
+\end{definition}
+
+Prop? Lemma? Eig?
+Es gilt für alle $B\in \mathcal{B}(X)$
+\begin{align*}
+	|\mu|(B) &= \inf\{|\mu|(U) \mid B\subset U, U \text{ offen}\}\\
+|\mu|(B) &= \sup\{|\mu|(K) \mid B\supset K, K \text{ kompakt}\}
+\end{align*}
+
+
+TODO: Zeige, dass durch diese Norm ein Banachraum definiert ist -- an späterer Stelle dann Dualraum zeigen. Hier auch noch vektorwertige Maße?
+
+Für maßwertige Lösungen von PDE benötigen wir den zentralen Satz von Radon-Nikodym. Hierzu braucht es vorbereitende Definitionen
+\begin{definition}[Absolutstetigkeit von Maßen]
+	Ein Maß $\mu$ heißt absolutstetig bezüglich $\nu$ mit Notation $\mu \ll \nu$, wenn für alle $A\subset \Omega$ mit $\nu(A) = 0$ auch $\mu(A) = 0$ gilt.
+\end{definition}
+
+Zusätzlich haben wir mehr oder weniger das Gegenteil von Absolutstetigkeit.
+
+TODO andere Definition verwenden?
+\begin{definition}[Singularität von Maßen]
+	Seien $\mu, \nu$ signierte Maße auf $(X,\mathcal{A})$. Wir nennen die zwei Maße singulär, wenn Mengen $E,F\in \mathcal{A}$ existieren mit $E\cap F = \emptyset, E\cup F = X$ und $\mu(E) = 0, \nu(F) = 0$. Wir schreiben dabei $\mu \perp \nu$.
+\end{definition}
+
+\begin{theorem}[Hahn-Zerlegung]
+	Sei $\mu$ ein signiertes Maß auf $(X,\mathcal{A})$, dann existieren Mengen $P$ mit $\mu(P)\geq 0$ und $N$ mit $\mu(N)\leq 0$ für die $P \cup N = X$ und $P \cap N = \emptyset$ gilt.
+\end{theorem}
+Beweis S 99
+
+\begin{theorem}[Jordan-Zerlegung]
+	Sei $\mu$ ein signiertes Maß, dann existieren zwei positive Maße $\mu^+, \mu^-$, so dass $\mu = \mu^+ - \mu^-$ und $\mu^+ \perp \mu^-.$
+\end{theorem}
+Hier noch Beweis
+
+\begin{theorem}[Radon-Nikodym]
+	Sei $\nu$ ein signiertes Maß und $\mu$ ein positives Maß, die jeweils $\sigma$-endlich auf $(X,\mathcal{A})$ sind. Es existieren eindeutige $\sigma$-endliche signierte Maße $\lambda, \rho$ auf $(X,\mathcal{A})$ mit 
+\begin{align*}
+	&\lambda \perp \mu,\\
+	&\rho \ll \mu,\\
+	&\nu = \lambda + \rho.
+\end{align*}
+Zusätzlich existiert eine $\mu$-integrierbare Funktion $f:X\to \mathbb{R}$ mit $d\rho = fd\mu$. $f$ hießt dabei Radon-Nikodym-Ableitung und wird geschrieben als $\frac{d\nu}{d\mu}$ // $d\nu = \frac{d\nu}{d\mu}d\mu$.\\
+	Es gilt $g\in L^n(\nu) \implies g(d\nu/d\mu) \in L^1(\mu)$ und $\int g d\nu = \int g \frac{d\nu}{d\mu}d\mu$.
+\end{theorem}
+
+
+Der Raum  von Maßen ist konvex (wieso? Das ist super wichtig zu verstehen) Wegen Radon-Nikodym lässt sich jedes absolutstetige Maß schreiben als $\rho = f(x)dx$ mit $f\in L^1, \int f = 1$ (WMaß) und $L^1\subset \mathcal{P}$ TODO. Vektor-wertige Maße?
+
+
+
+\subsection{Functional Analysis TODO}
+%TODO hier noch topologische Begriffe wie schwache Topologie oder so mit einfügen
+%Einführen was eine Norm ist und dass wir mit Subscript die Norm des jewieligen Raumes meinen.
+Nachdem das Problem das Konzept von Operatoren auf unendlichdimensionalen Räumen benötigt, führen wir zunächst grundlegende Begriffe wie Konzepte ein. Im Folgenden ist $X$ dabei ein normierter $\mathbb{K}$-Vektorraum. Ist $X$ vollständig, so heißt er \textit{Banachraum}. Enthält $X$ eine abzählbare Teilmenge $A$ mit $\overline{A} = X$, dann nennen wir $X$ \textit{separabel}. Ist zusätzlich auch $Y$ ein normierter Vektorraum, so bezeichnen wir mit $L(X;Y)$ die Menge der stetigen linearen Abbildungen $T:X\to Y$, wobei wir $T$ einen Operator nennen. Ein grundlegendes Resultat der Funktionalanalysis ist, dass lineare Operatoren genau dann stetig sind, wenn sie beschränkt sind.
+Mit $X'$ bezeichnen wir den \textit{Dualraum} von $X$. Elemente von $X'$ sind dabei lineare Funktionale $\varphi:X\to \mathbb{K}$ (als Beispiel Integrale nennen). Dieses Objekt erlaubt es uns, zwei weitere Konvergenzarten zu definieren.\\
+Wir nennen eine Folge $(x_n)_{n\in \mathbb{N}} \subset X$ \textit{stark konvergent}, falls $\lVert x_n\rVert_X \overset{n\to\infty}{\longrightarrow} \lVert x\rVert_X$.\\
+Wir nennen eine Folge $(x_n)_{n\in \mathbb{N}} \subset X$ \textit{schwach konvergenz}, falls für alle $\varphi \in X'$ gilt $\varphi(x_n) \overset{n\to\infty}{\longrightarrow} \varphi(x)$.\\
+Wir nennen eine Folge $(\varphi_n)_{n\in \mathbb{N}} \subset X'$ \textit{schwach-* konvergent}, falls für alle $x\in X$ gilt $\varphi_n(x) \overset{n\to\infty}{\longrightarrow} \varphi(x)$.\\
+Hier interessiert uns die Konvergenz von (Wahrscheinlichkeits-)Maßen(TODO Motivation).\\
+
+\begin{theorem}
+	Banach-ALagolu
+\end{theorem}
+
+\begin{theorem}
+	Riesz Representation
+\end{theorem}
+
+Daraus dann folgern dass $C_0'(\Omega) = \mathcal{M}(\Omega)$ "Maße sind Lineare Funktionale im gewissen Sinne", braucht es für Duale Formulierung und Variationsprobleme
+
+Reflexivität, Hahn-Banach, 
+
+Konvergenzarten von W-Maßen/Dichten im OT Kontext: narrow convergence, tightness, prokhorov, portmanteau?
+Generell: Was darf ich voraussetzen, was muss ich beweisen und was kann ich nur einmal erwähnen?
+
+\subsection{Variationsrechnung}
+Das vermutlich Verschieben nach 4: Warum brauchen wir das (Motivation), was sind die Methoden, die wir benötigen? Resultate verwenden für Lösung von Dualer Formulierung OT und DOT
+
+PDE-Theorie und damit Lp? Lp Def, Hölder, Minkowski, Dualität; Sobolew, schwache Ableitung, Einbettung, Poincare; Distributionen, Testfunktionen, schwache Formulierung von PDE, Lax-Milgram
+
+Variationsrechnung: Korezivität, Kompaktheit, lsc, Euler-Lagrange Gleichung und Lagrange Multiplikatoren (Direkte Methode
