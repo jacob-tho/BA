@@ -147,22 +147,24 @@ The goal here is to show the relationship between static optimal transport, that
 \end{definition}
 Note that the absolute value of the denominator is necessary for the expression to be well-defined. For $t<s$ we get
 $$
-d(c(t),c(s)) \leq \int_t^s|c'|(x)\mathrm{d}x.
+d(\gamma(t),\gamma(s)) \leq \int_t^s|\gamma'|(x)\mathrm{d}x.
 $$
 Also from the Rademacher-Theorem we conclude, that the metric derivative may exist for a.e. $t\in[0,1]$ if the curve is Lipschitz-continuous. TODO?
 \begin{definition}[Absolutely Continuous Curves]
-	A curve $c:[0,1]\to X$ is said to be absolutely continuous, if there exists a $g\in L^1([0,1])$ such that the inequality 
+	A curve $\gamma:[0,1]\to X$ is said to be absolutely continuous, if there exists a $g\in L^1([0,1])$ such that the inequality 
 	$$
-	d(c(t),c(s)) \leq \int_t^s g(x)dx
+	d(\gamma(t),\gamma(s)) \leq \int_t^s g(x)dx
 	$$
-	holds for all $t<s$. We write $c\in \mathrm{AC}(X)$.
+	holds for all $t<s$. We write $\gamma\in \mathrm{AC}(X)$.
 \end{definition}
 To show the first big result of this chapter, we need some auxiliary results.
 \begin{lemma}
 	If $\gamma\in \mathrm{AC}(X)$, we can reparametrize the curve such that it is Lipschitz-continuous.
 \end{lemma}
 \begin{proof}
-	Let $\gamma:[0,1]\to(X,d)$ be absolutely continuous with $L(\gamma) = \int_0^1|\gamma'|(t)dt<\infty$. The arc lenght is defined by $s(t) := \int_0^t |\gamma'|(t)dt$ with $s(0) = 0$ and $s(1) = L(\gamma)$. Reparametrizing by arc-length is defined by $\tilde{\gamma}(s) := \gamma(\tau(s)),\, s\in [0,T],\, \tau(k) := \inf\{t\in [0,1] \big\lvert s(t)>k\}$. We compute 
+	Let $\gamma:[0,1]\to X$ be absolutely continuous with $L(\gamma) = \int_0^1|\gamma'|(t)dt<\infty$. The arc-lenght is defined by $s(t) := \int_0^t |\gamma'|(t)dt$ with $s(0) = 0$ and $s(1) = L(\gamma)$. Reparametrizing by arc-length is defined by 
+	$$\tilde{\gamma}(s) := \gamma(\tau(s)),\, s\in [0,T],\quad \tau(k) := \inf\{t\in [0,1] \big\lvert s(t)>k\}.$$ 
+		We compute 
 \begin{align*}
 	d(\tilde{\gamma}(a),\tilde{\gamma}(b)) &= d(\gamma(\tau(a)), \gamma(\tau(b)))\\
 										   &\leq \int_{\tau(a)}^{\tau(b)}|\gamma'|(r)dr\\
@@ -174,22 +176,22 @@ To show the first big result of this chapter, we need some auxiliary results.
 	For $p>1$ the optimal Transport map between two absolutely continuous measures exists.
 \end{lemma}
 \begin{proof}
-	TODO
+	Beweis in 3.1 mit Kantorovich Dualität / Subdifferential -- bereits im Seminar gemacht
 \end{proof}
 
-TODO hier noch Lemmata für das Theorem
+TODO hier noch Lemmata für das Theorem: Weak und Distributional ist gleich (Prop 4.2 Sant bzw ganzes Kapitel 4.1), Lemma 5.2
 
 One of the main theorems of this chapter is the following.
 \begin{theorem}
-	Let $(c_t)_{t\in[0,1]}\subset\mathrm{AC}(\mathscr{P}_p(X))$ be a family of absolutely continuous curves on the space of probability measures. For a.e. $t\in[0,1]$ there exists a velocity field $v_t\in L^p(c_t, \mathbb{R}^d)$ with the properties
+	Let $(\gamma_t)_{t\in[0,1]}\subset\mathrm{AC}(\mathscr{P}_p(X))$ be a family of absolutely continuous curves on the space of probability measures. For a.e. $t\in[0,1]$ there exists a velocity field $v_t\in L^p(c_t, \mathbb{R}^d)$ with the properties
 	\begin{itemize}
 		\item the continuity equation is satisfied in the distributional sense
-		\item we have $\lVert v_t\rVert_{L^p}\leq |c'|(t)$ for a.e. $t\in[0,1].$
+		\item we have $\lVert v_t\rVert_{L^p}\leq |\gamma'|(t)$ for a.e. $t\in[0,1].$
 	\end{itemize}
 \end{theorem}
-The idea of the proof is to construct a sequence of $c_t$ and a corresponding sequence for $v_t$ such that the continuity equation is solved, $c_t^k$ is absolutely continuous for all $k$ and the limit admits the desired inequality.
+The idea of the proof is to construct a sequence of $\gamma_t$ and a corresponding sequence for $v_t$ such that the continuity equation is solved, $\gamma_t^k$ is absolutely continuous for all $k$ and the limit admits the desired inequality.
 \begin{proof}
-	By Lemma ?? we assume $\mu$ to be Lipschitz. We define the sequence $\mu_t^k:= \mu_t * \eta_k$, where $\nu_k$ is a Dirac sequence supported on $B\left(0,\frac{1}{k}\right)$. This is a necessary step, since for example $\delta_x \in \mathscr{P_2(X)}$ is not absolutely continuous. Since
+By Lemma ?? we assume $\mu$ to be Lipschitz. We define the sequence $\mu_t^k:= \mu_t * \eta_k$, where $\nu_k$ is a Dirac sequence supported on $B\left(0,\frac{1}{k}\right)$. This is a necessary step, since for example $\delta_x \in \mathscr{P}_2(X)$ is not absolutely continuous. Since
 	$$
 	\mathrm{supp}(\mu_t*\eta_k) \subset \Omega + B\left(0,\frac{1}{k}\right)
 	$$
@@ -215,17 +217,17 @@ X_t(x) := T_t^{i,k},\quad \mu_t^k = (X_t)_\#\mu_{\frac{i}{k}}^k
 $$
 and by definition it holds
 $$
-v_t^k(X_t(x)) = v_{i,k} = \dot{X}_t(x)
+v_t^k(X_t(x)) = v_{i,k} = X'_t(x)
 $$
 which defines an ordinary differential equations. Taking test functions and integrating by parts gives
 \begin{align*}
-	&\int_\varphi(y)d\mu_t^k(y) = \int\varphi(X_t(x))d\mu_{\frac{i}{k}}^k(x)\\
+	&\int\varphi(y)d\mu_t^k(y) = \int\varphi(X_t(x))d\mu_{\frac{i}{k}}^k(x)\\
 	&\iff\frac{d}{dt}\int\varphi(y)d\mu_t^k(y) = \int\nabla\varphi(X_t(x)) \cdot v_t^k(X_t(x))d\mu_{\frac{i}{k}}^k(x)\\
-	&\implies \frac{d}{dt} \int \varphi d \mu_t^k = \int \nabla\varphi(y= \cdot v_t^k(y)d\mu_t^k(y),
+	&\iff\frac{d}{dt} \int \varphi d \mu_t^k = \int \nabla\varphi(y) \cdot v_t^k(y)d\mu_t^k(y),
 \end{align*}
-which is exactly the weak form of the continuity equation, hence the pair $(\mu_t^k, v_t^k)$ solves $\partial_t\mu_t^k + \nabla \cdot (v_t^k\mu_t^k) = 0$ in the distributional sense.
+which is exactly the weak form of the continuity equation, hence the pair $(\mu_t^k, v_t^k)$ solves $$\partial_t\mu_t^k + \nabla \cdot (v_t^k\mu_t^k) = 0$$ in the distributional sense.
 
-To estimate an upper-bound of the newly obtained veloctiy field in order to extract a weak limit, we compute
+To estimate an upper-bound for the newly obtained veloctiy field in order to extract a weak limit, we compute
 \begin{align*}
 	\lVert v_t^k\rVert_{L^p(\mu_t^k)}^p &= \int_\Omega |v^{i,k}|^p d\mu_{\frac{i}{k}}^k = k^p W_p^p\left(\mu_{\frac{i}{k}}^k,\mu_{\frac{i+1}{k}}^k\right)\\
 										&\leq k^pW_p^p\left(\mu_{\frac{i}{k}},\mu_{\frac{i+1}{k}}\right)\\

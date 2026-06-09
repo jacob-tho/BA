@@ -25,7 +25,7 @@ $$
 
 and we simplyfy (dürfen wir das einfach so???) the whole problem as
 $$
-\inf_{(\rho_t,J_t)}\int_0^1\int_\Omega \frac{|J_t|^2}{2\rho_t}dxdt + \alpha_{dif}^2\int_0^1\int_\Omega \frac{|\nabla\rho_t|^2}{\rho_t}\rho_tdxdt
+\inf_{(\rho_t,J_t)}\int_0^1\int_\Omega \frac{|J_t|^2}{2\rho_t}dxdt + \alpha_{dif}^2\int_0^1\int_\Omega \frac{|\nabla\rho_t|^2}{2\rho_t}\rho_tdxdt
 $$
 $$
 s.t.\begin{cases}
@@ -38,7 +38,7 @@ $$
 
 Adding two terms to complete the model, one for allowing creation of mass and one for fitting data for a given curve, we finally receive
 \begin{align*}
-&\inf_{(f_t, J_t, \rho_t; \rho_0, \rho_1)} \int_0^1\int_\Omega \frac{|J_t|^2}{2\rho_t}dxdt + \alpha_f\int_0^1\int_\Omega \frac{|f_t|^2}{2\rho_t}dxdt \\&+ \alpha_{dif}^2\int_0^1\int_\Omega\frac{|\nabla\rho_t|^2}{\rho_t}dxdt + \frac{\alpha_{in}}{2}\int_0^1\int_{\Gamma}|\rho_t - \rho_{data}|^2dxdt
+&\inf_{(f_t, J_t, \rho_t; \rho_0, \rho_1)} \int_0^1\int_\Omega \frac{|J_t|^2}{2\rho_t}dxdt + \alpha_f\int_0^1\int_\Omega \frac{|f_t|^2}{2\rho_t}dxdt \\&+ \alpha_{dif}^2\int_0^1\int_\Omega\frac{|\nabla\rho_t|^2}{2\rho_t}dxdt + \frac{\alpha_{inv}}{2}\int_0^1\int_{\Gamma}|\rho_t - \rho_{data}|^2dxdt
 \end{align*}
 $$
 s.t. \begin{cases}
@@ -55,7 +55,7 @@ and we may impose the condition on the initial and final distribution as above. 
 Here, our goal is also to solve the saddle-point problem, for which we need to calculate the Lagrangian in the first place. Taking a smooth test function $\phi_t: [0,1]\times\Omega$ we obtain
 \begin{align*}
 	\mathcal{L}(\rho_t,J_t, f_t, \phi_t, \lambda_t) &= \int_0^1\int_\Omega\frac{|J_t|^2}{2\rho_t}dxdt + \alpha_f\int_0^1\int_\Omega \frac{|f_t|^2}{2\rho_t}dxdt \\
-													&+\alpha_{dif}^2\int_0^1\int_\Omega\frac{|\nabla\rho_t|^2}{\rho_t}dxdt\\
+													&+\alpha_{dif}^2\int_0^1\int_\Omega\frac{|\nabla\rho_t|^2}{2\rho_t}dxdt\\
 													&+\frac{\alpha_{inv}}{2} \int_0^1\int_\Omega|\rho_t-\rho_{data}|^2dxdt\\
 													&-\int_0^1\int_\Omega \rho_t\partial_t\phi_t + J_t \cdot \nabla\phi_t + \rho_tv_t^{wind} \cdot \nabla\phi_t + f_t\phi_t dxdt\\
 													&+\int_\Omega [\phi_1\rho_1 - \phi_0\rho_0]dx\\
@@ -100,7 +100,7 @@ Here, our goal is also to solve the saddle-point problem, for which we need to c
  $$
  by 
  $$
- (F^{\alpha_f,\alpha_{dif}})^*(\rho_t^*, J_t^*, f_t^*, \nabla\rho_t^*) = \iota_{\left\{\rho_t^* + \frac{1}{2}\left(|J_t^*| + \frac{|f_t^*|}{\alpha_f} + \frac{|\nabla\rho_t|}{\alpha_{dif}^2}\right) \leq 0\right\}.
+ (F^{\alpha_f,\alpha_{dif}})^*(\rho_t^*, J_t^*, f_t^*, \nabla\rho_t^*) = \iota_{\left\{\rho_t^* + \frac{1}{2}\left(|J_t^*| + \frac{|f_t^*|}{\alpha_f} + \frac{|\nabla\rho_t|}{\alpha_{dif}^2}\right) \leq 0\right\}}.
  $$
  The given set is calculated similarly to what we did for the classical Benamou-Brenier formulation. %, where we wrote the term $\frac{|m|^2}{2\rho}$ as 
 % $$\sup_{(a,b)\in K}(a\rho + b \cdot m),\quad K := \{(a,b)\in \mathbb{R}\times \mathbb{R}^n \mid a + \frac{|b|^2}{2}\leq 0 \}.$$
