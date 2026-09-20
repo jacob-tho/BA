@@ -1,6 +1,6 @@
 # Fdb version 4
-["bibtex BA"] 0 "BA.aux" "BA.bbl" "BA" 1781030915.96166 0
-  "./BA-blx.bib" 1781030914 343 cde38348460006c5916452be55e9ec1a ""
+["bibtex BA"] 0 "BA.aux" "BA.bbl" "BA" 1789132274.32267 0
+  "./BA-blx.bib" 1789132271 343 cde38348460006c5916452be55e9ec1a ""
   "BA.aux" 0 -1 0 "pdflatex"
   "c:/texlive/2024/texmf-dist/bibtex/bst/biblatex/biblatex.bst" 1741474809 65510 b1f696b0241395385f422f67543c37fd ""
   "cite.bib" 0 -1 0 ""
@@ -8,12 +8,12 @@
   "BA.bbl"
   "BA.blg"
   (rewritten before read)
-["pdflatex"] 1781030913.80793 "BA.tex" "BA.pdf" "BA" 1781030915.96227 2
-  "BA.aux" 1781030914 1866 36bbe0b0f0ac16962f7923043cebea3b "pdflatex"
+["pdflatex"] 1789132269.0966 "BA.tex" "BA.pdf" "BA" 1789132274.3267 0
+  "BA.aux" 1789132271 2198 66df3fede507d5e5078524eed9ced9b6 "pdflatex"
   "BA.bbl" 1772995798 520 47390d0fec917a8062f60a58a9b6d248 "bibtex BA"
-  "BA.run.xml" 1781030914 2504 cb84641aa088aadf8d69f2970d1780c8 "pdflatex"
-  "BA.tex" 1780839084 1284 cf964bdb06d3c202492e8efb85acce68 ""
-  "BA.toc" 1781030914 1025 169b4499b33453cce0ba276c0a4e9fe3 "pdflatex"
+  "BA.run.xml" 1789132271 2504 cb84641aa088aadf8d69f2970d1780c8 "pdflatex"
+  "BA.tex" 1789132257 1608 292450f05b30ed95309a296333e8c005 ""
+  "BA.toc" 1789132271 957 0bcebbdb64f94b2eb285076bf98035cf "pdflatex"
   "c:/texlive/2024/texmf-dist/fonts/enc/dvips/cm-super/cm-super-t1.enc" 1741476355 2971 def0b6c1f0b107b3b936def894055589 ""
   "c:/texlive/2024/texmf-dist/fonts/enc/dvips/cm-super/cm-super-ts1.enc" 1741476355 2900 1537cc8184ad1792082cd229ecc269f4 ""
   "c:/texlive/2024/texmf-dist/fonts/map/fontname/texfonts.map" 1741477621 3524 cb3e574dea2d1052e39280babc910dc8 ""
@@ -60,6 +60,7 @@
   "c:/texlive/2024/texmf-dist/fonts/type1/public/cm-super/sfbx1200.pfb" 1741476355 140176 d0f50dba675c56d445f84a32c1f93a79 ""
   "c:/texlive/2024/texmf-dist/fonts/type1/public/cm-super/sfbx1440.pfb" 1741476355 135942 aecb5af344df420d6ec421db27dedf62 ""
   "c:/texlive/2024/texmf-dist/fonts/type1/public/cm-super/sfbx1728.pfb" 1741476355 139826 3796482349bae544f13f54da58f9706d ""
+  "c:/texlive/2024/texmf-dist/fonts/type1/public/cm-super/sfrm0800.pfb" 1741476355 164227 41439fae96b3b30186924e9dd2fcff30 ""
   "c:/texlive/2024/texmf-dist/fonts/type1/public/cm-super/sfrm1200.pfb" 1741476355 136101 b18d10b3436f8cb0cd04046deb340fe7 ""
   "c:/texlive/2024/texmf-dist/fonts/type1/public/cm-super/sfti1200.pfb" 1741476355 198221 29e050730bc4b56b13a53cd149c0a42c ""
   "c:/texlive/2024/texmf-dist/fonts/type1/public/rsfs/rsfs10.pfb" 1741481378 16077 4737ac34f0fb5608550f3780a0202c22 ""
@@ -74,6 +75,9 @@
   "c:/texlive/2024/texmf-dist/tex/generic/infwarerr/infwarerr.sty" 1741478369 8356 7bbb2c2373aa810be568c29e333da8ed ""
   "c:/texlive/2024/texmf-dist/tex/generic/ltxcmds/ltxcmds.sty" 1741479199 17865 1a9bd36b4f98178fa551aca822290953 ""
   "c:/texlive/2024/texmf-dist/tex/generic/pdftexcmds/pdftexcmds.sty" 1741480388 20089 80423eac55aa175305d35b49e04fe23b ""
+  "c:/texlive/2024/texmf-dist/tex/latex/algorithmicx/algorithmicx.sty" 1741472091 26750 ce139c05a983e19ddca355b43e29c395 ""
+  "c:/texlive/2024/texmf-dist/tex/latex/algorithmicx/algpseudocode.sty" 1741472091 3457 d9077efe6b74c5a094199256af8d7d9a ""
+  "c:/texlive/2024/texmf-dist/tex/latex/algorithms/algorithm.sty" 1741472099 3249 15763257e50278eef5db1952ccde229c ""
   "c:/texlive/2024/texmf-dist/tex/latex/amscls/amsthm.sty" 1741472339 12594 0d51ac3a545aaaa555021326ff22a6cc ""
   "c:/texlive/2024/texmf-dist/tex/latex/amsfonts/amsfonts.sty" 1741472378 5949 3f3fd50a8cc94c3d4cbf4fc66cd3df1c ""
   "c:/texlive/2024/texmf-dist/tex/latex/amsfonts/amssymb.sty" 1741472378 13829 94730e64147574077f8ecfea9bb69af4 ""
@@ -105,6 +109,7 @@
   "c:/texlive/2024/texmf-dist/tex/latex/csquotes/csquotes.sty" 1741476694 62767 e79d6d7a989e7da62dcf3d0a65c1faee ""
   "c:/texlive/2024/texmf-dist/tex/latex/epstopdf-pkg/epstopdf-base.sty" 1741477198 13886 d1306dcf79a944f6988e688c1785f9ce ""
   "c:/texlive/2024/texmf-dist/tex/latex/etoolbox/etoolbox.sty" 1741477258 46850 d87daedc2abdc653769a6f1067849fe0 ""
+  "c:/texlive/2024/texmf-dist/tex/latex/float/float.sty" 1741477565 6749 16d2656a1984957e674b149555f1ea1d ""
   "c:/texlive/2024/texmf-dist/tex/latex/geometry/geometry.sty" 1741477780 41601 9cf6c5257b1bc7af01a58859749dd37a ""
   "c:/texlive/2024/texmf-dist/tex/latex/graphics-cfg/graphics.cfg" 1741477927 1224 978390e9c2234eab29404bc21b268d1e ""
   "c:/texlive/2024/texmf-dist/tex/latex/graphics-def/pdftex.def" 1741477928 19440 9da9dcbb27470349a580fca7372d454b ""
@@ -136,11 +141,10 @@
   "c:/texlive/2024/texmf-var/fonts/map/pdftex/updmap/pdftex.map" 1741483598 5512713 1e2df2d1e914a8052c604db674da6db6 ""
   "c:/texlive/2024/texmf-var/web2c/pdftex/pdflatex.fmt" 1741483802 3352885 34fa68758fb304a1b5b3855ca3fdf1a7 ""
   "c:/texlive/2024/texmf.cnf" 1741483580 713 e69b156964470283e0530f5060668171 ""
-  "sections/1-motivation.tex" 1776244041 1341 b58edf672889be21819213fd4abdd7d9 ""
-  "sections/2-background.tex" 1776244044 9995 24eb03453771e6bbaaf5d5dcafd5fb3c ""
-  "sections/3-DOT.tex" 1781030913 39908 62caeef4134e87c6b42252829861bc54 ""
-  "sections/4-data_fiting.tex" 1781030170 7273 43b5d163138da2c88efb1fb315ec052c ""
-  "sections/5-numeric.tex" 1772997272 99 0e310dd2e99733b221c05466e79140f5 ""
+  "sections/1-motivation.tex" 1781807551 1408 87eedea48bbf2d6081994d700ae5f223 ""
+  "sections/2-background.tex" 1781807766 10216 72a0b2b3e260d7650f6da6762f590762 ""
+  "sections/3-DOT.tex" 1782812173 48398 df31235f7bc35ad83ff769dea8bbbcd3 ""
+  "sections/4-data_fiting.tex" 1788723266 45596 a82cfa1a30cec740b64abee90fa440d0 ""
   (generated)
   "BA-blx.bib"
   "BA.aux"

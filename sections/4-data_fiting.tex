@@ -93,12 +93,12 @@ and we may impose the condition on the initial and final distribution as above. 
 &= \int_0^1\frac{\mathrm{d}}{\mathrm{d}t}\left(\int_\Omega \rho_t\,\mathrm{d}x\right)\mathrm{d}t - \int_0^1\int_\Omega f_t\, \mathrm{d}x\mathrm{d}t\\
 &= \int_\Omega\rho_1 \,\mathrm{d}x - \int_\Omega \rho_0\,\mathrm{d}x - \int_0^1\int_\Omega f_t \,\mathrm{d}x\mathrm{d}t = 0.
 \end{align*}
-Here, our goal is also to solve the saddle-point problem, for which we need to calculate the Lagrangian in the first place. For that, we define smooth Lagrange-multipliers $\phi_t:[0,1]\times \Omega\to \mathbb{R}$ and $\lambda_t:[0,1]\times \Omega\to \mathbb{R}^n$ and write
+Here, our goal is also to solve the saddle-point problem, for which we need to calculate the Lagrangian in the first place. For that, we define smooth Lagrange-multipliers $\phi_t:[0,1]\times \Omega\to \mathbb{R}$ and $\vartheta_t:[0,1]\times \Omega\to \mathbb{R}^n$ and write
 \begin{align*}
-	\mathcal{L}(\rho_t, J_t, f_t, g_t; \phi_t, \lambda_t) &= \int_0^1\int_\Omega \frac{|J_t|^2}{2\rho_t}\,\mathrm{d}x\mathrm{d}t  + \alpha_f^2\int_0^1\int_\Omega \frac{|f_t|^2}{2\rho_t}\,\mathrm{d}x\mathrm{d}t\\
+	\mathcal{L}(\rho_t, J_t, f_t, g_t; \phi_t, \vartheta_t) &= \int_0^1\int_\Omega \frac{|J_t|^2}{2\rho_t}\,\mathrm{d}x\mathrm{d}t  + \alpha_f^2\int_0^1\int_\Omega \frac{|f_t|^2}{2\rho_t}\,\mathrm{d}x\mathrm{d}t\\
 														  &+\alpha_{dif}^2\int_0^1\int_\Omega \frac{|g_t|^2}{2\rho_t}\,\mathrm{d}x\mathrm{d}t + \frac{\alpha_{inv}^2}{2}\int_0^1\int_\Gamma |\rho_t-\rho_{data}|^2\,\mathrm{d}x\mathrm{d}t\\
 														  &+\int_0^1\int_\Omega\phi_t(\partial_t\rho_t + \nabla \cdot (J_t + \rho_tv_t^{wind})-f_t)\,\mathrm{d}x\mathrm{d}t\\
-														  &+ \int_0^1\int_\Omega \lambda_t \cdot (g-\nabla\rho_t)\,\mathrm{d}x\mathrm{d}t.
+														  &+ \int_0^1\int_\Omega \vartheta_t \cdot (g-\nabla\rho_t)\,\mathrm{d}x\mathrm{d}t.
 \end{align*}
 Integrating by parts yields 
 \begin{align*}
@@ -108,35 +108,35 @@ For the divergence term we obtain using (Gaus divergence theorem?)
 \begin{align*}
 	&\int_0^1\int_\Omega \phi_t \nabla \cdot (J + \rho_tv_t^{wind}) \,\mathrm{d}x\mathrm{d}t = \int_0^1\int_{\partial\Omega} \phi_t(J_t + \rho_tv_t^{wind}) \cdot n \,\mathrm{d}S\mathrm{d}t - \int_0^1\int_\Omega \nabla\phi_t \cdot (J_t + \rho_tv_t^{wind}) \,\mathrm{d}x\mathrm{d}t \\&\overset{\text{no flux boundary condition}}{=} - \int_0^1\int_\Omega \nabla\phi_t (J_t + \rho_tv_t^{wind}) \,\mathrm{d}x\mathrm{d}t.
 \end{align*}
-and for the gradient constraint we get 
-\begin{align*}
-	\int_0^1\int_\Omega \lambda_t \cdot (g_t - \nabla\rho_t) \,\mathrm{d}x\mathrm{d}t \overset{\text{divergence theorem}}{=} \int_0^1\int_\Omega \lambda_t \cdot g_t \,\mathrm{d}x\mathrm{d}t + \int_0^1\int_\Omega \rho_t\nabla \cdot \lambda \,\mathrm{d}x\mathrm{d}t - \int_0^1\int_{\partial\Omega} \rho_t\lambda_t \cdot n \,\mathrm{d}S\mathrm{d}t.
-\end{align*}
-%TODO ist es normal dS zu machen? Irgendwelche zusatz-conditions für \lambda \cdot n??
+%and for the gradient constraint we get 
+%\begin{align*}
+%	\int_0^1\int_\Omega \vartheta_t \cdot (g_t - \nabla\rho_t) \,\mathrm{d}x\mathrm{d}t \overset{\text{divergence theorem}}{=} \int_0^1\int_\Omega \vartheta_t \cdot g_t \,\mathrm{d}x\mathrm{d}t + \int_0^1\int_\Omega \rho_t\nabla \cdot \vartheta \,\mathrm{d}x\mathrm{d}t - \int_0^1\int_{\partial\Omega} \rho_t\vartheta_t \cdot n \,\mathrm{d}S\mathrm{d}t.
+%\end{align*}
 %Taking a smooth test function $\phi_t: [0,1]\times\Omega$ for the constraint, substracting the weak formulation of our modified continuity equation constraint and integrating by parts we obtain
-To simplify calculations we assume $\lambda_t \cdot n = 0$ on $(0,1) \times \partial\Omega$. Putting those calculations together and introducing a real Lagrange multiplier $\kappa_t$, we end up with the final Lagrangian 
+%To simplify calculations we assume $\vartheta_t \cdot n = 0$ on $(0,1) \times \partial\Omega$.
+Putting those calculations together and introducing a real Lagrange multiplier $\lambda_t$, we end up with the final Lagrangian 
 \begin{align*}
-	\mathcal{L}(\rho_t,J_t, f_t, g_t, \phi_t, \lambda_t, \kappa_t) &= \int_0^1\int_\Omega\frac{|J_t|^2}{2\rho_t}\,\mathrm{d}x\mathrm{d}t + \alpha_f^2\int_0^1\int_\Omega \frac{|f_t|^2}{2\rho_t}\,\mathrm{d}x\mathrm{d}t \\
+	\mathcal{L}(\rho_t,J_t, f_t, g_t, \phi_t, \vartheta_t, \lambda_t) &= \int_0^1\int_\Omega\frac{|J_t|^2}{2\rho_t}\,\mathrm{d}x\mathrm{d}t + \alpha_f^2\int_0^1\int_\Omega \frac{|f_t|^2}{2\rho_t}\,\mathrm{d}x\mathrm{d}t \\
 																  &+\alpha_{dif}^2\int_0^1\int_\Omega\frac{|g_t|^2}{2\rho_t}\,\mathrm{d}x\mathrm{d}t+\frac{\alpha_{inv}^2}{2} \int_0^1\int_\Gamma|\rho_t-\rho_{data}|^2\,\mathrm{d}x\mathrm{d}t\\
 																  &-\int_0^1\int_\Omega \rho_t\partial_t\phi_t + J_t \cdot \nabla\phi_t + \rho_tv_t^{wind} \cdot \nabla\phi_t + f_t\phi_t \,\mathrm{d}x\mathrm{d}t\\
-																  &+\underbrace{\int_\Omega [\phi_1\rho_1 - \phi_0\rho_0]\,\mathrm{d}x}_{G(\phi_t)} + \int_0^1\int_\Omega \lambda_t \cdot g_t + \rho_t\nabla \cdot \lambda_t \,\mathrm{d}x\mathrm{d}t\\
-																  &+\kappa_t\left(\int_\Omega\rho_1\,\mathrm{d}x - \int_\Omega\rho_0\,\mathrm{d}x - \int_0^1\int_\Omega f_t\,\mathrm{d}x\mathrm{d}t\right) %- \int_0^1\int_{\partial\Omega} \rho_t\lambda_t \cdot n \,\mathrm{d}S\mathrm{d}t
+																  &+\underbrace{\int_\Omega [\phi_1\rho_1 - \phi_0\rho_0]\,\mathrm{d}x}_{G(\phi_t)} + \int_0^1\int_\Omega  \vartheta_t \cdot (g-\nabla\rho_t)\,\mathrm{d}x\mathrm{d}t\\%+ \int_0^1\int_\Omega \vartheta_t \cdot g_t + \rho_t\nabla \cdot \vartheta_t \,\mathrm{d}x\mathrm{d}t\\
+																  &+\lambda_t\left(\int_\Omega\rho_1\,\mathrm{d}x - \int_\Omega\rho_0\,\mathrm{d}x - \int_0^1\int_\Omega f_t\,\mathrm{d}x\mathrm{d}t\right) %- \int_0^1\int_{\partial\Omega} \rho_t\vartheta_t \cdot n \,\mathrm{d}S\mathrm{d}t
 \end{align*}
  and the saddle point problem then reads as 
  %$$
- %\inf_{(\rho_t, J_t, f_t, \nabla\rho_t)}\sup_{(\phi_t, \lambda_t)} \mathcal{L}(\rho_t, J_t, f_t, \nabla\rho_t, \phi_t, \lambda_t).
+ %\inf_{(\rho_t, J_t, f_t, \nabla\rho_t)}\sup_{(\phi_t, \vartheta_t)} \mathcal{L}(\rho_t, J_t, f_t, \nabla\rho_t, \phi_t, \vartheta_t).
  %$$
  $$
- \infsup{(\rho_t,J_t,f_t,g_t)}{(\phi_t,\lambda_t, \kappa_t)} \mathcal{L}(\rho_t,J_t,f_t,g_t,\phi_t,\lambda_t, \kappa_t),
+ \infsup{(\rho_t,J_t,f_t,g_t)}{(\phi_t,\vartheta_t, \lambda_t)} \mathcal{L}(\rho_t,J_t,f_t,g_t,\phi_t,\vartheta_t, \lambda_t),
  $$
 where the admissible set for $(\rho_t, J_t, f_t,g_t)$ is given by 
 $$
 \mathcal{D}_{adm} = M_{[0,1]}^+(\Omega) \times M_{[0,1]}(\Omega, \mathbb{R}^d)\times M_{[0,1]}(\Omega)\times M_{[0,1]}(\Omega, \mathbb{R}^d).
 $$
 
- To simplify notation, we introduce for $\kappa, \vartheta : [0,1]\times\Omega\to \mathbb{R}$
+ To simplify notation, we introduce for functionals $\chi, \tau: [0,1]\times\Omega\to \mathbb{R}$
  $$
- \langle \kappa,\vartheta\rangle = \int_0^1\int_\Omega \kappa\vartheta\,\mathrm{d}x\mathrm{d}t,\quad |\kappa| = \sqrt{\langle \kappa,\kappa\rangle}.
+ \langle \chi,\tau\rangle = \int_0^1\int_\Omega \chi\tau\,\mathrm{d}x\mathrm{d}t,\quad |\chi| = \sqrt{\langle \chi,\chi\rangle}.
  $$
  For a primal-dual projection algorithm we introduce convex functions and their respective Legendre-Fenchel transform. We define the convex and lower semicontinuous functional
  $$
@@ -147,9 +147,9 @@ $$
  and the two convex and lower semicontinuous functions (as a sum of c and lsc functions)
  \begin{align*}
 	 F^{\alpha_f, \alpha_{dif}}(\rho_t, J_t, f_t, g_t) &:= \Psi(\rho_t, J_t)  + \alpha_f^2\Psi(\rho_t, f_t) + \alpha_{dif}^2\Psi(\rho_t,g_t),\\
-	 \overline{F}^{\alpha_f,\alpha_{dif}}(\rho_t, J_t, f_t, g_t) &:= F^{\alpha_f,\alpha_{dif}}(\rho_t, J_t, f_t, g_t) + \frac{\alpha_{inv}^2}{2} |\rho_t - \rho_{data}|^2,
+	 \overline{F}^{\alpha_f,\alpha_{dif}, \alpha_{inv}}(\rho_t, J_t, f_t, g_t) &:= F^{\alpha_f,\alpha_{dif}}(\rho_t, J_t, f_t, g_t) + \frac{\alpha_{inv}^2}{2} |\rho_t - \rho_{data}|^2,
  \end{align*}			
- where $F^{\alpha_f, \alpha_{dif}}$ is defined on $((0,1)\times\Omega)\setminus\Gamma$ and $\overline{F}^{\alpha_f, \alpha_{dif}}$ on $\Gamma$. %TODO eher sowas wie "acts on functions defined on .. ." oder sowas, macht mehr Sinn. Was genau sind F und F_bar eigentlich für Objekte?
+ where $F^{\alpha_f, \alpha_{dif}}$ is defined on $((0,1)\times\Omega)\setminus\Gamma$ and $\overline{F}^{\alpha_f, \alpha_{dif}, \alpha_{inv}}$ on $\Gamma$. %TODO eher sowas wie "acts on functions defined on .. ." oder sowas, macht mehr Sinn. Was genau sind F und F_bar eigentlich für Objekte?
  We recall that for a convex function $F$ can be rewritten as %the Legendre-Fenchel transform has the form 
  $$
  F(x) = \sup_{x^*} \{\langle x,x^*\rangle - F^*(x^*)\},
@@ -164,13 +164,14 @@ $$
  F^{\alpha_f,\alpha_{dif}}(\rho_t, J_t, f_t, g_t) = \sup_{(\rho_t^*, J_t^*, f_t^*, g_t^*)} \{\langle (\rho_t, J_t, f_t, g_t), (\rho_t^*, J_t^*, f_t^*, g_t^*)\rangle - (F^{\alpha_f,\alpha_{dif}})^*(\rho_t^*, J_t^*, f_t^*, g_t^*)\}
  $$
  $$
- \overline{F}^{\alpha_f,\alpha_{dif}}(\rho_t, J_t, f_t, g_t) = \sup_{(\rho_t^*, J_t^*, f_t^*, g_t^*)} \{\langle (\rho_t, J_t, f_t, g_t), (\rho_t^*, J_t*, f_t^*, g_t^*)\rangle - (\overline{F}^{\alpha_f,\alpha_{dif}})^*(\rho_t^*, J_t^*, f_t^*, g_t^*)\}.
+ \overline{F}^{\alpha_f,\alpha_{dif}, \alpha_{inv}}(\rho_t, J_t, f_t, g_t) = \sup_{(\rho_t^*, J_t^*, f_t^*, g_t^*)} \{\langle (\rho_t, J_t, f_t, g_t), (\rho_t^*, J_t*, f_t^*, g_t^*)\rangle - (\overline{F}^{\alpha_f,\alpha_{dif}, \alpha_{inv}})^*(\rho_t^*, J_t^*, f_t^*, g_t^*)\}.
  $$
-  Using this relation we rewrite the problem as (noch erwähnen, dass *-1 weil inf sup exchange) 
+  Using this relation we rewrite the problem with an inf/sup exchange as 
 \begin{align*}
-	\supinf{(\rho_t,J_t,f_t,g_t)}{(\phi_t,\lambda_t, \kappa_t; \rho_t^*, J_t^*, f_t^*, g_t^*)} %\sup_{(\rho_t, J_t, f_t, \nabla\rho_t)}\inf_{(\phi_t, \lambda_t)} 
-	&\int_0^1\int_{((0,1)\times\Omega)\setminus\Gamma} (F^{\alpha_f, \alpha_{dif}})^*(\rho_t^*, J_t^*, f_t^*, g_t^*)\,\mathrm{d}x\mathrm{d}t \\&+ \int_\Gamma (\overline{F}^{\alpha_f, \alpha_{dif}})^*(\rho_t^*, J_t^*, f_t^*, g_t^*)\,\mathrm{d}x\mathrm{d}t -G(\phi_t) \\&+ \langle(\partial_t\phi_t + \nabla\phi_t \cdot v_t^{wind} - \rho_t^* -\nabla \cdot \lambda_t, \nabla\phi_t - J_t^*, \phi_t - f_t^*, -\lambda_t-g_t^*), (\rho_t, J_t, f_t, g_t)\rangle\\
-																	&-\kappa_t\left(\int_\Omega d\rho_1 - \int_\Omega d\rho_0 - \int_0^1\int_\Omega f_t\,\mathrm{d}x\mathrm{d}t\right).
+	\supinf{(\rho_t,J_t,f_t,g_t)}{(\phi_t,\vartheta_t, \lambda_t; \rho_t^*, J_t^*, f_t^*, g_t^*)} %\sup_{(\rho_t, J_t, f_t, \nabla\rho_t)}\inf_{(\phi_t, \vartheta_t)} 
+	&\int_0^1\int_{((0,1)\times\Omega)\setminus\Gamma} (F^{\alpha_f, \alpha_{dif}})^*(\rho_t^*, J_t^*, f_t^*, g_t^*)\,\mathrm{d}x\mathrm{d}t \\&+ \int_\Gamma \left(\overline{F}^{\alpha_f, \alpha_{dif},\alpha_{inv}}\right)^*(\rho_t^*, J_t^*, f_t^*, g_t^*)\,\mathrm{d}x\mathrm{d}t -G(\phi_t) \\&+ \langle(\partial_t\phi_t + \nabla\phi_t \cdot v_t^{wind} - \rho_t^* , \nabla\phi_t - J_t^*, \phi_t - f_t^*, -\vartheta_t-g_t^*), (\rho_t, J_t, f_t, g_t)\rangle\\
+																	&+\langle \vartheta,\nabla\rho_t\rangle %TODO unsicher
+																	-\lambda_t\left(\int_\Omega d\rho_1 - \int_\Omega d\rho_0 - \int_0^1\int_\Omega f_t\,\mathrm{d}x\mathrm{d}t\right) .
 \end{align*}
 
  We can evaluate the conjugate by the indicator function
@@ -195,7 +196,7 @@ $$
  $$
  To calculate 
  $$
- (\overline{F}^{\alpha_f, \alpha_{dif}})^*%(\rho_t^*, J_t^*, f_t^*, \nabla\rho_t^*) 
+ \left(\overline{F}^{\alpha_f, \alpha_{dif},\alpha_{inv}}\right)^*%(\rho_t^*, J_t^*, f_t^*, \nabla\rho_t^*) 
  = \sup_{\rho_t, J_t, f_t, g_t} 
  \left\{ \rho_t\rho_t^* + J_t \cdot J_t^* + f_tf_t^* + g_t\cdot g_t^* - \frac{|J_t|^2}{2\rho_t} - \alpha_f^2\frac{|f_t|}{2\rho_t} - \alpha_{dif}^2\frac{|g_t|^2}{2\rho_t} - \frac{\alpha_{inv}^2}{2} |\rho_t - \rho_{data}|^2 \right\} 
  $$ we again evaluate the first derivative in each primal variable and the first optimality condition with respect to $\rho_t$ gives
@@ -206,34 +207,347 @@ $$
 
 This allows us to rewrite
 \begin{align*}
-	&(\overline{F}^{\alpha_f, \alpha_{dif},\alpha_{inv}})^*(\rho_t^*, J_t^*, f_t^*, g_t^*) = \sup_{\rho_t}\rho_t\left(\rho_t^* + \frac{|J_t^*|^2}{2} + \frac{|f_t^*|^2}{2\alpha_f^2} + \frac{|g_t^*|^2}{2\alpha_{dif}^2}\right) - \frac{\alpha_{inv}^2}{2}|\rho_t - \rho_{data}|^2\\
+	&\left(\overline{F}^{\alpha_f, \alpha_{dif},\alpha_{inv}}\right)^*(\rho_t^*, J_t^*, f_t^*, g_t^*) = \sup_{\rho_t}\rho_t\left(\rho_t^* + \frac{|J_t^*|^2}{2} + \frac{|f_t^*|^2}{2\alpha_f^2} + \frac{|g_t^*|^2}{2\alpha_{dif}^2}\right) - \frac{\alpha_{inv}^2}{2}|\rho_t - \rho_{data}|^2\\
 	&=\rho_{data}\left(\rho_t^* + \frac{|J_t^*|^2}{2} + \frac{|f_t^*|^2}{2\alpha_f^2} + \frac{|g_t^*|^2}{2\alpha_{dif}^2}\right) + \frac{1}{2\alpha_{inv}^2} \left(\rho_t^* + \frac{|J_t^*|^2}{2} + \frac{|f_t^*|^2}{2\alpha_f^2} + \frac{|g_t^*|^2}{2\alpha_{dif}^2}\right)^2.
 																								   %&=\rho_{data}\left(\rho_t^* + \frac{|J_t^*|^2}{2} + \frac{|f_t^*|^2}{2\alpha_f^2} + \frac{|g_t^*|^2}{2\alpha_{dif}^2}\right) + \left(\frac{1}{\alpha_{inv}^2} - \frac{\alpha_{inv}^2}{2}\right) \left(\rho_t^* + \frac{|J_t^*|^2}{2} + \frac{|f_t^*|^2}{2\alpha_f^2} + \frac{|g_t^*|^2}{2\alpha_{dif}^2}\right)^2.
 \end{align*}
 %This now enables us to rewrite the objective functional as
 %\begin{align*}
-%	&\sup_{\rho_t, J_t, f_t, \nabla\rho_t}\inf_{\phi_t, \lambda_t, \rho_t^*, J_t^*, f_t^*, \nabla\rho_t} \int_{((0,1)\times\Omega)\setminus\Gamma} (F^{\alpha_f})^*(\rho_t^*, J_t^*, f_t^*, \nabla\rho_t^*) \,\mathrm{d}x\mathrm{d}t \\
+%	&\sup_{\rho_t, J_t, f_t, \nabla\rho_t}\inf_{\phi_t, \vartheta_t, \rho_t^*, J_t^*, f_t^*, \nabla\rho_t} \int_{((0,1)\times\Omega)\setminus\Gamma} (F^{\alpha_f})^*(\rho_t^*, J_t^*, f_t^*, \nabla\rho_t^*) \,\mathrm{d}x\mathrm{d}t \\
 %	&+ \int_\Gamma (\overline{F}^{\alpha_f, \alpha_{dif}})^*\,\mathrm{d}x\mathrm{d}t + G(\phi_t) \\
-%	&+ \langle(\partial_t\phi_t + \nabla\phi_t \cdot v_t^{wind} - \rho_t^*, \nabla\phi_t - J_t^*, \phi_t- f_t^*), (\rho_t, J_t, f_t)\rangle_\Omega - \lambda_t\left(\int_\Omega d\rho_1 - \int_\Omega d\rho_0 + \int_0^1\int_\Omega f_t\,\mathrm{d}x\mathrm{d}t\right)
+%	&+ \langle(\partial_t\phi_t + \nabla\phi_t \cdot v_t^{wind} - \rho_t^*, \nabla\phi_t - J_t^*, \phi_t- f_t^*), (\rho_t, J_t, f_t)\rangle_\Omega - \vartheta_t\left(\int_\Omega d\rho_1 - \int_\Omega d\rho_0 + \int_0^1\int_\Omega f_t\,\mathrm{d}x\mathrm{d}t\right)
 %\end{align*}
 %Das überarbeiten, da fehlt das Nabla!
 
 For a regulization parameter $r_1>0$ we obtain the Augmented Lagrangian defined as
 \begin{align*}
-	&\mathcal{L}_{aug}(\rho_t, J_t, f_t, g_t, \phi_t,\lambda_t,\rho_t^*,J_t^*,f_t^*,g_t^*):=\int_{((0,1)\times\Omega)\setminus\Gamma} (F^{\alpha_f,\alpha_{dif}})^*(\rho_t^*,J_t^*,f_t^*,g_t^*)\,\mathrm{d}x\mathrm{d}t \\
-	&+ \int_\Gamma(\overline{F}^{\alpha_f,\alpha_{dif}})^*(\rho_t^*,J_t^*,f_t^*,g_t^*)\,\mathrm{d}x\mathrm{d}t -G(\phi_t)\\ &+ \langle (\partial_t\phi_t + \nabla\phi_t\cdot v_t^{wind} - \rho_t^* - \nabla \cdot \lambda_t, \nabla\phi_t - J_t^*, \phi_t - f_t^*, -\lambda_t-g_t^*), (\rho_t,J_t, f_t, g_t)\rangle\\
-	&+ \frac{r_1}{2} \lvert \partial_t\phi_t + \nabla\phi_t \cdot v_t^{wind} - \rho_t^* -\nabla \cdot \lambda_t\rvert^2 +\frac{r_1}{2} (\lvert \nabla\phi_t - J_t^*\rvert^2 + \lvert \phi_t - f_t^*\rvert^2 + \lvert -\lambda_t - g_t^*\rvert^2)\\
-	&+ \kappa_t\left(\int_\Omega \rho_1\,\mathrm{d}x - \int_\Omega\rho\,\mathrm{d}x- \int_0^1\int_\Omega f_t\,\mathrm{d}x\mathrm{d}t\right)
+	&\mathcal{L}_{aug}(\rho_t, J_t, f_t, g_t, \phi_t,\vartheta_t,\rho_t^*,J_t^*,f_t^*,g_t^*):=\int_{((0,1)\times\Omega)\setminus\Gamma} (F^{\alpha_f,\alpha_{dif}})^*(\rho_t^*,J_t^*,f_t^*,g_t^*)\,\mathrm{d}x\mathrm{d}t \\
+	&+ \int_\Gamma \left(\overline{F}^{\alpha_f,\alpha_{dif},\alpha_{inv}}\right)^*(\rho_t^*,J_t^*,f_t^*,g_t^*)\,\mathrm{d}x\mathrm{d}t -G(\phi_t)\\ 
+	%&+ \langle (\partial_t\phi_t + \nabla\phi_t\cdot v_t^{wind} - \rho_t^* , \nabla\phi_t - J_t^*, \phi_t - f_t^*, -\vartheta_t-g_t^*), (\rho_t,J_t, f_t, g_t)\rangle\\
+	&+ \langle R_\rho, \rho_t\rangle_{V_\rho^* \times V_\rho} + \frac{r_1}{2} \lVert R_\rho\rVert_{V_\rho^*}^2\\
+	&+ \langle (\nabla\phi_t - J_t^*, \phi_t - f_t^*, -\vartheta_t - g_t^*) , (J_t, f_t, g_t)\rangle\\
+	&+ \frac{r_1}{2}\left (\lvert \nabla\phi_t - J_t^*\rvert^2 + |\phi_t - f_t^*|^2 + |-\vartheta_t - g_t^*|^2\right). %TODO Anfangs und End-Dichten noch hinzufügen
+	%&+ \frac{r_1}{2} \lvert \partial_t\phi_t + \nabla\phi_t \cdot v_t^{wind} - \rho_t^* \rvert^2 +\frac{r_1}{2} (\lvert \nabla\phi_t - J_t^*\rvert^2 + \lvert \phi_t - f_t^*\rvert^2 + \lvert -\vartheta_t - g_t^*\rvert^2)\\
+	%&+ \langle \vartheta,\nabla\rho_t\rangle %TODO unsicher
+	%- \lambda_t\left(\int_\Omega \rho_1\,\mathrm{d}x - \int_\Omega\rho\,\mathrm{d}x- \int_0^1\int_\Omega f_t\,\mathrm{d}x\mathrm{d}t\right)
 \end{align*}
+\newpage
+%For a regularization parameter \(r_1>0\) we define the Augmented Lagrangian by
+%
+%$$
+%\begin{aligned}
+%L_{\mathrm{aug}}
+%(&\rho_t,J_t,f_t,g_t,\phi_t,\vartheta_t,
+%\rho_t^*,J_t^*,f_t^*,g_t^*)
+%:=
+%\\
+%&\int_{Q\setminus \Gamma}
+%\left(F_{\alpha_f,\alpha_{\mathrm{dif}}}\right)^*
+%(\rho_t^*,J_t^*,f_t^*,g_t^*)\,dx\,dt
+%\\
+%&\quad+
+%\int_{\Gamma}
+%\left(F_{\alpha_f,\alpha_{\mathrm{dif}},\alpha_{\mathrm{inv}}}\right)^*
+%(\rho_t^*,J_t^*,f_t^*,g_t^*)\,dx\,dt
+%-G(\phi_t)
+%\\
+%&\quad+
+%\left\langle R_\rho,\rho_t\right\rangle_{V_\rho^*,V_\rho}
+%\\
+%&\quad+
+%\left\langle
+%\left(
+%\nabla\phi_t-J_t^*,
+%\phi_t-f_t^*,
+%-\vartheta_t-g_t^*
+%\right),
+%\left(
+%J_t,f_t,g_t
+%\right)
+%\right\rangle
+%\\
+%&\quad+
+%\frac{r_1}{2}
+%\left\|R_\rho\right\|_{V_\rho^*}^2
+%\\
+%&\quad+
+%\frac{r_1}{2}
+%\left(
+%\left\|\nabla\phi_t-J_t^*\right\|_{L^2(Q)}^2
+%+
+%\left\|\phi_t-f_t^*\right\|_{L^2(Q)}^2
+%+
+%\left\|-\vartheta_t-g_t^*\right\|_{L^2(Q)^d}^2
+%\right),
+%\end{aligned}
+%$$
+%
+%where \(Q=(0,1)\times\Omega\).
+
+Due to the gradient constraint
+%$$
+%g_t=\nabla\rho_t,
+%$$
+the density is required to possess spatial \(H^1\)-regularity. We therefore consider the suitable space
+
+$$
+V_\rho:=L^2\bigl((0,1);H^1(\Omega)\bigr).
+$$
+
+After introducing the conjugate variables, the terms which are linear in \(\rho_t\) are given by
+
+$$
+\int_{((0,1) \times \Omega)}
+\left[
+\left(
+\partial_t\phi_t
++
+\nabla\phi_t\cdot v_t^{\mathrm{wind}}
+-
+\rho_t^*
+\right)\rho_t
++
+\vartheta_t\cdot\nabla\rho_t
+\right]\,dx\,dt.
+$$
+
+Since the second term contains the gradient of \(\rho_t\), the complete density residual cannot be identified as a pointwise \(L^2\)-function
+%
+%$$
+%\partial_t\phi_t
+%+
+%\nabla\phi_t\cdot v_t^{\mathrm{wind}}
+%-
+%\rho_t^*
+%$$
+%
+%alone. In particular, integrating the term
+%
+%$$
+%\int_Q\vartheta_t\cdot\nabla\rho_t\,dx\,dt
+%$$
+%
+, since integrating by parts would introduce \(\nabla\cdot\vartheta_t\) and would therefore require additional regularity assumptions on \(\vartheta_t\). To avoid this, the derivative of \(\rho_t\) is retained in weak form.
+Consequently, the density residual is interpreted as a linear functional on \(V_\rho\). For every \(\xi\in V_\rho\), define
+
+$$
+\left\langle R_\rho,\xi\right\rangle_{V_\rho^*\times V_\rho}
+:=
+\int_{(0,1)\times\Omega}
+\left[
+\left(
+\partial_t\phi_t
++
+\nabla\phi_t\cdot v_t^{wind}
+-
+\rho_t^*
+\right)\xi
++
+\vartheta_t\cdot\nabla\xi
+\right]\,dx\,dt.
+$$
+
+Hence,
+$R_\rho\in V_\rho^*,$
+where \(V_\rho^*\) denotes the dual space of \(V_\rho\). Choosing \(\xi=\rho_t\) yields
+
+$$
+\left\langle R_\rho,\rho_t\right\rangle_{V_\rho^* \times V_\rho}
+=
+\int_Q
+\left[
+\left(
+\partial_t\phi_t
++
+\nabla\phi_t\cdot v_t^{\mathrm{wind}}
+-
+\rho_t^*
+\right)\rho_t
++
+\vartheta_t\cdot\nabla\rho_t
+\right]\,dx\,dt,
+$$
+
+which recovers exactly the corresponding linear terms of the saddle-point formulation.
+Assuming
+$$
+\partial_t\phi_t
++
+\nabla\phi_t\cdot v_t^{\mathrm{wind}}
+-
+\rho_t^*
+\in L^2((0,1)\times\Omega), \quad\vartheta_t\in L^2((0,1)\times\Omega)^d,
+$$
+
+the Cauchy--Schwarz inequality gives
+
+$$
+\begin{aligned}
+\left|
+\left\langle R_\rho,\xi\right\rangle_{V_\rho^*\times V_\rho}
+\right|
+&\le
+\left|
+\partial_t\phi_t
++
+\nabla\phi_t\cdot v_t^{wind}
+-
+\rho_t^*
+\right|
+\cdot\left|\xi\right|
+\\
+&\quad+
+|\vartheta_t|
+\cdot |\nabla\xi|
+\le
+C|\xi|%_{V_\rho},
+\end{aligned}
+$$
+
+for some constant \(C>0\). Thus, \(R_\rho\) defines a continuous linear functional on \(V_\rho\).
+
+In the augmented Lagrangian, the linear residual term is supplemented by a quadratic penalty measuring the norm of the same residual. Since \(R_\rho\) belongs to \(V_\rho^*\), the appropriate penalty is given by
+
+$$
+\frac{r_1}{2}
+\left\|R_\rho\right\|_{V_\rho^*}^2,
+$$
+
+where the dual norm is defined by
+
+$$
+\left\|R_\rho\right\|_{V_\rho^*}
+=
+\sup_{\xi\in V_\rho\setminus\{0\}}
+\frac{
+\left|
+\left\langle R_\rho,\xi\right\rangle_{V_\rho^*\times V_\rho}
+\right|
+}{
+|\xi|_{V_\rho}
+}.
+$$
+
+%Therefore, the density contribution to the augmented Lagrangian takes the form
+%
+%$$
+%\boxed{
+%\left\langle R_\rho,\rho_t\right\rangle_{V_\rho^*,V_\rho}
+%+
+%\frac{r_1}{2}
+%\left\|R_\rho\right\|_{V_\rho^*}^2.
+%}
+%$$
+%
+%This replaces the standard \(L^2\)-augmentation
+%
+%$$
+%\frac{r_1}{2}
+%\left\|
+%\partial_t\phi_t
+%+
+%\nabla\phi_t\cdot v_t^{\mathrm{wind}}
+%-
+%\rho_t^*
+%\right\|_{L^2(Q)}^2,
+%$$
+%
+%which would account only for the first part of the density residual and would neglect the contribution arising from
+%\(\vartheta_t\cdot\nabla\rho_t\).
+%
+\newpage
+%TODO: Duale Norm? Definiere 
+%$$
+%\int_0^1\int_\Omega (\partial_t\phi + v_t^{wind} \cdot \nabla\phi - \rho_t^*)\rho_t + \vartheta \cdot \nabla\rho_t \,\mathrm{d}x\mathrm{d}t
+%$$
+%und den Raum $V:= L^2((0,1); H^1(\Omega))$ mit $R_\rho\in V$, definiert durch
+%$$
+%\langle R_\rho, \xi\rangle_{V^*\times V} := \int_0^1\int_\Omega (\partial_t\phi + v_t^{wind} \cdot \nabla\phi - \rho_t^*) \cdot \xi + \vartheta \cdot \nabla\xi \,\mathrm{d}x\mathrm{d}t,
+%$$
+%wodurch wir dann die Norm $\lVert R_\rho \rVert_{V^*}^2$ erhalten(?) -- Operatornorm, also
+%$$
+%\lVert R_\rho\rVert_{V^*}^2 := \sup_{\xi\neq 0} \frac{|\int_Q A\xi + \vartheta \cdot \nabla\xi dxdt|^2}{\lVert \xi\rVert_V^2}
+%$$
+Update $(\phi_t, \vartheta_t)$
+
+Since $L^2$ is a Hilbert space and $R_\rho$ is a continuous linear functional in $V_\rho^*$ and by the Riesz-representation theorem, there exists an Isomorphism 
+$$
+\mathcal{R}: V_\rho \to V_\rho^*
+$$
+and we can rewrite the norm of the functional in terms of the isomorphism, i.e.
+$$
+\lVert R_\rho\rVert_{V_\rho^*}^2 = \langle R_\rho, \mathcal{R}^{-1}R_\rho\rangle_{V_\rho^*\times V_\rho}.
+$$
+We want to solve TODO TODO INDIZES!!!
+$$
+\inf_{(\phi_{m+1},\vartheta_{m+1})} \mathcal{L}_{aug}(\rho_t, J_t, f_t, g_t, \phi_t, \vartheta_t, \lambda_t, \rho_t^*, J_t^*, f_t^*, g_t^*)
+$$
+by calculating the first variation with respect to $\phi$ and $\vartheta$ and setting the result to 0. For that, define
+$$
+\phi_\varepsilon = \phi + \varepsilon\psi,\quad \vartheta_\varepsilon = \vartheta + \varepsilon\zeta
+$$
+for test functions $\psi$ and $\zeta$ and compute 
+$$
+\frac{d}{d\varepsilon} \mathcal{L}_{aug}(\phi_\varepsilon, \vartheta_\varepsilon) \Big\lvert_{\varepsilon = 0}.
+$$
+Calculating each term individually gives us 
+\begin{align*}
+	\langle R_\rho(\phi_\varepsilon, \zeta_\varepsilon), \xi\rangle &= \int_{(0,1)\times \Omega} \left[\left(\partial_t\phi_t + \varepsilon\partial_t\psi + v_t^{wind} \cdot (\nabla\phi + \varepsilon\nabla\psi) - \rho_t^*\right)\xi + (\vartheta + \varepsilon\zeta) \cdot \nabla \xi\right]\,\mathrm{d}x\mathrm{d}t\\
+																	&\overset{\varepsilon = 0}{\implies} \int_{(0,1)\times\Omega} \left[(\partial_t\psi + v_t^{wind} \cdot \nabla\psi )\xi + \zeta \cdot \nabla\xi\right]\,\mathrm{d}x\mathrm{d}t.
+\end{align*}
+Similarly for the penalty-term of the dual norm we obtain by following the exact steps as above
+$$
+r_1\int_{(0,1)\times\Omega} \left[(\partial_t\psi + v_t^{wind} \cdot \nabla\psi)(\mathcal{R}^{-1}R_\rho) + \zeta \cdot \nabla(\mathcal{R}^{-1}R_\rho)\right]\,\mathrm{d}x\mathrm{d}t.
+$$
+The other terms are given by 
+\begin{align*}
+	&\frac{d}{d\varepsilon} \left[ \frac{r_1}{2} |\nabla\phi_\varepsilon - J_m^*|^2\right] = r_1(\nabla\phi - J_m^*) \cdot \nabla\psi\\
+	&\frac{d}{d\varepsilon} \left[\frac{r_1}{2} |\phi_\varepsilon - f_m^*|^2\right] = r_1(\phi_m- f_m^*)\psi\\
+	&\frac{d}{d\varepsilon} \left[\frac{r_1}{2} |-\vartheta_\varepsilon - g_m^*|^2\right] = r_1(\vartheta_m + g_m^*) \cdot \zeta
+\end{align*}
+Putting the variation together gives us
+\begin{align*}
+	0 &= r_1\Big( %\int_{(0,1)\times\Omega} \left[ (\partial_t\psi + v_t^{wind} \cdot \nabla\psi)\xi + \zeta \cdot \nabla\xi \right] \,\mathrm{d}x\mathrm{d}t \\
+	  %&+ 
+	  \int_{(0,1)\times \Omega} \left[(\partial_t\psi + v_t^{wind} \cdot \nabla\psi)(\mathcal{R}^{-1}R_\rho)+ \zeta \cdot \nabla(\mathcal{R}^{-1}R_\rho)\right]\,\mathrm{d}x\mathrm{d}t \\
+	   &+ \langle(\nabla\phi - J_m^*, \phi - f_m^*, \vartheta + g_m^*),(\nabla\psi, \psi, \zeta)\rangle\Big)-G(\psi) \\
+	  &+ \langle (\rho_m, J_m, f_m, \nabla\rho_m-g_m),(\partial_t\psi + v_t^{wind} \cdot \nabla \psi, \nabla \psi, \psi, \zeta) \rangle
+\end{align*}
+To solve this linear variational problem, we want to define both a bilinear form and a linear form. To shorten notation, we define the functional
+$$
+\langle S(\phi,\vartheta), \xi\rangle = \int_{(0,1)\times\Omega} \left[(\partial_t\phi + v_t^{wind} \cdot \nabla \phi)\xi + \vartheta \cdot\nabla\xi\right]\,\mathrm{d}x\mathrm{d}t
+$$
+and notice that 
+$$
+R_rho = S(\phi,\vartheta) - I\rho_m^*,
+$$
+with the functional
+$$
+\langle I\rho_m^*,\xi\rangle = \int_{(0,1)\times\Omega} \rho_m^*\xi\,\mathrm{d}x\mathrm{d}t.
+$$
+We define the biliniear-form as (INDIZES DAVOR NOCH DUCHSCHAUEN) 
+\begin{align*}
+	A((\phi_{m+1},\vartheta_{m+1}), (\psi_{m+1},\zeta_{m+1})) &:= r_1\Big[\langle S(\psi_{m+1}, \zeta_{m+1}), \mathcal{R}^{-1} S(\phi_{m+1}, \vartheta_{m+1})\rangle + \langle \nabla\phi_{m+1},\nabla\psi_{m+1}\rangle \\&+ \langle\phi_{m+1},\psi_{m+1} + \langle\vartheta_{m+1},\zeta_{m+1}\rangle\Big].
+\end{align*}
+Collecting the terms independent of $(\phi_{m+1},\vartheta_{m+1})$ we get the linear-form
+\begin{align*}
+	F(\psi_{m+1},\zeta_{m+1}) &= r_1\Big[\langle S(\psi_{m+1}, \zeta_{m+1}),\mathcal{R}^{-1} I \rho_m^*\rangle + \langle (J_m^*,f_m^*, -g_m^*), (\nabla\psi_{m+1},\psi_{m+1},\zeta_{m+1})\rangle \Big]\\
+							  &-\langle(\rho_m,J_m,f_m,\nabla\rho_m-g_m), (\partial_t\psi_{m+1}+v_t^{wind} \cdot \nabla\psi_{m+1},\nabla\psi_{m+1},\psi_{m+1},\zeta_{m+1})\rangle - G(\psi_{m+1})
+\end{align*}
+and we solve
+$$
+A((\phi_{m+1},\vartheta_{m+1}), (\psi_t, \zeta_t)) = F(\psi_t, \zeta_t).
+$$
+\newpage
 
 To solve this problem numerically, the Benamou Brenier Algorithm can be rewritten to fit the modified problem. As in the classical ALG2 alrogithm, we update each tuple of variables independently. 
 
 For a shorter notation we define
 \begin{align*}
-	&\eta_{\rho^*} :=\partial_t\phi_{m+1} + \nabla\phi_{m+1} \cdot v_t^{wind} - \nabla \cdot \lambda_{m+1}+ \frac{1}{r_1}\rho_m\\
+	&\eta_{\rho^*} :=\partial_t\phi_{m+1} + \nabla\phi_{m+1} \cdot v_t^{wind} - \nabla \cdot \vartheta_{m+1}+ \frac{1}{r_1}\rho_m\\
 	&\eta_{J^*} := \nabla\phi_{m+1} + \frac{1}{r_1}J_m\\
 	&\eta_{f^*} := \phi_{m+1} + \frac{1}{r_1}f_m\\
-	&\eta_{g^*} := -\lambda_{m+1} + \frac{g_{m}}{r_1}\\
+	&\eta_{g^*} := -\vartheta_{m+1} + \frac{g_{m}}{r_1}\\
 	&\eta_\Omega := (\eta_{\rho^*},\eta_{J^*}, \eta_{f^*}, \eta_{g^*})\\
 	&z_m^* := (\rho_{m}^*, J_m^*, f_m^*, g_m^*)
 \end{align*}
@@ -241,7 +555,7 @@ For a shorter notation we define
 
 We want to solve 
 $$
-\inf_{(\phi_{m+1})} \mathcal{L}(\rho_t, J_t, f_t, g_t,\phi_t,\lambda_t, \kappa_t, \rho_t^*, J_t^*, f_t*,g_t^*)
+\inf_{(\phi_{m+1})} \mathcal{L}(\rho_t, J_t, f_t, g_t,\phi_t,\vartheta_t, \lambda_t, \rho_t^*, J_t^*, f_t*,g_t^*)
 $$
 by calculating the first variation with respect to $\phi$ and setting it equal to zero. In particular we aim to evaluate the pertubation for all $\psi \in H^1((0,1)\times\Omega)$ 
 $$
@@ -259,7 +573,7 @@ and look at each summand individually. Starting with the endpoint term we obtain
 Similarly we calculate for the scalar products in the augmented Lagrangian
 $$
 \begin{cases}
-	\frac{d}{d\varepsilon} \langle \partial_t\phi_\varepsilon + \nabla \phi_\varepsilon \cdot v_t^{wind} - \rho_m^* - \nabla \cdot \lambda_m, \rho_m\rangle \Big\lvert_{\varepsilon = 0} & = \langle \partial_t \psi + \nabla\psi \cdot v_t^{wind},\rho_m\rangle,\\
+	\frac{d}{d\varepsilon} \langle \partial_t\phi_\varepsilon + \nabla \phi_\varepsilon \cdot v_t^{wind} - \rho_m^* - \nabla \cdot \vartheta_m, \rho_m\rangle \Big\lvert_{\varepsilon = 0} & = \langle \partial_t \psi + \nabla\psi \cdot v_t^{wind},\rho_m\rangle,\\
 		\frac{d}{d\varepsilon}\langle \nabla\phi_\varepsilon - J_m^*,J_m\rangle \Big\lvert_{\varepsilon = 0} &= \langle \nabla\psi,J_m\rangle,\\
 			\frac{d}{d\varepsilon}\langle \phi_\varepsilon - f_m^*,f_m\rangle \Big\lvert_{\varepsilon = 0} &= \langle \psi,f_m\rangle.
 \end{cases} 
@@ -271,7 +585,7 @@ $$
 Then the first variations of the quadratic terms yield
 $$
 \begin{cases}
-	\frac{d}{d\varepsilon} \frac{r_1}{2} \left\lvert \partial_t\phi_\varepsilon + \nabla\varepsilon \cdot v_t^{wind} - \rho_m^* - \nabla \cdot \lambda_m \right\rvert^2 \Big\lvert_{\varepsilon = 0} \\= r_1\langle \partial_t\phi_{m+1} + \nabla\phi_{m+1} \cdot v_t^{wind} - \rho_m^* - \nabla\lambda_m, \partial_t\psi + \nabla\phi \cdot v_t^{wind}\rangle\\
+	\frac{d}{d\varepsilon} \frac{r_1}{2} \left\lvert \partial_t\phi_\varepsilon + \nabla\varepsilon \cdot v_t^{wind} - \rho_m^* - \nabla \cdot \vartheta_m \right\rvert^2 \Big\lvert_{\varepsilon = 0} \\= r_1\langle \partial_t\phi_{m+1} + \nabla\phi_{m+1} \cdot v_t^{wind} - \rho_m^* - \nabla\vartheta_m, \partial_t\psi + \nabla\phi \cdot v_t^{wind}\rangle\\
 		\frac{d}{d\varepsilon} \frac{r_1}{2} |\nabla\phi_\varepsilon - J_m^*|^2 \Big\lvert_{\varepsilon = 0} = r_1\langle\nabla\phi_{m+1} - J_m^*,\nabla\psi\rangle\\
 	\frac{d}{d\varepsilon}\frac{r_1}{2} |\phi_\varepsilon - f_m^*|^2\Big\lvert_{\varepsilon = 0} = r_1\langle\phi_{m+1}-f_m^*,\psi\rangle
 \end{cases} 
@@ -281,14 +595,14 @@ Rearranging the individual scalar products then enables us to write out the the 
 	0 &= -\langle\psi(1),\rho_1\rangle + \langle \psi(0),\rho_0 \rangle +  \langle \partial_t\psi+ \nabla\psi \cdot v_t^{wind},\rho_m\rangle +\langle \nabla\psi,J_m\rangle + \langle\psi,f_m\rangle \\
 	  &+ r_1\Big(  \langle \partial_t\phi_{m+1},\partial_t\psi + \nabla\psi \cdot v_t^{wind}\rangle\\
 	  &+\langle \nabla\phi_{m+1} \cdot v_t^{wind}, \partial_t\psi + \nabla\psi \cdot v_t^{wind}\rangle - \langle \rho_m^* \partial_t\psi - \nabla\psi \cdot v_t^{wind}\rangle\\
-	  &-\langle \nabla \cdot \lambda_m , \partial_t\psi + \nabla\psi \cdot v_t^{wind}\rangle + \langle \nabla\phi_{m+1},\nabla\phi\rangle\\
+	  &-\langle \nabla \cdot \vartheta_m , \partial_t\psi + \nabla\psi \cdot v_t^{wind}\rangle + \langle \nabla\phi_{m+1},\nabla\phi\rangle\\
 	  &-\langle J_m^*, \nabla\psi\rangle + \langle \phi_{m+1},\psi\rangle - \langle f_m^*,\psi\rangle\Big).
 \end{align*}
 Grouping terms containing $\phi_{m+1}$ lets us write this expression as a bilinear and linear form respectively. For that, define both
 \begin{align*}
 	A(\phi_{m+1},\psi_t) :=\, &r_1 \Big( \langle \nabla\phi_{m+1},\nabla\psi_t\rangle + \langle \phi_{m+1},\psi_t\rangle + \langle \nabla \phi_{m+1} \cdot v_t^{wind}, \partial_t\psi_t + \nabla\psi_t \cdot v_t^{wind}\rangle \\
 							  &+ \langle \partial_t \phi_{m+1}, \partial_t\psi_t + \nabla\psi_t \cdot v_t^{wind}\rangle \Big) \\
-		F_m(\psi_t) :=\, & G(\psi) + \langle\partial_t\psi_t + \nabla\psi_t \cdot v_t^{wind},r_1\rho_m^* + r_1\nabla \cdot \lambda_m - \rho_m\rangle \\
+		F_m(\psi_t) :=\, & G(\psi) + \langle\partial_t\psi_t + \nabla\psi_t \cdot v_t^{wind},r_1\rho_m^* + r_1\nabla \cdot \vartheta_m - \rho_m\rangle \\
 					   &+ \langle \nabla\psi_t, r_1J_m^* - J_m\rangle + \langle \psi_t,r_1f_m^*-f_m\rangle.
 \end{align*}
 Hence the update can be compactly described as finding $\phi_{m+1}$ such that
@@ -306,20 +620,20 @@ $$
 %A(\phi_{m+1},\psi_t) = F^m(\psi_t)
 %$$
 
-\textbf{Step 1b}: \underline{Update $(\lambda_t)$}
+\textbf{Step 1b}: \underline{Update $(\vartheta_t)$}
 $$
-\lambda_{m+1} = \lambda_m - \left(\int_\Omega d\rho_1 - \int_\Omega d\rho_0 - \int_0^1\int_\Omega f_m \,\mathrm{d}x\mathrm{d}t\right)
+\vartheta_{m+1} = \vartheta_m - \left(\int_\Omega d\rho_1 - \int_\Omega d\rho_0 - \int_0^1\int_\Omega f_m \,\mathrm{d}x\mathrm{d}t\right)
 $$
-TODO $\kappa$ tauschen -- $\lambda$ an welcher Stelle optimieren?
+TODO $\lambda$ tauschen -- $\vartheta$ an welcher Stelle optimieren?
 
 \textbf{Step 2}: \underline{Update $(\rho_t^*, J_t^*, f_t^*, \nabla\rho_t^*)$}
 
 The new iterates are defined as the solution of 
 \begin{align*}
 	\inf_{(\rho_{m+1}^*, J_{m+1}^*, f_{m+1}^*, g_{m+1}^*)} &\int_{((0,1)\times\Omega)\setminus\Gamma} (F^{\alpha_f,\alpha_{dif}})^*(\rho_t^*, J_t^*, f_t^*,g_t^*)\,\mathrm{d}x\mathrm{d}t + \int_\Gamma (\overline{F}^{\alpha_f,\alpha_{dif}})^*(\rho_t^*,J_t^*,f_t^*,g_t^*)\,\mathrm{d}x\mathrm{d}t\\
-															&- \langle\rho_t^*,\rho_m + r_1(\partial_t\phi_{m+1} + \nabla\phi_{m+1} \cdot v_t^{wind} - \nabla \cdot \lambda_{m+1} \rangle+ \frac{r_1}{2} \lVert \rho_t^*\rVert^2\\
+															&- \langle\rho_t^*,\rho_m + r_1(\partial_t\phi_{m+1} + \nabla\phi_{m+1} \cdot v_t^{wind} - \nabla \cdot \vartheta_{m+1} \rangle+ \frac{r_1}{2} \lVert \rho_t^*\rVert^2\\
 	&-\langle J_t^*, J_m + r_1\nabla\phi_{m+1}\rangle+ \frac{r_1}{2} \lvert J_t^*\rvert^2-\langle f_t^*, f_m + r_1\phi_{m+1}\rangle+ \frac{r_1}{2} \lvert f_t^*\rvert^2\\
-	&-\langle g_t^*, g_m - r_1\lambda_{m+1}\rangle+ \frac{r_1}{2}\lvert g_t^*\rvert^2
+	&-\langle g_t^*, g_m - r_1\vartheta_{m+1}\rangle+ \frac{r_1}{2}\lvert g_t^*\rvert^2
 \end{align*}
 where terms constant in $(\rho_{m+1}^*,J_{m+1}^*, f_{m+1}^*, g_{m+1}^*)$ are neglected. We optimize this problem in $((0,1)\times \Omega)\setminus\Gamma$ and in $\Gamma$ independently.
 Taking the variables defined above, the minimization in the former reads as
@@ -390,15 +704,15 @@ $$
 
 As in step 2, we neglegt terms constant to the respective variables and need to solve 
 \begin{align*}
-	\sup_{(\rho_t,J_t, f_t, g_t)}&\langle(\partial_t\phi_t + \nabla\phi_t \cdot v_t^{wind} - \rho_t^* - \nabla \cdot \lambda_t, \nabla\phi_t - J_t^*, \phi_t - f_t^*, - \lambda_t -g_t^*), (\rho_t, J_t, f_t, g_t)\rangle%\\
-	%TODO Das noch abklären &- G(\phi_t) + \lambda_t \left(\int_\Omega d\rho_1 - \int_\Omega d\rho_0 - \int_0^1\int_\Omega f_t\,\mathrm{d}x\mathrm{d}t\right)
+	\sup_{(\rho_t,J_t, f_t, g_t)}&\langle(\partial_t\phi_t + \nabla\phi_t \cdot v_t^{wind} - \rho_t^* - \nabla \cdot \vartheta_t, \nabla\phi_t - J_t^*, \phi_t - f_t^*, - \vartheta_t -g_t^*), (\rho_t, J_t, f_t, g_t)\rangle%\\
+	%TODO Das noch abklären &- G(\phi_t) + \vartheta_t \left(\int_\Omega d\rho_1 - \int_\Omega d\rho_0 - \int_0^1\int_\Omega f_t\,\mathrm{d}x\mathrm{d}t\right)
 \end{align*}
 which is done by a single gradient descent step in each variable with step size $r_1$, i.e. 
 \begin{align*}
-	&\rho_{m+1} := \rho_m + r_1 (\partial_t\phi_{m+1} + \nabla\phi_{m+1} \cdot v_t^{wind} - \rho_{m+1}^* - \nabla \cdot \lambda_{m+1})\\
+	&\rho_{m+1} := \rho_m + r_1 (\partial_t\phi_{m+1} + \nabla\phi_{m+1} \cdot v_t^{wind} - \rho_{m+1}^* - \nabla \cdot \vartheta_{m+1})\\
 	&J_{m+1} := J_m + r_1(\nabla\phi_{m+1} - J_{m+1}^*)\\
-	&f_{m+1} := f_m + r_1(\phi_{m+1} - f_{m+1}^*)\\% + \lambda_t\\
-	&g_{m+1} := g_m + r_1 (-\lambda_{m+1} - g_{m+1}^*).
+	&f_{m+1} := f_m + r_1(\phi_{m+1} - f_{m+1}^*)\\% + \vartheta_t\\
+	&g_{m+1} := g_m + r_1 (-\vartheta_{m+1} - g_{m+1}^*).
 \end{align*}
 
 \begin{algorithm}
@@ -408,7 +722,7 @@ which is done by a single gradient descent step in each variable with step size 
 
 		Solve $A(\phi_{m+1}) = F^m$ for $\phi_{m+1}$
 
-		Update $\lambda_{m+1}$
+		Update $\vartheta_{m+1}$
 
 		$\eta_{\rho^*} := \partial_t\phi_{m+1} + \nabla\phi_{m+1} \cdot v_t^{wind} + \frac{1}{r_1}\rho_m$
 
@@ -451,7 +765,7 @@ which is done by a single gradient descent step in each variable with step size 
 
 		$J_{m+1}\gets J_m + r_1\left(\nabla\phi_{m+1}-J_{m+1}^*\right)$
 
-		$f_{m+1}\gets f_m+r_1\left(\phi_{m+1}-f_{m+1}^*\right) + \lambda_{m+1}$
+		$f_{m+1}\gets f_m+r_1\left(\phi_{m+1}-f_{m+1}^*\right) + \vartheta_{m+1}$
 
 		$\nabla\rho_{m+1}\gets\nabla\rho_m - r_1\nabla\rho_{m+1}^*$
 

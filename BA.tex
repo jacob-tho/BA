@@ -5,6 +5,8 @@ left=55pt,
 right=55pt
 ]{geometry}
 \usepackage[utf8]{inputenc}
+\usepackage{algorithm}
+\usepackage{algpseudocode}
 \usepackage[T1]{fontenc}
 \usepackage{amsmath, mathrsfs, amssymb, amsthm, graphicx, mathtools} %
 \newtheorem{theorem}{Theorem} 
@@ -30,6 +32,15 @@ right=55pt
 \theoremstyle{remark} 
 \newtheorem{remark}{Remark}
 
+\newcommand\infsup[2]{
+\inf_{\raisebox{-0.082cm}[\height][\depth]{$\scriptstyle #1$}}  \sup_{\raisebox{0cm}{$\scriptstyle #2$}}
+}
+
+
+\newcommand\supinf[2]{
+\sup_{\raisebox{0cm}[\height][\depth]{$\scriptstyle #1$}}  \inf_{\raisebox{-0.11cm}{$\scriptstyle #2$}}
+}
+
 \numberwithin{theorem}{subsection}
 \usepackage[english]{babel}
 \usepackage{csquotes}
@@ -52,7 +63,7 @@ right=55pt
 \input{sections/2-background}
 \input{sections/3-DOT}
 \input{sections/4-data_fiting}
-\input{sections/5-numeric}
+%\input{sections/5-numeric}
 
 
 
