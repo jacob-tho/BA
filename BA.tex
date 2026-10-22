@@ -9,10 +9,20 @@ right=55pt
 \usepackage{algpseudocode}
 \usepackage[T1]{fontenc}
 \usepackage{amsmath, mathrsfs, amssymb, amsthm, graphicx, mathtools} %
+\usepackage{algpseudocode, algorithm}
 \newtheorem{theorem}{Theorem} 
 \newtheorem{lemma}[theorem]{Lemma} 
 \newtheorem{corollary}[theorem]{Corollary} 
 \newtheorem{proposition}[theorem]{Proposition} 
+\newcommand\infsup[2]{
+\inf_{\raisebox{-0.082cm}[\height][\depth]{$\scriptstyle #1$}}  \sup_{\raisebox{0cm}{$\scriptstyle #2$}}
+}
+
+
+\newcommand\supinf[2]{
+\sup_{\raisebox{0cm}[\height][\depth]{$\scriptstyle #1$}}  \inf_{\raisebox{-0.11cm}{$\scriptstyle #2$}}
+}
+
 %\hypersetup{
 %    colorlinks,
 %    citecolor=black,
