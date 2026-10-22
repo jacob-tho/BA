@@ -260,9 +260,6 @@ with Imports():
             baralpha_inv = 2*(1/alpha_inv - alpha_inv/2)
             Jsums = Jxs + Jys
             if bSource:
-                """
-                Schauen, ob in der Theorie richtig mit gs_norm**2 manchmal und manchmal nicht
-                """
                 K_sqaured = (1/alpha_inv-alpha_inv/2)*(rhos + 0.5*(Jxs**2 + Jys**2) + 0.5*(1/alpha_f)*fs**2 + 1/(2*alpha_dif)* gs_norm**2) 
                 K = (1/alpha_inv-alpha_inv/2)*(rhos + 0.5*(Jxs**2 + Jys**2) + 0.5*(1/alpha_f)*fs**2 + 1/(2*alpha_dif)* gs_norm) 
                 fval = np.array([rhodat + 2*K_sqaured - r1*etarhos + r1*rhos,
@@ -417,7 +414,7 @@ def assembleBilinearForm_new(V, r1, bWind, bSource, bDif, vWindX, vWindY, tol=1e
 
     aprod.Assemble() 
 
-    invaprod = aprod.mat.Inverse(X.FreeDofs(True), inverse = "pardiso")
+    invaprod = aprod.mat.Inverse(V.FreeDofs(True), inverse = "pardiso")
     return invaprod #V, aprod
 
 @safescope 
@@ -486,17 +483,19 @@ def interpolatedPhi(phih, dphih):
 
     return 0
 
-def interpolatedTheta(theta, dtheta):
-    dtheta.components[0].Set(grad(theta)[0])
-    dtheta.components[1].Set(grad(theta)[1])
-    dtheta.components[2].Set(grad(theta)[2])
+def interpolatedTheta(theta, divtheta):
+    theta_x = theta.components[0]
+    theta_y = theta.components[1]
+
+    divtheta.Set(grad(theta_x)[1] + grad(theta_y)[2])
 
     return 0
 
 
 @safescope
-def UpdatePhiTheta(r1, rho, dphih, phiL2, Jx, Jy, gx, gy, source, rhos, Jxs, Jys, gxs, gys, sources, bWind, bSource, bInverse, sensor_marker, alpha_f, alpha_inv, alpha_dif, vWindX, vWindY, gfInvDat, theta):
+def UpdatePhiTheta(r1, rho, dphih, phiL2, Jx, Jy, gx, gy, source, rhos, Jxs, Jys, gxs, gys, sources, bWind, bSource, bInverse, sensor_marker, alpha_f, alpha_inv, alpha_dif, vWindX, vWindY, gfInvDat, theta, divtheta):
 
+    import pdb
     bDif = theta is not None
     ### TODO Fallunterscheidungen mit Theta -> bDif implizit drin
     if bInverse:
@@ -505,8 +504,10 @@ def UpdatePhiTheta(r1, rho, dphih, phiL2, Jx, Jy, gx, gy, source, rhos, Jxs, Jys
         indNot = BitArray(rho.vec.size)
         indNot.Clear()
     #theta = 0 # Platzhalter
+    pdb.set_trace()
     if bDif:
-        div_theta = grad(theta[0])[0] + grad(theta[1])[1]
+        div_theta = grad(theta.components[0])[0] + grad(theta.components[1])[1]
+        divtheta.Set(div_theta)
 
     etarhos = dphih.components[2].vec.FV().NumPy() + 1/r1*rho.vec.FV().NumPy() #TODO ändern (alle etas)
     
@@ -514,7 +515,7 @@ def UpdatePhiTheta(r1, rho, dphih, phiL2, Jx, Jy, gx, gy, source, rhos, Jxs, Jys
         etarhos += dphih.components[0].vec.FV().NumPy()*vWindX.vec.FV().NumPy() + dphih.components[1].vec.FV().NumPy()*vWindY.vec.FV().NumPy()
     # Hier noch eine Bedingung für Diffusion?
     if bDif:
-        etarhos -= div_theta
+        etarhos -= divtheta.vec.FV().NumPy()
 
     etaJxs = dphih.components[0].vec.FV().NumPy() + 1/r1*Jx.vec.FV().NumPy()
     etaJys = dphih.components[1].vec.FV().NumPy() + 1/r1*Jy.vec.FV().NumPy()
@@ -610,7 +611,7 @@ def UpdatePhiTheta(r1, rho, dphih, phiL2, Jx, Jy, gx, gy, source, rhos, Jxs, Jys
                 #x = norm Js / mu01d, y = norm fs / nu01d, u = norm gs/ nrm_d1d
                 etarhos[PosIndexG] = -0.5*(x_sol**2 + y_sol**2/alpha_f**2 + u_sol**2/alpha_dif**2)
             else:
-                etarhos[PosIndexG] = -0.5*(x_sol**2 + y:sol**2/alpha_f**2)
+                etarhos[PosIndexG] = -0.5*(x_sol**2 + y_sol**2/alpha_f**2)
 
             etaJxs[PosIndexG] = x_sol * eta_Jx/eta_J_nrm
             etaJys[PosIndexG] = x_sol * eta_Jy/eta_J_nrm
@@ -669,7 +670,7 @@ def UpdatePhiTheta(r1, rho, dphih, phiL2, Jx, Jy, gx, gy, source, rhos, Jxs, Jys
                 while err > 1e-6 and iter0<20:
                     iter0 += 1
                     #mu1 = mu0 - (mu0**3 + 2*(a+1)*mu0 - 2*nrm_b)/(3*mu0**2+2*(a+1)) # x = x - f(x)/f'(x)
-                        x_new = x_sol - (x_sol**3 + 2*(1+eta_rho)*x_sol - 2*eta_J_nrm) / (3*x_sol**2 + 2*(1+ eta_rho))
+                    x_new = x_sol - (x_sol**3 + 2*(1+eta_rho)*x_sol - 2*eta_J_nrm) / (3*x_sol**2 + 2*(1+ eta_rho))
                     #err = abs(mu1-mu0).max()
                     #mu0 = mu1
                     err = abs(x_new - x_sol).max()
@@ -749,7 +750,6 @@ def ALG2_new(V, W, r1, rho, rho0, rho1, Jx, Jy, gx, gy, rhos, Jxs, Jys, gxs, gys
     """
     bDif unnötig?; fehlt gx,gy,gxs,gys, Definition theta 
     """ 
-    pdb.set_trace()
     
     if bDif:
         V = FESpace([V,(V*V)]) 
@@ -760,6 +760,7 @@ def ALG2_new(V, W, r1, rho, rho0, rho1, Jx, Jy, gx, gy, rhos, Jxs, Jys, gxs, gys
         dphih = GridFunction(W*W*W)
         thetaL2 = GridFunction(W*W)
         divtheta = GridFunction(W)
+        #dtheta = GridFunction(W*W*W)
 
     else: 
         phiL2 = GridFunction(W)
@@ -801,10 +802,11 @@ def ALG2_new(V, W, r1, rho, rho0, rho1, Jx, Jy, gx, gy, rhos, Jxs, Jys, gxs, gys
             #pdb.set_trace()
             interpolatedPhi(phih, dphih)            
             if bDif:
-                interpolatedTheta(thetah, dtheta) #TODO Argumente prüfen
+                interpolatedTheta(thetah, divtheta) #TODO Argumente prüfen
 
-            UpdatePhi(r1, rho, dphih, phiL2, Jx, Jy, source, rhos, Jxs, Jys, sources, bWind, bSource, bInverse, sensor_marker, alpha_f, alpha_inv, vWindX, vWindY, gfInvDat)
-
+            #UpdatePhi(r1, rho, dphih, phiL2, Jx, Jy, source, rhos, Jxs, Jys, sources, bWind, bSource, bInverse, sensor_marker, alpha_f, alpha_inv, vWindX, vWindY, gfInvDat)
+            #pdb.set_trace()
+            UpdatePhiTheta(r1, rho, dphih, phiL2, Jx, Jy, gx, gy, source, rhos, Jxs, Jys, gxs, gys, sources, bWind, bSource, bInverse, sensor_marker, alpha_f, alpha_inv, alpha_dif, vWindX, vWindY, gfInvDat, theta, divtheta)
             ## STEPC: 
             rho.vec.FV().NumPy()[:] += tau*r1*(dphih.components[2].vec.FV().NumPy() + vWindX.vec.FV().NumPy()*dphih.components[0].vec.FV().NumPy() + vWindY.vec.FV().NumPy()*dphih.components[1].vec.FV().NumPy() - rhos.vec.FV().NumPy())
             rho.vec.FV().NumPy()[:] += tau*r1*(dphih.components[2].vec.FV().NumPy() + vWindX.vec.FV().NumPy()*dphih.components[0].vec.FV().NumPy() + vWindY.vec.FV().NumPy()*dphih.components[1].vec.FV().NumPy() - rhos.vec.FV().NumPy()) # Hier noch in die Klammer Nabla * Lambda
@@ -961,7 +963,7 @@ if __name__ == "__main__":
     tolcvg = 1e-5
     maxiter = 500 # 50000
 
-    invaprod = assembleBilinearForm_new(V, r1, bWind, bSource, vWindX, vWindY, tol=toldiff)
+    invaprod = assembleBilinearForm_new(V, r1, bWind, bSource, bDif, vWindX, vWindY, tol=toldiff)
     # was genau ist das dif argmuent?
     dif = 0
-    rho, rho0, rho1, phih, Jx, Jy, Jxs, Jys, source, Thesources, iter0, err0, duality_gaps = ALG2_new(V, W, r1, rho, rho0, rho1, Jx, Jy, gx, gy, source, sources, dif, rhos, Jxs, Jys, gxs, gys, ndof3d, invaprod, bWind, bSource, bInitialFinial, bDif, vWindX, vWindY, scaler1=sr1, iterMax=maxiter, tol=tolcvg)
+    rho, rho0, rho1, phih, Jx, Jy, Jxs, Jys, source, Thesources, iter0, err0, duality_gaps = ALG2_new(V, W, r1, rho, rho0, rho1, Jx, Jy, gx, gy, rhos, Jxs, Jys, gxs, gys, source, sources, ndof3d, invaprod, bWind, bSource, bInitialFinial, bDif, vWindX, vWindY, scaler1=sr1, iterMax=maxiter, tol=tolcvg)
