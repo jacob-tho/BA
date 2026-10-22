@@ -11,4 +11,4 @@
 \contentsline {subsection}{\numberline {3.3}Equivalence of the Static and Dynamic Formulation}{10}{}%
 \contentsline {subsection}{\numberline {3.4}Numerical Analysis of the Saddle-Point Problem}{16}{}%
 \contentsline {section}{\numberline {4}Data Fitting}{19}{}%
-\contentsline {section}{\numberline {5}Numerische Ergebnisse}{29}{}%
+\contentsline {section}{\numberline {5}Numerische Ergebnisse}{30}{}%

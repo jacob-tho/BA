@@ -60,6 +60,16 @@ INPUT c:/texlive/2024/texmf-dist/tex/latex/tools/calc.sty
 INPUT c:/texlive/2024/texmf-dist/tex/latex/tools/calc.sty
 INPUT c:/texlive/2024/texmf-dist/tex/latex/mathtools/mhsetup.sty
 INPUT c:/texlive/2024/texmf-dist/tex/latex/mathtools/mhsetup.sty
+INPUT c:/texlive/2024/texmf-dist/tex/latex/algorithmicx/algpseudocode.sty
+INPUT c:/texlive/2024/texmf-dist/tex/latex/algorithmicx/algpseudocode.sty
+INPUT c:/texlive/2024/texmf-dist/tex/latex/base/ifthen.sty
+INPUT c:/texlive/2024/texmf-dist/tex/latex/base/ifthen.sty
+INPUT c:/texlive/2024/texmf-dist/tex/latex/algorithmicx/algorithmicx.sty
+INPUT c:/texlive/2024/texmf-dist/tex/latex/algorithmicx/algorithmicx.sty
+INPUT c:/texlive/2024/texmf-dist/tex/latex/algorithms/algorithm.sty
+INPUT c:/texlive/2024/texmf-dist/tex/latex/algorithms/algorithm.sty
+INPUT c:/texlive/2024/texmf-dist/tex/latex/float/float.sty
+INPUT c:/texlive/2024/texmf-dist/tex/latex/float/float.sty
 INPUT c:/texlive/2024/texmf-dist/tex/latex/biblatex/biblatex.sty
 INPUT c:/texlive/2024/texmf-dist/tex/latex/biblatex/biblatex.sty
 INPUT c:/texlive/2024/texmf-dist/tex/generic/pdftexcmds/pdftexcmds.sty
@@ -79,8 +89,6 @@ INPUT c:/texlive/2024/texmf-dist/tex/latex/logreq/logreq.sty
 INPUT c:/texlive/2024/texmf-dist/tex/latex/logreq/logreq.def
 INPUT c:/texlive/2024/texmf-dist/tex/latex/logreq/logreq.def
 INPUT c:/texlive/2024/texmf-dist/tex/latex/logreq/logreq.def
-INPUT c:/texlive/2024/texmf-dist/tex/latex/base/ifthen.sty
-INPUT c:/texlive/2024/texmf-dist/tex/latex/base/ifthen.sty
 INPUT c:/texlive/2024/texmf-dist/tex/latex/url/url.sty
 INPUT c:/texlive/2024/texmf-dist/tex/latex/url/url.sty
 INPUT c:/texlive/2024/texmf-dist/tex/latex/biblatex/blx-dm.def
