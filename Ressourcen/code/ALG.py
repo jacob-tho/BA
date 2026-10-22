@@ -403,7 +403,7 @@ def assembleBilinearForm_new(V, r1, bWind, bSource, bDif, vWindX, vWindY, tol=1e
         mixed_trial = dt_phi + wind_phi - div_theta 
         mixed_test = dt_psi + wind_psi - div_zeta 
         aprod += r1 * mixed_trial * mixed_test * dx
-        aprod += r1 * (theta[0] * zeta[0] + theta[1] + zeta[1]) * dx
+        aprod += r1 * (theta[0] * zeta[0] + theta[1] * zeta[1]) * dx
     # Einzelne Terme hinzufügen 
     aprod += r1 * (gradx_phi * gradx_psi + grady_phi * grady_psi) * dx 
 
@@ -487,15 +487,15 @@ def interpolatedTheta(theta, divtheta):
     theta_x = theta.components[0]
     theta_y = theta.components[1]
 
-    divtheta.Set(grad(theta_x)[1] + grad(theta_y)[2])
+    divtheta.Set(grad(theta_x)[0] + grad(theta_y)[1])
 
     return 0
 
 
 @safescope
-def UpdatePhiTheta(r1, rho, dphih, phiL2, Jx, Jy, gx, gy, source, rhos, Jxs, Jys, gxs, gys, sources, bWind, bSource, bInverse, sensor_marker, alpha_f, alpha_inv, alpha_dif, vWindX, vWindY, gfInvDat, theta, divtheta):
+def UpdatePhiTheta(r1, rho, dphih, phiL2, Jx, Jy, gx, gy, source, rhos, Jxs, Jys, gxs, gys, sources, bWind, bSource, bInverse, sensor_marker, alpha_f, alpha_inv, alpha_dif, vWindX, vWindY, gfInvDat, theta = None, divtheta = None):
 
-    import pdb
+    #import pdb
     bDif = theta is not None
     ### TODO Fallunterscheidungen mit Theta -> bDif implizit drin
     if bInverse:
@@ -504,12 +504,11 @@ def UpdatePhiTheta(r1, rho, dphih, phiL2, Jx, Jy, gx, gy, source, rhos, Jxs, Jys
         indNot = BitArray(rho.vec.size)
         indNot.Clear()
     #theta = 0 # Platzhalter
-    pdb.set_trace()
     if bDif:
         div_theta = grad(theta.components[0])[0] + grad(theta.components[1])[1]
         divtheta.Set(div_theta)
 
-    etarhos = dphih.components[2].vec.FV().NumPy() + 1/r1*rho.vec.FV().NumPy() #TODO ändern (alle etas)
+    etarhos = dphih.components[2].vec.FV().NumPy() + 1/r1*rho.vec.FV().NumPy() 
     
     if bWind:
         etarhos += dphih.components[0].vec.FV().NumPy()*vWindX.vec.FV().NumPy() + dphih.components[1].vec.FV().NumPy()*vWindY.vec.FV().NumPy()
@@ -521,8 +520,14 @@ def UpdatePhiTheta(r1, rho, dphih, phiL2, Jx, Jy, gx, gy, source, rhos, Jxs, Jys
     etaJys = dphih.components[1].vec.FV().NumPy() + 1/r1*Jy.vec.FV().NumPy()
     # Bedingung für Diffusion
     if bDif:
-        etagxs = -theta.components[0].vec.FV().NumPy() + 1/r1*gx.vec.FV().NumPy()
-        etagys = -theta.components[1].vec.FV().NumPy() + 1/r1*gy.vec.FV().NumPy()
+        #TODO Dimensions-Mismatch... Unbedingt eine elegantere Lösung finden!!!
+        theta_x_W = GridFunction(gx.space)
+        theta_y_W = GridFunction(gy.space)
+
+        theta_x_W.Set(theta.components[0])
+        theta_y_W.Set(theta.components[1])
+        etagxs = -theta_x_W.vec.FV().NumPy() + 1/r1*gx.vec.FV().NumPy()
+        etagys = -theta_y_W.vec.FV().NumPy() + 1/r1*gy.vec.FV().NumPy()
     if bSource:
         etafs = phiL2.vec.FV().NumPy() + 1/r1*source.vec.FV().NumPy()
 
@@ -540,7 +545,7 @@ def UpdatePhiTheta(r1, rho, dphih, phiL2, Jx, Jy, gx, gy, source, rhos, Jxs, Jys
             eta_Jy = etaJys[PosIndexG].copy()
             eta_f = etafs[PosIndexG].copy()
 
-            eta_J_nrm = np.sqrt(bgx**2+bgy**2)
+            eta_J_nrm = np.sqrt(eta_Jx**2+eta_Jy**2)
             eta_f_nrm = np.abs(eta_f)
             # Solve the system using Newton's method
             #mu01d = nrm_b1d.copy() # Wieso hier nochmal die copy TODO!!!
@@ -552,7 +557,7 @@ def UpdatePhiTheta(r1, rho, dphih, phiL2, Jx, Jy, gx, gy, source, rhos, Jxs, Jys
             if bDif:
                 eta_gx = etagxs[PosIndexG].copy()
                 eta_gy = etagys[PosIndexG].copy()
-                eta_g_nrm = np.sqrt(dgx**2+dgy**2)
+                eta_g_nrm = np.sqrt(eta_gx**2+eta_gy**2)
                 u_sol = eta_g_nrm.copy()
 
             """
@@ -572,7 +577,7 @@ def UpdatePhiTheta(r1, rho, dphih, phiL2, Jx, Jy, gx, gy, source, rhos, Jxs, Jys
             kappa01d = nrm_d1d.copy()
             err1d = 1
             """
-            for i in range(np.shape(ag)[0]):
+            for i in range(np.shape(eta_rho)[0]):
                 #TODO Fallunterscheidung notwendig? wieso nicht auch wenn y-Term == 0? Dann mehrere Unterscheidungen bei Neuerung? Vorerst keine Fallunterscheidung und direkt alle machen
                 """
                 if nrm_b1d[i]==0: # wenn x-Term 0
@@ -594,7 +599,7 @@ def UpdatePhiTheta(r1, rho, dphih, phiL2, Jx, Jy, gx, gy, source, rhos, Jxs, Jys
                 """
                 #funcderivparam2 = lambda c: funcderiv2(c[0], c[1], ag[i], cg[i], nrm_b1d[i], 1, alpha_f) # TODO Hier Newton mit allen Termen
                 if bDif:
-                    funcderivparam2 = lambda c: funcderiv2_dif(c[0], c[1], c[2], eta_rho[i], eta_J_nrm[i], eta_f_nrm[i], eta_g_nrm, alpha_f, alpha_dif)
+                    funcderivparam2 = lambda c: funcderiv2_dif(c[0], c[1], c[2], eta_rho[i], eta_J_nrm[i], eta_f_nrm[i], eta_g_nrm[i], alpha_f, alpha_dif)
 
                     zold = np.array([x_sol[i], y_sol[i], u_sol[i]])
                 else: 
@@ -703,10 +708,12 @@ def UpdatePhiTheta(r1, rho, dphih, phiL2, Jx, Jy, gx, gy, source, rhos, Jxs, Jys
         for i in range(len(indNot)):
             if indNot[i]:
                 ### TODO Wieso nicht einfach ausschließlich in der Funktion und dort dann die Fallunterscheidung? Ist dann ja doppelt
+                #pdb.set_trace()
                 if bSource:
                     #TODO Fallunterscheidung bDif
+                    import pdb
                     if bDif:
-                        funcderivInv = lambda c: funcderivInv(c[0], c[1], c[2], alpha_inv, alpha_f, r1, etarhos[i], etaJxs[i], etaJys[i], gfInvDat.vec.FV().NumPy()[i], bSource=True, fs = c[3], etafs = etafs[i], bDif=True, alpha_dif = alpha_dif, gxs = gxs[i], gys = gys[i], etagxs = etagxs[i], etagys = etagys[i])
+                        funcderivInv2 = lambda c: funcderivInv(c[0], c[1], c[2], alpha_inv, alpha_f, r1, etarhos[i], etaJxs[i], etaJys[i], gfInvDat.vec.FV().NumPy()[i], bSource=True, fs = c[3], etafs = etafs[i], bDif=True, alpha_dif = alpha_dif, gxs = c[4], gys = c[5], etagxs = etagxs[i], etagys = etagys[i])
                         zold = np.array([rhos.vec.FV().NumPy()[i], Jxs.vec.FV().NumPy()[i], Jys.vec.FV().NumPy()[i], sources.vec.FV().NumPy()[i], gxs.vec.FV().NumPy()[i], gys.vec.FV().NumPy()[i]])
                     else:
                         funcderivInv2 = lambda c: funcderivInv(c[0], c[1], c[2], alpha_inv, alpha_f, r1, etarhos[i], etaJxs[i], etaJys[i],  gfInvDat.vec.FV().NumPy()[i], bSource=True, fs = c[3], etafs = etafs[i])
@@ -715,7 +722,7 @@ def UpdatePhiTheta(r1, rho, dphih, phiL2, Jx, Jy, gx, gy, source, rhos, Jxs, Jys
                 else: #No Source
                     #TODO Fallunterscheidung bDif
                     if bDif:
-                        funcderivInv = lambda c: funcderivInv(c[0], c[1], c[2], alpha_inv, alpha_f, r1, etarhos[i], etaJxs[i], etaJys[i], gfInvDat.vec.FV().NumPy()[i],bDif=True, alpha_dif = alpha_dif, gxs = gxs[i], gys = gys[i], etagxs = etagxs[i], etagys = etagys[i])
+                        funcderivInv2 = lambda c: funcderivInv(c[0], c[1], c[2], alpha_inv, alpha_f, r1, etarhos[i], etaJxs[i], etaJys[i], gfInvDat.vec.FV().NumPy()[i],bDif=True, alpha_dif = alpha_dif, gxs = c[3], gys = c[4], etagxs = etagxs[i], etagys = etagys[i])
                         zold = np.array([rhos.vec.FV().NumPy()[i], Jxs.vec.FV().NumPy()[i], Jys.vec.FV().NumPy()[i], gxs.vec.FV().NumPy()[i], gys.vec.FV().NumPy()[i]])
                     else:
                         funcderivInv2 = lambda c: funcderivInv(c[0], c[1], c[2], alpha_inv, alpha_f, r1, etarhos[i], etaJxs[i], etaJys[i], gfInvDat.vec.FV().NumPy()[i]) 
@@ -806,18 +813,23 @@ def ALG2_new(V, W, r1, rho, rho0, rho1, Jx, Jy, gx, gy, rhos, Jxs, Jys, gxs, gys
 
             #UpdatePhi(r1, rho, dphih, phiL2, Jx, Jy, source, rhos, Jxs, Jys, sources, bWind, bSource, bInverse, sensor_marker, alpha_f, alpha_inv, vWindX, vWindY, gfInvDat)
             #pdb.set_trace()
-            UpdatePhiTheta(r1, rho, dphih, phiL2, Jx, Jy, gx, gy, source, rhos, Jxs, Jys, gxs, gys, sources, bWind, bSource, bInverse, sensor_marker, alpha_f, alpha_inv, alpha_dif, vWindX, vWindY, gfInvDat, theta, divtheta)
+            UpdatePhiTheta(r1, rho, dphih, phiL2, Jx, Jy, gx, gy, source, rhos, Jxs, Jys, gxs, gys, sources, bWind, bSource, bInverse, sensor_marker, alpha_f, alpha_inv, alpha_dif, vWindX, vWindY, gfInvDat, theta = thetah, divtheta = divtheta)
             ## STEPC: 
-            rho.vec.FV().NumPy()[:] += tau*r1*(dphih.components[2].vec.FV().NumPy() + vWindX.vec.FV().NumPy()*dphih.components[0].vec.FV().NumPy() + vWindY.vec.FV().NumPy()*dphih.components[1].vec.FV().NumPy() - rhos.vec.FV().NumPy())
+            #rho.vec.FV().NumPy()[:] += tau*r1*(dphih.components[2].vec.FV().NumPy() + vWindX.vec.FV().NumPy()*dphih.components[0].vec.FV().NumPy() + vWindY.vec.FV().NumPy()*dphih.components[1].vec.FV().NumPy() - rhos.vec.FV().NumPy())
             rho.vec.FV().NumPy()[:] += tau*r1*(dphih.components[2].vec.FV().NumPy() + vWindX.vec.FV().NumPy()*dphih.components[0].vec.FV().NumPy() + vWindY.vec.FV().NumPy()*dphih.components[1].vec.FV().NumPy() - rhos.vec.FV().NumPy()) # Hier noch in die Klammer Nabla * Lambda
-              
+
             Jx.vec.data += tau*r1*(dphih.components[0].vec - Jxs.vec)#(dphih.components[0].vec.FV().NumPy() - Jxs.vec.FV().NumPy())
             Jy.vec.data += tau*r1*(dphih.components[1].vec - Jys.vec)#(dphih.components[1].vec.FV().NumPy() - Jys.vec.FV().NumPy())
+            # Fehler einzeln vor den Bedingungen berechnen?
 
             #TODO Das in if packen (was ist die Condition?)
             if bDif:
-                gx.vec.data += tau*r1*(-theta_x - gxs.vec)
-                gy.vec.data += tau*r1*(-theta_y - gys.vec)
+                rho.vec.FV().NumPy()[:] -= divtheta.vec.FV().NumPy()
+                
+                thetaL2.components[0].Set(theta_x)
+                thetaL2.components[1].Set(theta_y)
+                gx.vec.data += tau*r1*(-thetaL2.components[0].vec - gxs.vec)
+                gy.vec.data += tau*r1*(-thetaL2.components[1].vec - gys.vec)
 
             if not bInitialFinial: # update initial- and final data
                 #TODO auch in der Theorie
@@ -932,7 +944,7 @@ if __name__ == "__main__":
     sigma = .1
 
     tt3 =(x-(.35*(1-z)+.7*z))**2+(y-(.35*(1-z)+.7*z))**2
-    rhoEx = 0*exp(-(1/2/sigma**2)*tt3) + 0*1
+    rhoEx = 1*exp(-(1/2/sigma**2)*tt3) + 0*1
     
     if bInitialFinial:
         rho0cf = rhoEx
