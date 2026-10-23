@@ -1,5 +1,4 @@
 from safescope import safescope, Imports
-import pdb
 """
 Alles TODOS bearbeiten, Fallunterscheidung Diffusion, InitialFinal vollständig bearbeiten
 funcderivInv -> UpdatePhi if not source & if bInverse
@@ -862,6 +861,8 @@ def ALG2_new(V, W, r1, rho, rho0, rho1, Jx, Jy, gx, gy, rhos, Jxs, Jys, gxs, gys
 
 
 if __name__ == "__main__":
+    import pdb
+    pdb.set_trace()
     bWind = True
     bSource = True
     bInitialFinial = True
