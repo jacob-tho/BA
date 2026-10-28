@@ -362,6 +362,7 @@ def assembleBilinearForm_new(V, r1, bWind, bSource, bDif, vWindX, vWindY, tol=1e
     # Dann den Produktraum noch zurückgeben
     #TODO Fallunterscheidung; Checke Raumdimensionen
     if bDif:
+        print(V.Get_Boundaries())
         V = FESpace([V, V*V])
         (phi, theta), (psi, zeta) = V.TnT()
     else:
