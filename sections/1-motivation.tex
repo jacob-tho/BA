@@ -1,23 +1,71 @@
-\section{Einführung}
+\section{Introduction}
 
-TODO Englisch, Problem umstellen, Interpretation und Motivation
+%Beantworte: Was ist OT und wieso interessant? Was kann man mit dem klassischen Modell nicht beschreiben? Was genau untersuche ich konkret? Wie gehe ich bei der Lösung vor?
 
+%Motivation und Erklärung von OT mit Grenzen. Mathematisches Modell mit Erklärung der Terme, Zielsetzung
 
-Wir betrachten das dynamische Transportproblem
-$$
-\inf \int_0^1\int_\Omega \frac{|J_t|^2}{2\rho_t}dxdt + \int_0^1\int_\Omega \frac{|f_t|^2}{2\rho_t}dxdt + \int_0^1\int_\Gamma |\rho(t)-\rho_d|^2dxdt
-$$
-mit Kurve $\Gamma \subset (\Omega \times (0,1))$ und Nebenbedingungen
-\begin{align*}
-	\frac{\partial \rho_t}{\partial t} + \nabla \cdot (J_t + \rho_t v_t) &= f_t \quad auf \Omega\times (0,1)\\
-	(J_t + \rho_t v_t) \cdot n &= 0 \quad \partial\Omega\times(0,1).
-\end{align*}
+Optimal transport has attracted increasing attention in mathematics and its applications in recent decades, although its origins date back to the eighteenth century. The classical problem concerns finding an optimal way of transporting mass between two given distributions while minimizing a prescribed transportation cost. Its dynamic formulation extends this perspective by describing the evolution of a density over time through a velocity field. This provides a mathematical framework for studying transport processes and motivates extensions that account for additional physical effects, such as diffusion, external forces, and the creation or removal of mass.
 
-Dabei bezeichnet $J_t$ das Energiefunktional zum Zeitpunkt $t$, $f_t$ ist die Quelle, $\rho_t$ ist ???, $v_t$ das Vektorfeld und Datenterm. Mit Neumann-Randbedingungen haben wir halt ein abgeschlossenes System.
+In this thesis, we investigate an inverse problem in the context of dynamical optimal transport. Rather than prescribing both the initial and final distributions, we consider density measurements along a given space-time curve and a prescribed velocity field. The objective is to reconstruct a density evolution consistent with these observations, including the unknown initial distribution. Since the available measurements generally do not uniquely determine the underlying transport process, additional regularization is required. To this end, we build upon the dynamical formulation introduced by Benamou and Brenier and extend it by incorporating diffusion, source and sink terms, and a penalty for deviations from the observed data.
 
-Um dieses Problem zu lösen, benötigt es einige Grundlagen aus Maßtheorie und Funktionalanalysis, eine Einführung in optimalen Transport und PDE/Variationsrechnung/Konvexe Analysis. Dann erarbeiten wir Existenzresultate und lösen das Problem noch numerisch.
+More precisely, we consider the following optimization problem:
 
+\[
+\begin{aligned}
+\min_{(\rho,J,f,g)}\quad
+&\int_0^1\int_\Omega
+\left(
+\frac{|J_t|^2}{2\rho_t}
++\alpha_f^2\frac{|f_t|^2}{2\rho_t}
++\alpha_{\mathrm{dif}}^2\frac{|g_t|^2}{2\rho_t}
+\right)\,\mathrm dx\,\mathrm dt\\
+&\quad+\frac{\alpha_{\mathrm{inv}}^2}{2}
+\int_0^1\int_\Gamma|\rho-\rho_{\mathrm{data}}|^2\,\mathrm d x \mathrm d t,\\[4pt]
+\text{s.t.}\quad
+&\begin{cases}
+\partial_t\rho_t+\nabla\cdot(J_t+\rho_t v_t^{\mathrm{wind}})=f_t
+&\text{in }\Omega\times(0,1),\\
+(J_t+\rho_t v_t^{\mathrm{wind}})\cdot n=0
+&\text{on }\partial\Omega\times(0,1),\\
+g_t=\nabla\rho_t
+&\text{in }\Omega\times(0,1).
+\end{cases}
+\end{aligned}
+\]
 
-Gegeben ein Vektorfeld und einer Datenkurve, welche auch eine Dichte im gewissen Sinne ist: Was war der Ursprung? 
+Here, \(\rho_t\) denotes the time-dependent density, \(J_t\) the transport flux, \(f_t\) a source or sink term, and \(g_t\) an auxiliary variable representing the density gradient. The prescribed vector field \(v_t^{\mathrm{wind}}\) describes external transport, while \(\rho_{\mathrm{data}}\) represents the available measurements along the curve \(\Gamma\). The parameters \(\alpha_f\), \(\alpha_{\mathrm{dif}}\), and \(\alpha_{\mathrm{inv}}\) control the relative contributions of the source, diffusion, and data-fitting terms. The no-flux boundary condition ensures that mass cannot enter or leave the domain through its boundary, while changes in the total mass are permitted through the source term.
 
-Bisherige Quellen: Santambrogio 4.1.2 (und OT-Theorie), Folland Maßtheorie + Funkana, Alt Funkana, OT von Figalli, Gradient Flows von Ambrosio/Gigli, Evans PDE, Benamou Brenier Paper, Variationsrechnung Skript Schmidt und Struwe
+The thesis is structured as follows. Chapter 2 introduces the necessary mathematical foundations from measure theory, functional analysis, and variational calculus. Chapter 3 reviews classical optimal transport, beginning with Monge's formulation and Kantorovich's relaxation, before introducing the dynamical formulation and its relationship to the static problem. We then discuss the Benamou–Brenier approach and its numerical solution using an augmented Lagrangian algorithm (ALG2). Building on these results, Chapter 4 develops the extended inverse transport model and derives the corresponding numerical scheme. Finally, Chapter 5 presents and discusses numerical results obtained from its implementation.
+\newpage
+%Optimal Transport is a mathematical field that gained an increasing amount of attention in the mathematical community over the past years, despite the original formulation being a few hundred years old. It allows us to follow a initial density along a vector field morphing into a final distribution and enables us to model physical processes like diffusion. In the course of this thesis we study the inverse problem. Given a curve of measurements and the vector field, how can we reconstruct the intial distribution; for this purpose we use the approach of BB. Since this model inherently can be used flexibly, we remodel the problem formulation to allow diffusion and include regularization parameters. To make it more concrete, we look at the model 
+%\begin{align*}
+%	\min_{(\rho_t, J_t, f_t, g_t)} \int\limits_{\Omega\times(0,1)} &\left(\frac{|J_t|^2}{2\rho_t} + \alpha_f^2\frac{|f_t|^2}{2\rho_t} + \alpha_{dif}^2\frac{|g_t|^2}{2\rho_t}\right) \,\mathrm{d}x\mathrm{d}t + \frac{\alpha_{inv}^2}{2} \int\limits_0^1\int\limits_{\Gamma}|\rho_t - \rho_{data}|^2 \,\mathrm{d}x\mathrm{d}t \\
+%	&\mathrm{s.t.}\begin{cases}\partial_t\rho_t + \nabla \cdot (J_t + \rho_t v_t^{wind}) = f &\Omega\times(0,1)\\
+%		(J_t + \rho_tv_t^{wind}) \cdot n = 0 & \partial\Omega\times (0,1)\\
+%	g_t = \nabla\rho_t\end{cases}
+%\end{align*}
+%
+%The variables in question describe the density over time $(\rho_t)$, the transport flow $(J_t)$, the source or sink term $(f_t)$ and a auxiliary variable to describe the gradient of the density $(g_t)$. The given velocity field is described by $v_t^{wind}$ and as mentioned, we measure data $(\rho_{data})$ along a curve $(\Gamma)$. Eventuell hier noch initial und final erwähnen. 
+%
+%In this work we first of all recapitulate the mathematical foundations of measure theory, functional analysis and calculus of variation, before explaining the concept and crucial theoretical results of Optimal Transport theory. There we will first discuss the original idea of Monge and why it was necessary to define a relaxation, established by Kantorovich. There we can proof the existence of the static problem and will later on proof the equivalence of the static and dynamic formulation. Lastly we take a look at the numerical formulation of BB and transfer the results to our specific modelling problem. We close the work by providing numerical results of the implementation of our model
+%
+%
+%Wir betrachten das dynamische Transportproblem
+%$$
+%\inf \int_0^1\int_\Omega \frac{|J_t|^2}{2\rho_t}dxdt + \int_0^1\int_\Omega \frac{|f_t|^2}{2\rho_t}dxdt + \int_0^1\int_\Gamma |\rho(t)-\rho_d|^2dxdt
+%$$
+%mit Kurve $\Gamma \subset (\Omega \times (0,1))$ und Nebenbedingungen
+%\begin{align*}
+%	\frac{\partial \rho_t}{\partial t} + \nabla \cdot (J_t + \rho_t v_t) &= f_t \quad auf \Omega\times (0,1)\\
+%	(J_t + \rho_t v_t) \cdot n &= 0 \quad \partial\Omega\times(0,1).
+%\end{align*}
+%
+%Dabei bezeichnet $J_t$ das Energiefunktional zum Zeitpunkt $t$, $f_t$ ist die Quelle, $\rho_t$ ist ???, $v_t$ das Vektorfeld und Datenterm. Mit Neumann-Randbedingungen haben wir halt ein abgeschlossenes System.
+%
+%Um dieses Problem zu lösen, benötigt es einige Grundlagen aus Maßtheorie und Funktionalanalysis, eine Einführung in optimalen Transport und PDE/Variationsrechnung/Konvexe Analysis. Dann erarbeiten wir Existenzresultate und lösen das Problem noch numerisch.
+%
+%
+%Gegeben ein Vektorfeld und einer Datenkurve, welche auch eine Dichte im gewissen Sinne ist: Was war der Ursprung? 
+%
+
+%TODO Bisherige Quellen: Santambrogio 4.1.2 (und OT-Theorie), Folland Maßtheorie + Funkana, Alt Funkana, OT von Figalli, Gradient Flows von Ambrosio/Gigli, Evans PDE, Benamou Brenier Paper, Variationsrechnung Skript Schmidt und Struwe; Osher

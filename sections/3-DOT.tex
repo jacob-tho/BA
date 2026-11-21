@@ -1,6 +1,9 @@
 \newpage
 \section{Dynamical Optimal Transport}
 
+%TODO Definitiv die Notation anpassen und an Kapitel 4 angleichen!
+%Einfaches Beispiel für kein Monge aber Kantorovich explizit nennen. Polnische Räume nennen und voraussetzen. Herleitung der CE; 
+
 In this chapter we lay out the framework in which our mathematical model is presented. We introduce the concept of optimal transport, first the static formulation of Monge-Kantorovich and in combination with the continuity equation the dynamical formulation that is then presented through the lense of the Benamou-Brenier formulation. The goal then is to establish a result on the equivalence of solutions and also introduce a version of the ALG2 algorithm presented in (BB). This helps us understand the approach used to solve the modified variational problem in the next chapter.
 \subsection{Optimal Transport Theorie}
 The central question of the problem was proposed by Gaspard Monge in 1781. Given a pile of dirt and an equal sized hole, how can it be filled "optimally" (Tikz Grafik einfügen). This raises questions such as what optimal means in that context and also if the problem can even be solved. 
@@ -12,9 +15,13 @@ The central question of the problem was proposed by Gaspard Monge in 1781. Given
 \end{definition}
 This initial definition allows for an intuitive interpration of the problem, however it inherently comes with the problem that it may not exist a solution.
 \begin{example}
-	Consider the case $X=Y=\mathbb{R}^n$ and $c(x,y) = \lVert x-y\rVert^2$, where $\mu,\nu\in\mathscr(\mathbb{R}^n)$ have smooth densities with respect to the Lebesgue measure. If $\mu$ is not absolutely continuous (e.g. if it has an atom), a transport map $T$ solving \eqref{eq:MP} may fail to exist: mass concentrated at a single point cannot be split and sent to multiple locations to match $\nu$. One simply consideres the case of Dirac measures.
+	Consider the case $X=Y=\mathbb{R}^n$ and $c(x,y) = \lVert x-y\rVert^2$, where
+	$$
+	\mu = \delta_0,\quad \nu = \frac{1}{2}\delta_{-1} + \frac{1}{2}\delta_1.
+	$$
+	A map $T$ solving \eqref{eq:MP} may fail to exist, since mass concentrated at a single point cannot be split and sent to multiple locations to match $\nu$.
 \end{example}
-Include tikz mit Dirac Mass
+% TODO Include tikz mit Dirac Mass
 
 Another issue may be that even if a transport map exists, it may not be unique, if we do not allow for strict regulaztion. These potential problems motivate a \textit{relaxation}, that is, rather than seeking a \textit{transport map} we allow \textit{tansport plans}, which are measures on the product space $X\times Y$ that have correct marginals. This idea was introduced by Leonid Kantorovich about 150 years later and is foundational to the modern theory of optimal transport. First we define the concept of a coupling, which formalizes the restriction on the marginals.
 \begin{definition}[Coupling]
@@ -28,10 +35,33 @@ Another issue may be that even if a transport map exists, it may not be unique, 
 A result that is crucial for upcoming result is the fact, that under suitable conditions, the set $\Gamma$ is non-empty.
 
 \begin{lemma}
-	Let $X$ be a Polish space and $T:X\to Y$ a measurable map such that $T_\#\mu = \nu$. Then $\Gamma(\mu,\nu)$ is non-empty, convex and tight. Moreover, $\Gamma(\mu,\nu)\subset\mathscr{P}(X\times Y)$ is compace under the topology of narrow convergence.
+	Let $X$ and $Y$ be a Polish spaces and let $\mu\in \mathscr{P}(X)$ and $\nu \in \mathscr{P}(Y)$. Then $\Gamma(\mu,\nu)$ is non-empty, convex and compact with respect to narrow convergence. %$T:X\to Y$ a measurable map such that $T_\#\mu = \nu$. Then $\Gamma(\mu,\nu)$ is non-empty, convex and tight. Moreover, $\Gamma(\mu,\nu)\subset\mathscr{P}(X\times Y)$ is compace under the topology of narrow convergence.
 \end{lemma}
 \begin{proof}
-	Prokhorok, marginals of tight families are tight.
+	%Prokhorok, marginals of tight families are tight.
+	Since $\mu\otimes\nu\in\Gamma(\mu,\nu)$, the set of couplings is non-empty. Convexity follow directly from the linearity of the marginal constrains.
+
+	Let $\varepsilon > 0$. Since $\mu$ and $\nu$ are tight, there exist compact sets $K_X\subset X$ and $K_Y\subset Y$ with
+	\begin{align*}
+		\mu(X\setminus K_X)<\frac{\varepsilon}{2},\quad \nu(Y\setminus K_Y)<\frac{\varepsilon}{2}.
+	\end{align*}
+	For every $\gamma\in\Gamma(\mu,\nu)$, we have
+	\begin{align*}
+        &\gamma((X\times Y)
+            \setminus(K_X\times K_Y))\\
+        &\quad\leq
+        \gamma((X\setminus K_X)\times Y)
+        +\gamma(X\times(Y\setminus K_Y))\\
+        &\quad=
+        \mu(X\setminus K_X)
+        +\nu(Y\setminus K_Y)
+        <\varepsilon.
+    \end{align*}
+    Hence $\Gamma(\mu,\nu)$ is tight. By Prokhorov's theorem, it is relatively
+    compact. Moreover, the marginal maps
+    are continuous under narrow convergence,
+    so $\Gamma(\mu,\nu)$ is closed. Therefore $\Gamma(\mu,\nu)$ is compact.
+
 \end{proof}
 
 \begin{definition}[Kantorovich Problem]
@@ -52,7 +82,7 @@ C_M(\mu,\nu)\geq C_K(\mu,\nu),
 $$
 where $C_M$ and $C_K$ denote the optimal costs of the Monge and Kantorovich problems, respectively.
 \end{remark}
-Tikz zu Kantorovich einfügen
+%TODO Tikz zu Kantorovich einfügen
 
 Under mild assumptions we can proof the existence of a solution for the static optimal transport problem.
 \begin{theorem}[Existence of Optimal Transport Plans]
@@ -61,9 +91,8 @@ Under mild assumptions we can proof the existence of a solution for the static o
 	\int_{X\times Y} c(x,y)\,\mathrm{d}\overline{\gamma}(x,y) = \inf_{\gamma\in\Gamma(\mu,\nu)}\int_{X\times Y} c(x,y)\,\mathrm{d}\gamma(x,y).
 	$$
 \end{theorem}
-TODO Box für direkte Methode einfügen
 \begin{proof}
-Assume that 
+We use the direct method, as explained in ???. Assume that 
 $$
 \alpha = \inf_{\gamma\in\Gamma(\mu,\nu)}\int_{X\times Y} c(x,y)\,\mathrm{d}\gamma(x,y)< +\infty,
 $$
@@ -79,26 +108,26 @@ $$
 $$
 But since $\overline{\gamma}\in\Gamma(\mu,\nu)$, we also have
 $$
-\int_{X\times Y}c(x,y)\,\mathrm{d}\overline{\gamma}\geq\alpha,
+\int_{X\times Y}c(x,y)\,\mathrm{d}(x,y)\overline{\gamma}\geq\alpha,
 $$
 which implies that $\overline{\gamma}$ is a minimizer.
 
 \end{proof}
-Hier noch Santambrogio 1.17.
+%TODO Hier noch Santambrogio 1.17.
 
 \subsection{Dynamical Optimal Transport}
-
+%TODO Hier fast komplett umformulieren. Auch die Notation an Kapitel 4 anpassen (z.B. J statt m)
 We want to introduce the concept of dynamical optimal transport. In contrast to static optimal transport, we do not only care about finding an optimal map or optimal coupling to transport one distribution to another but are interested in a sense of flow in time, where for each time step $t\in (0,T)$ the flow along a vector field is optimal. The necessary tools for that are a definition of a new metric, namely the Wasserstein metric, a new sense of derivative, namely a metric derivative and a little bit of convex analysis. We show that solutions of dynamic and static optimal transport are in fact equivalent and present a numerical method for solving the dynamical optimal transport problem, including an implementation.
 
 While the total variation measure indeed takes into account the difference between two probability measures, it ignores a spacial distance, making it unfit for our purposes. A better choice is the Wasserstein-Distance.
-
+%TODO es fehlt P_p(X), die Notation hier ist komisch, da d nicht definiert ist
 \begin{definition}[Wasserstein Distance]
-	Let $X$ be a separable metric space, where each element $\mathscr{P}(X)$ is probability and hence a Radon measure and let $p\geq 1$. We define the $p$-th Wasserstein distance between two probability measures $\mu,\nu\in\mathscr{P}(X)$ as 
+	Let $X$ be a separable metric space, where each element $\mathscr{P}(X)$ is a probability measure and hence a Radon measure and let $p\geq 1$. We define the $p$-th Wasserstein distance between two probability measures $\mu,\nu\in\mathscr{P}(X)$ as 
 	$$
 	W_p^p(\mu,\nu) := \inf\left\{\int_{X^2}d(x,y)^p\,\mathrm{d}\gamma(x,y)\ \middle|\ \gamma\in\Gamma(\mu,\nu)\right\}.
 	$$
 \end{definition}
-TODO $W$ ist eine Metrik
+%TODO $W$ ist eine Metrik
 
 The concept of dynamic optimal transport is linked to the continuity equation, that can be interpreted as a condition to preserve mass during the flow of particles across a given velocity field and also allows us to then follow each single time step. Introducing the variable $\rho(t,x)$ with $t\in(0,1)$ and $x\in\Omega$ is essentialy the flow of our density in time-space with $\rho(0,x) = \mu(x)$ and $\rho(1,x) = \nu(x)$. TODO schöner formulieren
 
@@ -190,7 +219,7 @@ $$
 $$
 
 \subsection{Equivalence of the Static and Dynamic Formulation}
-%Hier Ambrosio
+%Hier Ambrosio citen; Scheinbar ist der eigentliche Benamou-Brenier-Satz noch gar nicht gestatet
 
 The goal here is to show the relationship between static optimal transport, that is the Monge-Kantorovich formulation, and dynamical optimal transport. We will find that having a solution for one of these problems will then give us a solution to the other, making the problems equivalent. For this purpose, we define a few key terms.
 \begin{definition}[Metric Derivative]
@@ -208,7 +237,7 @@ Note that the absolute value of the denominator is necessary for the expression 
 \end{definition}
 To show the first main result of this chapter, we need some auxiliary results.
 \begin{lemma}
-	Let $\gamma\in \mathrm{AC}([0,1],X)$ and $|\gamma'|$ be its metric derivative. For $t<s$ we get
+	Let $\gamma\in \mathrm{AC}([0,1],X)$ and $|\gamma'|$ be its metric derivative almost everywhere. For $t<s$ we get
 $$
 d(\gamma(t),\gamma(s)) \leq \int_t^s|\gamma'|(x)\mathrm{d}x.
 $$
@@ -237,7 +266,7 @@ d(\gamma(t),\gamma(s)) = \int_t^sf'(r)\,\mathrm{d}r\leq \int_t^s|f'(r)|\,\mathrm
 $$
 
 \end{proof}
-	BOX: By the Rademacher-Theorem we conclude that the metric dericative may exist for a.e. $t\in[0,1]$ if the curve is Lipschitz-continuous. The next results guarantees us that it is possible to reparametrize absolutely continuous curves to be Lipschitz-curves.
+	%TODO BOX: By the Rademacher-Theorem we conclude that the metric dericative may exist for a.e. $t\in[0,1]$ if the curve is Lipschitz-continuous. The next results guarantees us that it is possible to reparametrize absolutely continuous curves to be Lipschitz-curves.
 
 	\begin{lemma}\label{lipschitz}
 	If $\gamma\in \mathrm{AC}([0,1],X)$, then $\gamma$ admits a Lipschitz reparametrization.
@@ -276,7 +305,7 @@ $$
 %\end{align*}
 \end{proof}
 
-
+%TODO
 \begin{lemma}\label{ac_solution}
 	For $p>1$ the optimal Transport map between two absolutely continuous measures exists. TODO?
 \end{lemma}
@@ -285,7 +314,7 @@ $$
 \end{proof}
 
 TODO hier noch Lemmata für das Theorem: Weak und Distributional ist gleich (Prop 4.2 Sant bzw ganzes Kapitel 4.1), Lemma 5.2
-
+%TODO Übergang zum Grenzfluss
 One of the main theorems of this chapter is the following.
 \begin{theorem}
 	Let $(\gamma_t)_{t\in[0,1]}\subset\mathrm{AC}(\mathscr{P}_p(X))$ be a family of absolutely continuous curves on the space of probability measures. For a.e. $t\in[0,1]$ there exists a velocity field $v_t\in L^p(c_t, \mathbb{R}^d)$ with the properties
@@ -353,6 +382,7 @@ and compute the total variation
 $$
 \lVert E\rVert = \int_0^1 \lVert v_t^k\rVert_{L^1(\mu_t^k)}\,\mathrm{d}t \overset{\text{Hölder}}{\leq} \int_0^1 \lVert v_t^k\rVert_{L^p(\mu_t^k)}\,\mathrm{d}t \overset{\text{Hölder}}{\leq} \left(\int_0^1 \lVert v_t^k\rVert_{L^p(\mu_t^k)}^p\,\mathrm{d}t\right)^{\frac{1}{p}}\leq C.
 $$
+%TODO
 Since for $p>1$ $L^p$ is reflexive, $E^k$ as a bounded sequence has a weakly converging subsequence FALSCHES ARGUMENT (eher Banach Alaoglu). Also, by a triangle inequality argument, we can show that $\mu_t^k$ converges uniformly in time to $\mu_t$ in $W_p$ Explizit berechnen?. This gives us 
 $$
 \partial_t\mu_t + \nabla \cdot E = 0
@@ -364,7 +394,8 @@ REST TODO
 
 \end{proof}
 As the goal is to show that a solution of the static problem admits one to the dynamic problem and vice-versa, we also want to show a converse result.
-TODO Lemma 5.21 staten
+%TODO Lemma 5.21 staten
+%TODO Bedingung an Zeitstetigkeit der Maßkurve; h\to0 und \epsilon\to 0 nicht vertauschen
 \begin{theorem}
 	If $(\mu_t)_{t\in[0,1]}\subset\mathscr{P}(\Omega)$ and for arbitrary $t$ there exists $v_t\in L^p(\mu_t)$ satisfying $\int_0^1 \lVert v_t\rVert_{L^p(\mu_t)}dt<\infty$ and $\partial_t\mu_t + \nabla \cdot (v_t\mu_t) = 0$, then $|\mu'|(t) \leq \lVert v_t\rVert_{L^p(\mu_t)}$ for a.e. $t$ and $(\mu_t)_{t\in[0,1]}$ is absolutely continuous in $W_p(\Omega)$.
 
@@ -539,7 +570,7 @@ $$
 with $F'(\lambda^{(k)}) = -\frac{1}{2} - \frac{4\beta^2}{(2+\lambda)^3}$. Note that in the case $\lambda > 0$ the solution is unique, since the problem is strictly convex.
 
 %\begin{definition}[Wasserstein-Metrik]
-%	Sei $X$ ein separabler metrische Raum, in dem jedes Wahrscheinlichkeitsmaß ein Radon-Maß ist und $p\geq 1$. Wir definieren die $p$-te Wasserstein-Metrik zwischen zwei Wahrscheinlichkeitsmaßen $\mu,\nu \in \mathcal{P}(X)$ mit
+%	Sei $X$ ein separabler metrische Raum, in dem jedes Wahrscheinlichkeitsmaß ein Radon-Maß ist und $p\geq 1$. Wir definieren die $p$-te Wasserstein-Metrik zwischen zwei Wahrscheinlichkeitsmaßen $\mu,\nu \in \mathscr{P}(X)$ mit
 %	$$
 %		W_p^p(\mu,\nu) := \inf\left\{\int_{X^2}d(x,y)^pd\gamma(x,y) \big\vert \gamma \in \Gamma(\mu,\nu)\right\}\\
 %	$$
@@ -753,19 +784,19 @@ with $F'(\lambda^{(k)}) = -\frac{1}{2} - \frac{4\beta^2}{(2+\lambda)^3}$. Note t
 %	$$
 %\end{definition}
 %
-%One can show that for all $\mu,\nu\in \mathcal{P}_2(\mathbb{R}^d)$, $\gamma\in\Gamma_0(\mu,\nu)$ the map $\mu_t=((1-t)\pi^1+t\pi^2)_\#\gamma$ is a constant speed geodesic.
+%One can show that for all $\mu,\nu\in \mathscr{P}_2(\mathbb{R}^d)$, $\gamma\in\Gamma_0(\mu,\nu)$ the map $\mu_t=((1-t)\pi^1+t\pi^2)_\#\gamma$ is a constant speed geodesic.
 %
 %Für Existenz einer Lösung siehe Ausarbeitung Theorem 3.3.1 oder Theorem 2.3 Ambrosio Lecture Notes (dort dann auch Darstellung als was ähnliches wie c-Transform. 
 %Lemma 2.6???
 %
 %\begin{theorem}
-%	Sei $\mu_t:I\subset \mathbb{R} \to \mathcal{P}_2(\mathbb{R}^d)$ eine absolut-stetige Kurve mit existierender metrischer Ableitung. Es existiert ein Vektorfeld $v:(x,t)\to v_t(x)$ mit 
+%	Sei $\mu_t:I\subset \mathbb{R} \to \mathscr{P}_2(\mathbb{R}^d)$ eine absolut-stetige Kurve mit existierender metrischer Ableitung. Es existiert ein Vektorfeld $v:(x,t)\to v_t(x)$ mit 
 %$$
 %v_t\in L^2(\mu_t,\mathbb{R}^d),\quad \lVert v_t\rVert_{L^2(\mu_t,\mathbb{R}^d)} \leq |\mu'|(t)
 %$$
-%für $\mathcal{L}^1$ fast alle $t\in I$ und CE gilt im distributionellen Sinn. Zusätzlich ist für $\mathcal{L}^1$.fast alle $t\in I$ $v_t\in \overline{\{\nabla\varphi:\varphi\in C_c\infty(\mathbb{R}^d)\}}^{L^2(\mu;\mathbb{R}^d)} =:\mathrm{Tan}_\mu\mathcal{P}_2(\mathbb{R}^d).$
+%für $\mathcal{L}^1$ fast alle $t\in I$ und CE gilt im distributionellen Sinn. Zusätzlich ist für $\mathcal{L}^1$.fast alle $t\in I$ $v_t\in \overline{\{\nabla\varphi:\varphi\in C_c\infty(\mathbb{R}^d)\}}^{L^2(\mu;\mathbb{R}^d)} =:\mathrm{Tan}_\mu\mathscr{P}_2(\mathbb{R}^d).$
 %
-%Für eine narrowly continuos curve $\mu_t:I\to \mathcal{P}_2(\mathbb{R}^d)$, die die CE erfüllt für ein Geschwindigkeitsfeld $w_t$ mit $\lVert w_t\rVert_{L^2}\in L^1(I)$
+%Für eine narrowly continuos curve $\mu_t:I\to \mathscr{P}_2(\mathbb{R}^d)$, die die CE erfüllt für ein Geschwindigkeitsfeld $w_t$ mit $\lVert w_t\rVert_{L^2}\in L^1(I)$
 %\end{theorem}
 %
 %
