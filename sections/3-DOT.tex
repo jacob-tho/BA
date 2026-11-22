@@ -116,6 +116,162 @@ which implies that $\overline{\gamma}$ is a minimizer.
 %TODO Hier noch Santambrogio 1.17.
 
 \subsection{Dynamical Optimal Transport}
+\label{sec:dynamical_ot}
+The static formulation of optial transport determines how mass is redistributed between two fixed measures, but does not describe its evolution in time. The dynamical formulation however looks at a family of densities and a respective flux, linked by a conservation law. We first motivate this formluation for regular flows and subsequently introduce the weak formulation used in the following sections.
+
+Througout this section, let $\Omega\subset \mathbb{R}^n$ be a bounded, convex domain with Lipschitz boundary and let $\rho_0,\rho_1\in L^1(\Omega)$ be probability densities, representing the initial and final densities associated with $\mu$ and $\nu$, respectively. This means that
+$$
+\mu(A) = \int_A\rho_0(x)\,\mathrm{d}x,\quad\nu(A)=\int_A\rho_1(x)\,\mathrm{d}x
+$$
+for every Borel set $A\subseteq \Omega$. We describe the evolution of the density by a time-dependent function
+$$
+\rho_[0,1]\times \Omega\to[0,\infty),\quad (t,x)\mapsto\rho_t(x),
+$$
+with prescribed initial and final densities $\rho_{t=0}=\rho_0$ and $\rho_{t=1} = \rho_1$. To continue the study of the concept, we introduce the central metric.
+\begin{definition}[Quadratic Wasserstein Distance]
+	Let $\mu,\nu\in\mathscr{P}_2(\mathbb{R}^n)$, where
+	$$
+	\mathscr{P}_2(\mathbb{R}^n) := \left(\eta\in \mathscr{P}(\mathbb{R}^n) \middle|\int_{\mathbb{R}^n} |x|^2\,\mathrm{d}\eta(x) < \infty\right).
+	$$
+	The \emph{quadratic Wasserstein distance} is defined by
+	\begin{align*}
+		W_2(\mu,\nu) := \inf\left\{\left(\int_{\mathbb{R}^n\times \mathbb{R}^n} |x-y|^2\,\mathrm{d}\gamma(x,y)\right)^{\frac{1}{2}}\middle|\gamma\in\Gamma(\mu,\nu)\right\}
+	\end{align*}
+\end{definition}
+The function $W_2$ defines a metric on $\mathscr{P}_2(\mathbb{R}^n)$ and unlike the total variation norm, it takes into account the spatial distance over which mass is transported. Since $\Omega$ is bounded, the measures $\mu_0$ and $\mu_1$ have finite second moments.
+
+To describe a time-dependent transport, consider a sufficiently regular velocity field $v:[0,1]\times \Omega\to \mathbb{R}^n$. To understand the relationship between the density and the velocity field, we first consider a sufficiently regular flow of particles.
+
+Let $X(t,x)$ denote the position at time $t$ of a particle initially located at $x$. Its trajectory is determined by 
+\begin{equation*}
+	\begin{cases}\frac{\partial X}{\partial t}(t,x) = v_t(X(t,x)),\\
+	X(0,x) = x. \end{cases} \label{eq_particle_flow}
+\end{equation*}
+Assuming that the flow is well-defined and preserves the domain, conservation of mass implies that for every measurable set $A$ we have
+$$
+\int_A\rho_0(x)\,\mathrm{d}x = \int_{X(t,A)}\rho_t(y)\,\mathrm{d}y.
+$$
+In particular, the density at time $t$ is obtained by transporting the initial measure along the flow. In terms of pushforward measures, this reads as 
+$$
+(X(t,\cdot))_\#\mu = \mu_t,
+$$
+where $\mu_t$ denotes the measure with density $\rho_t$. At the final time, we require $(X(1,\cdot))_\#\mu = \nu.$
+
+The needed conservation law can be expressed without explicitly tracking individual particles. For a sufficiently smooth test function $\psi$, the pushforward identity gives
+$$
+\int_\Omega\psi(y)\rho_t(y)\,\mathrm{d}y = \int_\Omega\psi(X(t,x))\rho_0(x)\,\mathrm{d}x.
+$$
+Differentiating with respect to time and using \eqref{eq:particle_flow}, we obtain
+\begin{align*}
+	\frac{\mathrm{d}}{\mathrm{d}t}\int_\Omega\psi(y)\rho_t(y)\,\mathrm{d}y
+	&= \int\Omega\nabla\psi(X(t,x))\cdot v_t(X(t,x))\rho_0(x)\,\mathrm{d}x\\
+	&= \int_\Omega\nabla\psi(y)\cdot v_t(y)\rho_t(y)\,\mathrm{d}y.
+\end{align*}
+Assuming sufficient regularity and a vanishing normal flux at the boundary, integrating by parts yield
+$$
+\int_\Omega\left(\partial_t\rho_t + \nabla\cdot(\rho_tv_t)\right)\psi\,\mathrm{d}x = 0.
+$$
+Since this holds for arbitrary smooth test functions, we obtain the \emph{continuity equation}
+\begin{equation*}
+	\partial_t\rho_t+\nabla\cdot(\rho_tv_t)=0\label{eq:ce}
+\end{equation*}
+This equation expresses conservation of mass, so that changes in the density are caused by the transport of mass through the velocity field.
+
+We now investigate how the Wasserstein distance can be related to the energy of such a flow. For this purpose, consider a sufficiently regular pair $(\rho,v)$ satisfying the continuity equation and the prescribed endpoint conditions. Since 
+$$
+\gamma := (\mathrm{Id},X(1,\cdot))_\#\mu\in\Gamma(\mu,\nu),
+$$
+the definition of $W_2$ gives
+\begin{align*}
+	W_2^2(\mu,\nu)&\leq \int_\Omega|X(1,x)-x|^2\rho_0(x)\,\mathrm{d}x\\
+				  &= \int_\Omega\left|\int_0^1\frac{\partial X}{\partial t}(t,x)\,\mathrm{d}t\right|^2\rho_0(x)\,\mathrm{d}x\\
+				  &\overset{\text{Jensen}}{\leq} \int_\Omega\int_0^1\left|\frac{\partial X}{\partial t}(t,x)\right|^2\,\mathrm{d}t\,\rho_0(x)\,\mathrm{d}x\\
+				  &=\int_0^1\int_\Omega|v_t(X(t,x))|^2\rho_0(x)\,\mathrm{d}x\,\mathrm{d}t.
+\end{align*}
+Using the pushforward relation once more, we obtain 
+\begin{equation*}
+	W_2^2(\mu,\nu)\leq \int_0^1\int_\Omega\rho_t(x)|v_t(x)|^2\,\mathrm{d}x\,\mathrm{d}t.\label{eq:wasserstein_energy}
+\end{equation*}
+Thus, the squared Wasserstein distance is bounded above by the kinetic energy of any sufficiently regular admissible flow. To understand when equality can be achieved, suppose that an optimal transport map $T:\Omega\to\Omega$ exists for the quadratic transport cost. Consider the linear interpolation
+\begin{equation*}
+	X(t,x):=(1-t)x + tT(x).\label{eq:interpolation}
+\end{equation*}
+The trajectories' velocity satisfies $\frac{\partial X}{\partial t}(t,x) = T(x) - x$. If the interpolation induces a suitable Eulerian velocity field $v_t$, then for almost every initial position $x$ we have
+$$
+v_t(X(t,x)) = T(x) -x.
+$$
+Consequently,
+\begin{align*}
+	&\int_0^1\int_\Omega\rho_t(y)|v_t(y)|^2\,\mathrm{d}y\,\mathrm{d}t\\
+	&\qquad=\int_0^1\int_\Omega |T(x)-x|^2\rho_0(x)\,\mathrm{d}x\,\mathrm{d}t\\
+	&\qquad=\int_\Omega |T(x)-x|^2\rho_0(x)\,\mathrm{d}x\\
+	&\qquad=W_2^2(\mu,\nu).
+\end{align*}
+This shows, under the stated assumptions, that the lower bound in \eqref{eq:wasserstein_bound} can be attained by transporting particles along straight lines with constant velocity. These considerations motivate the \emph{dynamical formulation of optimal transport}
+\begin{equation}
+	\begin{aligned}
+		W_2^2(\mu,\nu) = \inf_{(\rho,v)}\quad&
+		\int_0^1\int_\Omega\rho_t(x)|v_t(x)|^2\,\mathrm{d}x\,\mathrm{d}t,\\
+		\text{s.t.}\quad&\partial_t\rho_t + \nabla\cdot(\rho_tv_t)=0,\\
+						&\rho_{t=0}=\rho_0,\\
+						&\rho_{t=1}=\rho_1.
+	\end{aligned}
+	\label{eq:dynamic_ot}
+\end{equation}
+On a bounded domain, the no-flux condition $(\rho_t v_t)\cdot n = 0$ may be imposed on the spatial boundary. Finally, we introduce the transport flux $J_t := \rho_t v_t.$ This substitution has the advantage, that the continuity equation becomes linear in the variables $(\rho,J)$. Additionally, the kinetic energy takes the form 
+$$
+\rho_t|v_t|^2 = \frac{|J_t|^2}{\rho_t}
+$$
+whenever $\rho_t>0$. Using normalization we obtain the \emph{Benamou-Brenier formulation}
+\begin{equation*}
+	\begin{align*}
+		\frac{1}{2}W_2^2(\mu,\nu) = \inf_{(\rho,J)}\quad&
+		\int_0^1\int_\Omega\frac{|J_t|^2}{2\rho_t}\,\mathrm{d}x\,\mathrm{d}t,\\
+		\text{s.t.}\quad&\partial_t\rho_t + \nabla\cdot J_t = 0,\\
+						&J_t\cdot n = 0\quad\text{on }(0,1)\times\partial\Omega,\\
+						&\rho_{t=0}=\rho_0,\\
+						&\rho_{t=1}=\rho_1.
+	\end{align*}
+	\label{eq:BB}
+\end{equation*}
+The cost is understood through its lower semicontinuous extension, taking the value zero at $(\rho,J) = (0,0)$ and $+\infty$ whenever $\rho=0$ and $J\neq 0$. The main advantage of this formulation is that the nonlinear term in the constraints disappears, while the objective is convex. 
+
+The preceding argument provides the intuition behind the dynamical formulation under appropiate regularity assumptions. Its rigorous validity for general probability measures, including cases in which no optimal transport map exists, will be established in the following section.
+%TODO Cleanup: "Intro" zu dem Chapter - hier soll es nur ein sanfter Einstieg sein! Typos, TODOS, Notation, Übergang zum nächsten Kapitel etc.
+
+
+
+\newpage
+
+
+\begin{align*}
+	\frac{\mathrm{d}}{\mathrm{d}t}X_t(x) = v_t(X_t(x)),\quad X_0(x)=x.
+\end{align*}
+The transported measures are defined by
+$$
+\mu_t := (X_t)_\#\mu_0.
+$$
+Assuming that $\mu_t=\rho_t\mathcal{L}^d\!\restriction_\Omega$, the
+pushforward identity means that
+\[
+    \int_\Omega\zeta(y)\rho_t(y)\,\mathrm{d}y
+    =\int_\Omega\zeta(X_t(x))\rho_0(x)\,\mathrm{d}x
+\]
+for every bounded measurable function $\zeta$.
+%TODO das klingt irgendwie weird.
+For $\zeta\in C^1(\overline\Omega)$, differentiating this identity
+with respect to time yields
+\begin{align*}
+    \frac{\mathrm{d}}{\mathrm{d}t}
+    \int_\Omega\zeta(y)\rho_t(y)\,\mathrm{d}y
+    &=\int_\Omega
+      \nabla\zeta(X_t(x))\cdot v_t(X_t(x))
+      \rho_0(x)\,\mathrm{d}x\\
+    &=\int_\Omega
+      \nabla\zeta(y)\cdot v_t(y)\rho_t(y)\,\mathrm{d}y.
+\end{align*}
+
+
 %TODO Hier fast komplett umformulieren. Auch die Notation an Kapitel 4 anpassen (z.B. J statt m)
 We want to introduce the concept of dynamical optimal transport. In contrast to static optimal transport, we do not only care about finding an optimal map or optimal coupling to transport one distribution to another but are interested in a sense of flow in time, where for each time step $t\in (0,T)$ the flow along a vector field is optimal. The necessary tools for that are a definition of a new metric, namely the Wasserstein metric, a new sense of derivative, namely a metric derivative and a little bit of convex analysis. We show that solutions of dynamic and static optimal transport are in fact equivalent and present a numerical method for solving the dynamical optimal transport problem, including an implementation.
 
