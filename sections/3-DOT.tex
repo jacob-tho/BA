@@ -223,17 +223,17 @@ $$
 \rho_t|v_t|^2 = \frac{|J_t|^2}{\rho_t}
 $$
 whenever $\rho_t>0$. Using normalization we obtain the \emph{Benamou-Brenier formulation}
-\begin{equation*}
-	\begin{align*}
+\begin{equation}
+	\begin{aligned}
 		\frac{1}{2}W_2^2(\mu,\nu) = \inf_{(\rho,J)}\quad&
 		\int_0^1\int_\Omega\frac{|J_t|^2}{2\rho_t}\,\mathrm{d}x\,\mathrm{d}t,\\
 		\text{s.t.}\quad&\partial_t\rho_t + \nabla\cdot J_t = 0,\\
 						&J_t\cdot n = 0\quad\text{on }(0,1)\times\partial\Omega,\\
 						&\rho_{t=0}=\rho_0,\\
 						&\rho_{t=1}=\rho_1.
-	\end{align*}
+	\end{aligned}
 	\label{eq:BB}
-\end{equation*}
+\end{equation}
 The cost is understood through its lower semicontinuous extension, taking the value zero at $(\rho,J) = (0,0)$ and $+\infty$ whenever $\rho=0$ and $J\neq 0$. The main advantage of this formulation is that the nonlinear term in the constraints disappears, while the objective is convex. 
 
 The preceding argument provides the intuition behind the dynamical formulation under appropiate regularity assumptions. Its rigorous validity for general probability measures, including cases in which no optimal transport map exists, will be established in the following section.
