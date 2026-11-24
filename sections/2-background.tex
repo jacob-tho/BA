@@ -1,23 +1,19 @@
 \section{Mathematical Background}
 
-%TODO Kurzes Intro
-%FUAN: Dualräume und schwache Konvergenz, Narrow Conv und Compactness of Measures; Function spaces and weak derivatives
-
-%CalcVar und Convex Analysis: Schwach unterhalbstetig und direkte Methode; Convex Conjugate und Dualität; Lagrangian Sattelpunktproblem
-
-%TODO Überlegen: Was brauche ich auch Maßtheorie, Konvexer Analysis, Funkana, Variationsrechnung... Wenn es eher ein Vorgehen ist wie Testfunktionen und PI oder KKT dann in eine Box packen. Das auch alles auf Englisch.
-
-%Das zu behandelnde Thema benötigt Kenntnisse und Grundlagen aus unterschiedlichsten mathematischen Teilgebieten. So geben wir einen Überblick über Maßtheorie, insbesondere Radonmaße und den Satz von Radon-Nikodym, grundlegende Definitionen aus der Funktionalanalysis - unterschiedliche Konvergenzarten (schwach und schwach-*) und in diesem Zug auch Dualräume. Darüber hinaus brauchen wir noch grundlegende Resultate aus der Funktionalanalysis und PDE-Theorie, etwa Lösungstheorie und Methoden der Variationsrechnung. Hier auch noch Konvexe Analysis?
-
+The mathematical formulation of optimal transport
+combines concepts from measure theory, functional
+analysis and convex optimization. We briefly
+introduce the main definitions and results from
+these areas that will be used throughout this thesis.
 
 \subsection{Foundations of Measure Theory}
-We begin by recalling some basic notions from measure theory, which will be used to formulate the optimal transport problem in a measure-theoretic setting. 
+We begin by recalling some basic notions from measure theory, which will be used to formulate the optimal transport problem in a measure-theoretic setting. The presentation of the following results is mainly based on \cite{Folland} 
 \begin{definition}[$\sigma$-Algebra]
 	Let $X$ be a set. A family $\mathcal{A}\subset \mathcal{P}(X)$ is called a \emph{$\sigma$-algebra} on $X$ if%We call $\mathcal{A}$ a \textbf{$\sigma$-algebra} over $X$ if it satisfies
 	\begin{enumerate}
 		\item $\emptyset \in \mathcal{A}$,
 		\item $A\in \mathcal{A} \implies A^C\in \mathcal{A}$,
-		\item For every sequence $(A_i)_{i\in \mathbb{N}} \subset \mathcal{A} \implies \bigcup\limits_{i=1}^\infty A_i \in \mathcal{A}.$
+		\item For every sequence $(A_i)_{i\in \mathbb{N}} \subset \mathcal{A}$ we have $\bigcup\limits_{i=1}^\infty A_i \in \mathcal{A}.$
 	\end{enumerate}
 \end{definition}
 The pair $(X,\mathcal{A})$ is called a
@@ -55,7 +51,7 @@ $\mathcal{A}$ are called measurable sets.
         \qquad \mu(A_i)<\infty.
     \]
     A positive measure satisfying $\mu(X)=1$
-	is called a \emph{probability measure}. A map $\nu:\mathcal{A}\to(-\infty,\infty]$
+	is called a \emph{probability measure}. A map $\nu:\mathcal{A}\to(-\infty,\infty)$
     is called a \emph{finite signed measure}
     if $\nu(\emptyset)=0$ and it satisfies
     the same $\sigma$-additivity property.
@@ -123,7 +119,6 @@ $\mathcal{B}(X)$.
         \|\mu\|_{\mathrm{TV}}:=|\mu|(X).
     \]
 \end{definition}
-%TODO Dazu noch mehr ausführen?
 The total variation is a positive measure
 and quantifies the magnitude of a signed
 measure independently of cancellations
@@ -206,7 +201,6 @@ called the density of $\nu$.
 We conclude by introducing the spaces
 of measures used in the following chapters.
 
-%TODO Das abändern
 \begin{definition}[Spaces of Measures]
     Let $\mathcal{M}(X)$ denote the space
     of finite signed Radon measures on $X$,
@@ -219,7 +213,7 @@ of measures used in the following chapters.
     \]
     and
     \[
-        \mathcal{P}(X)
+        \mathscr{P}(X)
         :=\{\mu\in\mathcal{M}_+(X):
              \mu(X)=1\}.
     \]
@@ -234,181 +228,19 @@ of measures used in the following chapters.
 
 The space $\mathcal{M}(X)$ is a vector
 space, while $\mathcal{M}_+(X)$ is a
-convex cone and $\mathcal{P}(X)$ is a
+convex cone and $\mathscr{P}(X)$ is a
 convex subset. Indeed, for
-$\mu,\nu\in\mathcal{P}(X)$ and
+$\mu,\nu\in\mathscr{P}(X)$ and
 $\lambda\in[0,1]$,
 \[
     \lambda\mu+(1-\lambda)\nu
     \in\mathcal{P}(X).
 \]
 
-Vector-valued measures allow us to
-represent quantities such as the
-transport flux. In particular, an
-integrable vector field
-$J:X\to\mathbb{R}^m$ induces a
-vector-valued measure, provided that
-$X\subseteq\mathbb{R}^d$.
-%TODO Drüberschauen und Formatierung, Notation und ob noch etwas fehlt
-
-
-
-%\begin{definition}[Types of Measures]
-%	A map $\mu: \mathcal{A}\to (-\infty,\infty]$ is called \textbf{signed measure} if
-%	\begin{enumerate}
-%		\item $\mu(\emptyset) = 0$
-%		\item $\mu\left(\bigcup\limits_{i=1}^\infty\right) = \sum\limits_{i=1}^{\infty} \mu(A_i)$
-%	\end{enumerate}
-%	holds for pairwise disjoint sets $A_i$. If $\tilde{\mu}:\mathcal{A}\to [0,\infty]$, we call it \emph{positive}, and $\hat{\mu}:\mathcal{A}\to[0,1]$ we call it a \emph{probability measure}.
-%\end{definition}
-%
-%We call the space $(X,\mathcal{A})$ a \emph{measureable space} and sets $E\in\mathcal{A}$ are called measurable. If $\mu(E)=0$, then $E$ is called a null-set.
-%\begin{definition}[Borel $\sigma$-algebra]
-%	Let $(X,\mathcal{O})$ be a topological space, where $\mathcal{O}$ is the set of open sets over $X$. We denote by $\mathcal{B}(X)$ the smallest $\sigma$-algebra that is induced by $\mathcal{O}$ and call it \textbf{Borel $\sigma$- algebra}.
-%\end{definition}
-%\begin{definition}[Radon measure]
-%	A signed measure $\mu:\mathcal{A}\to (-\infty,\infty]$ is called a \textbf{Radon measure}, if we have
-%	\begin{enumerate}
-%		\item $\mu(K)<\infty$ for every compact $K\in \mathcal{A}$,
-%		\item For all $E\in \mathcal{A}$ there exists $B\in \mathcal{B}(X)$ with $B\supseteq E$ and $\mu(B)= \mu(E)$.
-%	\end{enumerate}
-%\end{definition}
-%%TODO Polish Space? Sigma additive and sigma finite
-%
-%\begin{definition}[Total-Variation measure]
-%	For a $\sigma$-additive measure $\mu:\mathcal{A}\to (-\infty,\infty]$ we define 
-%	$$
-%	|\mu|(B) := \sup_{B\in \mathcal{B}(X)} \left\{\sum\limits_{i=1}^{\infty} |\mu(B_i)| \Big\lvert \bigcup\limits_{i=1}^\infty B_i = B\right\}.
-%	$$
-%	%TODO TV-Norm
-%\end{definition}
-%
-%\begin{definition}[Absolutely continuous measures]
-%	A measure $\mu$ is said to be absolutely continuous with respect to $\nu$ (in notation: $\mu \ll \nu$), if
-%	$$
-%	\nu(A) = 0 \implies \mu(A) = 0\quad A\subset\Omega.
-%	$$
-%\end{definition}
-%
-%\begin{definition}[Singular measures]
-%	Let $\mu,\nu$ be signed measures on $(X,\mathcal{A})$. We say they are singular if there is a set $E\in \mathcal{A}$ such that $\mu(E) = 0$ and $\mu(E^C)=0$. We write $\mu \perp \nu$.
-%\end{definition}
-%We now have a central result that guarantees the existence of measures under certain regularity
-%\begin{theorem}[Radon-Nikodym]
-%	Let $\nu$ be a signed measure and $\mu$ positive on $(X,\mathcal{A})$. If both are $\sigma$-finite, there exist unique $\sigma$-finite measures $\lambda,\rho$ on $(X,\mathcal{A})$ satisfying
-%	\begin{enumerate}
-%		\item $\lambda\perp\mu$,
-%		\item $\rho \ll \mu$,
-%		\item $\nu = \lambda + \rho$.
-%	\end{enumerate}
-%	Further there exists a $\mu$-integrable function $f: X\to \mathbb{R}$ called \emph{Radon-Nikodym density} with $\mathrm{d}\rho = f\mathrm{d}\mu$. 
-%\end{theorem}
-%%TODO Raum von Maßen ist konvex. Vektor-wertige Maße
-%
-%Im Kontext von Transporttheorie, wo uns interessiert, wie wir möglichst effizient Masse von einem zum anderen Standort transportieren können, benötigen wir eine Idee von dem Konzept Masse und wie diese quantifiziert werden kann. Naheliegend finden wir dazu Antworten in der Maßtheorie. Wir beschäftigen uns erst mit dem Begriff eines Maßes und spezielle Klassen dieses Begriffs sowie zentrale Eigenschaften von Elementen, die wir messen können und überlegen uns, in welchem Sinne eine Ableitung für Maße existiert.
-%
-%\begin{definition}[$\sigma$-Algebra]
-%	Sei $X$ eine Menge. Ein Mengensystem $\mathcal{A}$ über $X$ heißt \textbf{$\sigma$-Algebra}, wenn die Eigenschaften
-%	\begin{enumerate}
-%		\item $\emptyset \in \mathcal{A} $,
-%		\item $A\in \mathcal{A} \implies A^C\in \mathcal{A}$,
-%		\item $(A_i)_{i\in I} \in \mathcal{A} \implies \bigcup\limits_{i=1}^\infty A_i \in \mathcal{A}$,
-%	\end{enumerate}
-%	erfüllt sind.
-%\end{definition}
-%
-%\begin{definition}[Signiertes Maß]
-%	Eine Abbildung $\mu: \mathcal{A}\to (-\infty,\infty]$ heißt \textbf{signiertes Maß}, wenn gilt 
-%	\begin{enumerate}
-%		\item $\mu(\emptyset)=0$,
-%		\item $\mu\left(\bigcup\limits_{i=1}^\infty A_i\right) = \sum\limits_{i=1}^{\infty} \mu(A_i)$
-%		
-%	\end{enumerate}
-%	für paarweise disjunkte $A_i$. Zusätzlich nennen wir Abbildungen $\tilde{\mu}: \mathcal{A}\to[0,\infty]$ mit den gleichen Eigenschaften \textit{positive Maße} und Abbildungen $\mathbb{P}: \mathcal{A}\to[0,1]$ heißen \textit{Wahrscheinlichkeitsmaße}.
-%	
-%\end{definition}
-%
-%Den Raum $(X,\mathcal{A})$ bezeichnen wir als \textbf{Messraum} und Elemente des Maßraums heißen \textit{messbare Mengen}. Messbare Mengen $E$ mit der Eigenschaft $\mu(E) = 0$ heißen \textit{Nullmengen} bezüglich $\mu$ oder auch $\mu-$Nullmengen. Ist es möglich, den Raum $X$ als abzählbare Vereinigung von Mengen $A_1,\dots,A_n$ mit $\mu(A_i)<\infty$ für alle $i\in \mathbb{N}$ zu schreiben, so heißt das Maß \textit{$\sigma$-endlich}. Ein Messraum ausgestattet mit einem Maß, also $(X,\mathcal{A}, \mu)$ heißt \textbf{Maßraum}.
-%
-%\begin{definition}[Erzeugte $\sigma$-Algebra]
-%	Sei $\mathcal{M} \subset \mathcal{P}(X)$. $\sigma(\mathcal{M})=\bigcap\limits_{\mathcal{A}\in\mathcal{F}(\mathcal{M})} \mathcal{A}$ heißt die \textit{erzeugte $\sigma$-Algebra}, wobei $\mathcal{F}(\mathcal{M}) := \{\mathcal{M}\subseteq\mathcal{A} \mid \mathcal{A} \text{ ist } \sigma \text{-Algebra auf } X\}.$
-%\end{definition}
-%
-%\begin{definition}[Borel-$\sigma$-Algebra]
-%	Sei $(X, \mathcal{O})$ ein topologischer Raum, wobei $\mathcal{O}$ das Mengensystem der offenen Mengen ist. $\sigma(\mathcal{O})$ ist die \textit{Borelsche-$\sigma$-Algebra} und wir schreiben $\mathcal{B}(X) := \sigma(\mathcal{O}).$
-%\end{definition}
-%
-%Eine Klasse von besonders netten Maßen sind sogenannte Radon-Maße. Diese sind intuitiv, da kompakten Mengen ein endliches Maß zuordnen und sich Mengen auch approximieren lassen.
-%
-%\begin{definition}[Radon-Maße]
-%	Ein signiertes Maß $\mu: \mathcal{A} \to [-\infty,\infty)$ heißt Radon-Maß, wenn gilt
-%	\begin{itemize}
-%		\item $\mu(K) < \infty$ für $K\in \mathcal{A}$ kompakt
-%		\item Für jedes $E\in \mathcal{A}$ existiert ein $B\in \mathcal{B}(X)$ mit $B\supseteq E$ und $\mu(B) = \mu(E)$
-%	\end{itemize}
-%\end{definition}
-%
-%TODO sigma-additiv, $X = \mathbb{R}^d$ definieren oder allgemeiner - wollen wir Polish Spaces oder brauchen wir bestimmte Eigenschaften?
-%
-%\begin{definition}[Variationsmaß]
-%	Für ein $\sigma$-additives signiertes Maß $\mu:\mathcal{A}\to[-\infty,\infty)$ definieren wir das Totalvariationsmaß
-%	$$
-%	|\mu|(B) := \sup\left\{\sum\limits_{i=1}^{\infty} |\mu(B_i)|\, \Bigl\vert \,\dot\bigcup_{i=1}^\infty B_i = B\right\}\quad B\in \mathcal{B}(X).
-%	$$
-%	Mit $\lVert \mu\rVert_{TV} = |\mu|(X)$ definieren wir die Totalvariations-Norm.
-%
-%\end{definition}
-%
-%Prop? Lemma? Eig?
-%Es gilt für alle $B\in \mathcal{B}(X)$
-%\begin{align*}
-%	|\mu|(B) &= \inf\{|\mu|(U) \mid B\subset U, U \text{ offen}\}\\
-%|\mu|(B) &= \sup\{|\mu|(K) \mid B\supset K, K \text{ kompakt}\}
-%\end{align*}
-%
-%
-%TODO: Zeige, dass durch diese Norm ein Banachraum definiert ist -- an späterer Stelle dann Dualraum zeigen. Hier auch noch vektorwertige Maße?
-%
-%Für maßwertige Lösungen von PDE benötigen wir den zentralen Satz von Radon-Nikodym. Hierzu braucht es vorbereitende Definitionen
-%\begin{definition}[Absolutstetigkeit von Maßen]
-%	Ein Maß $\mu$ heißt absolutstetig bezüglich $\nu$ mit Notation $\mu \ll \nu$, wenn für alle $A\subset \Omega$ mit $\nu(A) = 0$ auch $\mu(A) = 0$ gilt.
-%\end{definition}
-%
-%Zusätzlich haben wir mehr oder weniger das Gegenteil von Absolutstetigkeit.
-%
-%TODO andere Definition verwenden?
-%\begin{definition}[Singularität von Maßen]
-%	Seien $\mu, \nu$ signierte Maße auf $(X,\mathcal{A})$. Wir nennen die zwei Maße singulär, wenn Mengen $E,F\in \mathcal{A}$ existieren mit $E\cap F = \emptyset, E\cup F = X$ und $\mu(E) = 0, \nu(F) = 0$. Wir schreiben dabei $\mu \perp \nu$.
-%\end{definition}
-%
-%\begin{theorem}[Hahn-Zerlegung]
-%	Sei $\mu$ ein signiertes Maß auf $(X,\mathcal{A})$, dann existieren Mengen $P$ mit $\mu(P)\geq 0$ und $N$ mit $\mu(N)\leq 0$ für die $P \cup N = X$ und $P \cap N = \emptyset$ gilt.
-%\end{theorem}
-%Beweis S 99
-%
-%\begin{theorem}[Jordan-Zerlegung]
-%	Sei $\mu$ ein signiertes Maß, dann existieren zwei positive Maße $\mu^+, \mu^-$, so dass $\mu = \mu^+ - \mu^-$ und $\mu^+ \perp \mu^-.$
-%\end{theorem}
-%Hier noch Beweis
-%
-%\begin{theorem}[Radon-Nikodym]
-%	Sei $\nu$ ein signiertes Maß und $\mu$ ein positives Maß, die jeweils $\sigma$-endlich auf $(X,\mathcal{A})$ sind. Es existieren eindeutige $\sigma$-endliche signierte Maße $\lambda, \rho$ auf $(X,\mathcal{A})$ mit 
-%\begin{align*}
-%	&\lambda \perp \mu,\\
-%	&\rho \ll \mu,\\
-%	&\nu = \lambda + \rho.
-%\end{align*}
-%Zusätzlich existiert eine $\mu$-integrierbare Funktion $f:X\to \mathbb{R}$ mit $d\rho = fd\mu$. $f$ hießt dabei Radon-Nikodym-Ableitung und wird geschrieben als $\frac{d\nu}{d\mu}$ // $d\nu = \frac{d\nu}{d\mu}d\mu$.\\
-%	Es gilt $g\in L^n(\nu) \implies g(d\nu/d\mu) \in L^1(\mu)$ und $\int g d\nu = \int g \frac{d\nu}{d\mu}d\mu$.
-%\end{theorem}
-%
-%
-%Der Raum  von Maßen ist konvex (wieso? Das ist super wichtig zu verstehen) Wegen Radon-Nikodym lässt sich jedes absolutstetige Maß schreiben als $\rho = f(x)dx$ mit $f\in L^1, \int f = 1$ (WMaß) und $L^1\subset \mathcal{P}$ TODO. Vektor-wertige Maße?
-%
-
-
-%\subsection{Functional Analysis TODO}
+Vector-valued measures are useful for describing transport fluxes. In particular, if $X\subseteq \mathbb{R}^n$ and $J\in L^1(X; \mathbb{R}^m)$, then $J$ induces a vector-valued measure by
+$$
+J(A):)\int_A J(x)\,\mathrm dx,\qquad A\in\mathcal{B}(X).
+$$
 
 \subsection{Foundations of Functional Analysis}
 
@@ -416,9 +248,8 @@ We now introduce the functional analytic concepts required
 to study convergence, compactness and weak formulations of
 partial differential equations. These notions provide the
 basis for the variational formulation of the optimal
-transport problem.
+transport problem. The presentation of the following results is mainly based on \cite{Alt}
 
-%\subsubsection{Normed Spaces and Dual Spaces}
 
 \begin{definition}[Normed, Banach and Hilbert Spaces]
     A vector space $V$ over $\mathbb{R}$ equipped with
@@ -451,14 +282,20 @@ transport problem.
     the duality pairing by
     $\langle F,v\rangle_{V^*\times V}$.
 \end{definition}
-%TODO Riesz staten
-In particular, the Riesz representation theorem
-identifies every Hilbert space $H$ with its
-continuous dual $H^*$ through its inner product.
+\begin{theorem}[Riesz Representation Theorem]
+	Let $H$ be a real Hilbert space. For every $F\in H^*$ there exists a unique $u\in H$ such that
+	$$
+	F(v) = \langle v,u\rangle_H \qquad \forall v\in H.
+	$$
+	Moreover, we have 
+	$$
+	\|F\|_{H^*} = \|u\|_H.
+	$$
+\end{theorem}
+Thus, every continuous linear functional on a Hilbert space can be represented through its inner product.
 This identification will be used when considering
 weak formulations of partial differential equations.
 
-%\subsubsection{Weak and Weak-* Convergence}
 
 \begin{definition}[Weak and Weak-* Convergence]
     Let $V$ be a Banach space.
@@ -508,8 +345,6 @@ These results are fundamental in variational
 problems, where bounded minimizing sequences
 can be used to extract convergent subsequences.
 
-%\subsubsection{Narrow Convergence and Compactness}
-
 We now specialize the concept of convergence
 to measures. Throughout this part, let $X$
 be a Polish space, i.e., a topological space
@@ -530,6 +365,14 @@ separable metric.
     \]
     where $C_b(X)$ denotes the space of
     bounded continuous functions on $X$.
+\end{definition}
+Narrow convergence thus lets us define the concept of narrow continuity.
+\begin{definition}[Narrow Continuity]
+	A curve $(\mu_t)_{t\in[0,1]}$ in $\mathscr{P}(X)$ is called \emph{narrowly continuous} if 
+	$$
+	t\mapsto\int_X\varphi\,\mathrm d\mu_t
+	$$
+	is continuous on $[0,1]$ for every $\varphi\in C_b(X)$. It describes the continuous evolution of probability measures with respect to the narrow topology.
 \end{definition}
 
 For finite Radon measures on a locally compact
@@ -563,9 +406,7 @@ $\mathcal{M}(X)=C_0(X)^*$.
 
 An important consequence of narrow convergence
 is the following lower semicontinuity property.
-%TODO Das ist doch nicht Portmanteau? Oder? Irgendwelche Beweise?
-\begin{theorem}[Portmanteau Theorem,
-                 Lower Semicontinuity]
+\begin{theorem}[Lower Semicontinuity]
     Let $\mu_n,\mu\in\mathcal{P}(X)$ with
     $\mu_n$ converging narrowly to $\mu$.
     Then, for every lower semicontinuous
@@ -582,8 +423,6 @@ Together, compactness and lower semicontinuity
 are essential tools for establishing the
 existence of minimizers in optimal transport
 and related variational problems.
-
-%\subsubsection{Function Spaces and Weak Derivatives}
 
 Let $\Omega\subseteq\mathbb{R}^d$ be an open
 set. We recall the Lebesgue and Sobolev
@@ -618,21 +457,19 @@ inner product
     \langle u,v\rangle_{L^2(\Omega)}
     :=\int_\Omega uv\,\mathrm{d}x.
 \]
-%TODO Notation
 \begin{definition}[Weak Derivative]
     Let $u\in L^1_{\mathrm{loc}}(\Omega)$.
-    A function $v_i\in L^1_{\mathrm{loc}}(\Omega)$
+    A function $D_i u\in L^1_{\mathrm{loc}}(\Omega)$
     is called the \emph{weak derivative}
     of $u$ with respect to $x_i$ if
     \[
         \int_\Omega u\,\partial_i\varphi
         \,\mathrm{d}x
         =
-        -\int_\Omega v_i\varphi
+        -\int_\Omega D_i u\varphi
         \,\mathrm{d}x
     \]
     for all $\varphi\in C_c^\infty(\Omega)$.
-    We write $\partial_i u=v_i$.
 \end{definition}
 
 Weak derivatives extend classical
@@ -678,15 +515,15 @@ with inner product
     \left(uv+\nabla u\cdot\nabla v\right)
     \,\mathrm{d}x.
 \]
-%TODO Das noch nachvollziehen?
 We denote by $H_0^1(\Omega)$ the closure
 of $C_c^\infty(\Omega)$ in $H^1(\Omega)$.
-Its continuous dual is denoted by
+Its dual space is denoted by
 \[
     H^{-1}(\Omega):=(H_0^1(\Omega))^*.
 \]
-In general, this space is distinct from
-$(H^1(\Omega))^*$. Finally, for a vector field
+%In general, this space is distinct from
+%$(H^1(\Omega))^*$. 
+Finally, for a vector field
 $J\in L^2(\Omega;\mathbb{R}^d)$, we define
 \[
     H(\operatorname{div};\Omega)
@@ -704,47 +541,26 @@ constraints arising in optimal transport
 to be interpreted in a weak sense, even
 when classical derivatives do not exist.
 
-%TODO hier noch topologische Begriffe wie schwache Topologie oder so mit einfügen
-%Einführen was eine Norm ist und dass wir mit Subscript die Norm des jewieligen Raumes meinen.
-%Nachdem das Problem das Konzept von Operatoren auf unendlichdimensionalen Räumen benötigt, führen wir zunächst grundlegende Begriffe wie Konzepte ein. Im Folgenden ist $X$ dabei ein normierter $\mathbb{K}$-Vektorraum. Ist $X$ vollständig, so heißt er \textit{Banachraum}. Enthält $X$ eine abzählbare Teilmenge $A$ mit $\overline{A} = X$, dann nennen wir $X$ \textit{separabel}. Ist zusätzlich auch $Y$ ein normierter Vektorraum, so bezeichnen wir mit $L(X;Y)$ die Menge der stetigen linearen Abbildungen $T:X\to Y$, wobei wir $T$ einen Operator nennen. Ein grundlegendes Resultat der Funktionalanalysis ist, dass lineare Operatoren genau dann stetig sind, wenn sie beschränkt sind.
-%Mit $X'$ bezeichnen wir den \textit{Dualraum} von $X$. Elemente von $X'$ sind dabei lineare Funktionale $\varphi:X\to \mathbb{K}$ (als Beispiel Integrale nennen). Dieses Objekt erlaubt es uns, zwei weitere Konvergenzarten zu definieren.\\
-%Wir nennen eine Folge $(x_n)_{n\in \mathbb{N}} \subset X$ \textit{stark konvergent}, falls $\lVert x_n\rVert_X \overset{n\to\infty}{\longrightarrow} \lVert x\rVert_X$.\\
-%Wir nennen eine Folge $(x_n)_{n\in \mathbb{N}} \subset X$ \textit{schwach konvergenz}, falls für alle $\varphi \in X'$ gilt $\varphi(x_n) \overset{n\to\infty}{\longrightarrow} \varphi(x)$.\\
-%Wir nennen eine Folge $(\varphi_n)_{n\in \mathbb{N}} \subset X'$ \textit{schwach-* konvergent}, falls für alle $x\in X$ gilt $\varphi_n(x) \overset{n\to\infty}{\longrightarrow} \varphi(x)$.\\
-%Hier interessiert uns die Konvergenz von (Wahrscheinlichkeits-)Maßen(TODO Motivation).\\
-%
-%\begin{theorem}
-%	Banach-ALagolu
-%\end{theorem}
-%
-%\begin{theorem}
-%	Riesz Representation
-%\end{theorem}
-%
-%Daraus dann folgern dass $C_0'(\Omega) = \mathcal{M}(\Omega)$ "Maße sind Lineare Funktionale im gewissen Sinne", braucht es für Duale Formulierung und Variationsprobleme
-%
-%Reflexivität, Hahn-Banach, 
-%
-%Konvergenzarten von W-Maßen/Dichten im OT Kontext: narrow convergence, tightness, prokhorov, portmanteau?
-%Generell: Was darf ich voraussetzen, was muss ich beweisen und was kann ich nur einmal erwähnen?
-
-%\subsection{Variationsrechnung}
 
 \subsection{Foundations of Convex Analysis and
 Variational Methods}
-
 We introduce the main concepts of convex analysis
 and variational methods required for the formulation
 and solution of constrained optimization problems.
 In particular, we discuss the existence of minimizers,
 convex duality and the characterization of solutions
 through saddle points and Lagrange multipliers.
-
-%\subsubsection{The Direct Method}
-
 The direct method of the calculus of variations
 provides a fundamental approach to establishing
-the existence of minimizers.
+the existence of minimizers. The presentation of the following results is mainly based on \cite{rockafellar} %TODO checken, ob die Notation so überhaupt übereinstimmt
+
+\begin{definition}[Proper Functionals]
+	A functional $F:V\to(-\infty,\infty]$ is called \emph{proper} if its effective domain 
+	$$
+	\operatorname{dom}(F) := \{u\in V: F(u)<\infty\}
+	$$
+is non-empty.
+\end{definition}
 
 \begin{definition}[Coercivity and Lower
 Semicontinuity]
@@ -767,7 +583,6 @@ Semicontinuity]
         F(u)\leq\liminf_{n\to\infty}F(u_n).
     \]
 \end{definition}
-%TODO proper?
 \begin{theorem}[Direct Method]
     Let $V$ be a reflexive Banach space and
     $F:V\to(-\infty,\infty]$ be proper,
@@ -791,8 +606,6 @@ For constrained problems, the admissible set
 must additionally be compatible with the
 chosen convergence, for instance by being
 weakly sequentially closed.
-
-%\subsubsection{Convex Functions and Conjugation}
 
 \begin{definition}[Convex Functional]
     Let $V$ be a real vector space.
@@ -859,13 +672,11 @@ only if
         \right\}.
     \]
 \end{definition}
-%TODO Das beweisen?
 The convex conjugate is always convex and
 lower semicontinuous in the weak-* topology.
 Its relation to the original functional is
 characterized by the following results.
-%TODO Wofür brauche ich das?
-\begin{theorem}[Fenchel--Young Inequality]
+\begin{theorem}[Fenchel-Young Inequality]
     Let $F:V\to(-\infty,\infty]$ be proper
     and convex. Then
     \[
@@ -877,8 +688,8 @@ characterized by the following results.
     Equality holds if and only if
     $p\in\partial F(u)$.
 \end{theorem}
-%TODO Mehr erklären
-\begin{theorem}[Fenchel--Moreau]
+The equality case of the Fenchel-Young inequality characterizes the subdifferential and provides a connection between primal and dual optimality conditions.
+\begin{theorem}[Fenchel-Moreau]
     Let $F:V\to(-\infty,\infty]$ be a
     proper, convex and lower semicontinuous
     functional on a Banach space $V$.
@@ -889,69 +700,19 @@ characterized by the following results.
     where the canonical embedding of
     $V$ into its bidual is understood.
 \end{theorem}
-
-%\subsubsection{Convex Duality}
-\newpage
-%TODO Wofür brauche ich das?
-We consider a general convex optimization
-problem involving a linear operator.
-
-Let $V$ and $Y$ be Banach spaces,
-$A:V\to Y$ a bounded linear operator,
-and $F:V\to(-\infty,\infty]$ and
-$G:Y\to(-\infty,\infty]$ proper, convex,
-lower semicontinuous functionals.
-The primal problem is
-\[
-    \inf_{u\in V}\left\{F(u)+G(Au)\right\}.
-\]
-
-\begin{theorem}[Fenchel--Rockafellar Duality]
-    Suppose there exists
-    $u_0\in\operatorname{dom}(F)$ such
-    that $G$ is continuous at $Au_0$.
-
-    Then
-    \[
-        \inf_{u\in V}
-        \left\{F(u)+G(Au)\right\}
-        =
-        \max_{p\in Y^*}
-        \left\{
-            -F^*(-A^*p)-G^*(p)
-        \right\},
-    \]
-    provided that the primal infimum is
-    finite, where $A^*:Y^*\to V^*$
-    denotes the adjoint operator.
-\end{theorem}
-
-The left-hand side is called the
-\emph{primal problem}, while the
-right-hand side is its \emph{dual problem}.
-The equality of their optimal values is
-called \emph{strong duality}.
-
-Without additional regularity assumptions,
-only \emph{weak duality} is guaranteed,
-meaning that the dual optimal value
-does not exceed the primal optimal value.
+%This theorem shows that under certain conditions, a functional can be recovered from its convex conjugate. This provides the basis for representing convex costs through dual variables.
 
 Convex duality plays an important role in
 optimal transport, where the nonlinear
 transport cost can be expressed through
 its convex conjugate.
-
-%\subsubsection{Saddle Points and
-%Lagrange Multipliers}
-
-Consider the constrained optimization problem
+Let $V$ and $Y$ be Banach spaces and consider the constrained optimization problem
 \[
     \min_{u\in V}F(u)
     \qquad\text{subject to}\qquad Au=b,
 \]
 where $A:V\to Y$ is bounded and linear,
-$b\in Y$, and $F$ is proper and convex.
+$b\in Y$, and $F:V\to(-\infty,\infty]$ is proper and convex.
 
 \begin{definition}[Lagrangian]
     The \emph{Lagrangian} associated with
@@ -959,7 +720,7 @@ $b\in Y$, and $F$ is proper and convex.
     \[
         \mathcal{L}(u,p)
         :=
-        F(u)+\langle p,Au-b\rangle_{Y^*,Y},
+        F(u)+\langle p,Au-b\rangle_{Y^*\times Y},
     \]
     where $p\in Y^*$ is called a
     \emph{Lagrange multiplier}.
@@ -1031,8 +792,4 @@ methods and primal-dual algorithms,
 including the ALG2 approach used later
 in this thesis.
 
-%Das vermutlich Verschieben nach 4: Warum brauchen wir das (Motivation), was sind die Methoden, die wir benötigen? Resultate verwenden für Lösung von Dualer Formulierung OT und DOT
-
-%PDE-Theorie und damit Lp? Lp Def, Hölder, Minkowski, Dualität; Sobolew, schwache Ableitung, Einbettung, Poincare; Distributionen, Testfunktionen, schwache Formulierung von PDE, Lax-Milgram
-
-%Variationsrechnung: Korezivität, Kompaktheit, lsc, Euler-Lagrange Gleichung und Lagrange Multiplikatoren (Direkte Methode
+The concepts introduced in this chapter provide the theoretical foundation for the dynamic optimal transport formulation. In particular, the compactness results and convex duality principles will be used to analyze the variational problem and derive the numerical method in the following chapter.
