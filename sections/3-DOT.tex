@@ -1,11 +1,9 @@
 \newpage
-\section{Dynamical Optimal Transport}
-
-%TODO Definitiv die Notation anpassen und an Kapitel 4 angleichen!
-%Einfaches Beispiel für kein Monge aber Kantorovich explizit nennen. Polnische Räume nennen und voraussetzen. Herleitung der CE; 
+\section{Optimal Transport Theory}
+\label{sec:ot}
 
 In this chapter we lay out the framework in which our mathematical model is presented. We introduce the concept of optimal transport, first the static formulation of Monge-Kantorovich and in combination with the continuity equation the dynamical formulation that is then presented through the lense of the Benamou-Brenier formulation. The goal then is to establish a result on the equivalence of solutions and also introduce a version of the ALG2 algorithm presented in (BB). This helps us understand the approach used to solve the modified variational problem in the next chapter.
-\subsection{Optimal Transport Theorie}
+\subsection{Static Optimal Transport}
 The central question of the problem was proposed by Gaspard Monge in 1781. Given a pile of dirt and an equal sized hole, how can it be filled "optimally" (Tikz Grafik einfügen). This raises questions such as what optimal means in that context and also if the problem can even be solved. 
 \begin{definition}[Monge-Problem]
 	Let $\mu\in \mathscr{P}(X)$ and $\nu\in\mathscr{P}(Y)$ be two probability measures and $c:X\times Y\to[0,\infty]$ a continuous or lower semi-continuous \textit{cost function}. The \textbf{Monge problem} is to find a measurable map $T:X\to Y$ that minimizes the total transpotation cost
@@ -21,7 +19,21 @@ This initial definition allows for an intuitive interpration of the problem, how
 	$$
 	A map $T$ solving \eqref{eq:MP} may fail to exist, since mass concentrated at a single point cannot be split and sent to multiple locations to match $\nu$.
 \end{example}
-% TODO Include tikz mit Dirac Mass
+%TODO Auslagern
+\begin{figure}[htbp]
+	\centering
+	\begin{tikzpicture}[>=stealth,scale=1]
+		\node at (-2,1.25) {$\mu=\delta_0$};
+		\node at (2,1.25) {$\nu=\frac12\delta_{-1}+\frac12\delta_1$};
+		\draw[->](-3.1,0)--(-0.8,0);\draw[->] (0.6,0)--(3.4,0);
+	\fill (-2,0) circle (3pt); \fill (1.1,0) circle (2pt);\fill (2.9,0) circle (2pt);
+	\node[below] at(-2,0) {$0$};\node[below] at (1.1,0) {$-1$};\node[below] at (2.9,0) {$1$};
+		\draw[->,thick] (-1.85,0.18) to[bend left=15] node[above=10] {$T$} (1.05,0.18);
+		\draw[->, dashed] (-1.85,0.18) to[bend left=30] (2.85,0.18);
+	\end{tikzpicture}
+	\caption{The Monge map cannot split mass}
+	\label{fig:monge-dirac}
+\end{figure}
 
 Another issue may be that even if a transport map exists, it may not be unique, if we do not allow for strict regulaztion. These potential problems motivate a \textit{relaxation}, that is, rather than seeking a \textit{transport map} we allow \textit{tansport plans}, which are measures on the product space $X\times Y$ that have correct marginals. This idea was introduced by Leonid Kantorovich about 150 years later and is foundational to the modern theory of optimal transport. First we define the concept of a coupling, which formalizes the restriction on the marginals.
 \begin{definition}[Coupling]
@@ -82,7 +94,21 @@ C_M(\mu,\nu)\geq C_K(\mu,\nu),
 $$
 where $C_M$ and $C_K$ denote the optimal costs of the Monge and Kantorovich problems, respectively.
 \end{remark}
-%TODO Tikz zu Kantorovich einfügen
+For the Dirac example, the unique coupling is $\gamma=\frac{1}{2}\delta_{(0,-1)}+\frac{1}{2}\delta_{(0,1)}$; it is admissible and has quadratic cost $1$.
+\begin{figure}[htbp]
+	\centering
+	\begin{tikzpicture}[>=stealth]
+		\node[draw,circle,minimum size=9mm] (s) at (0,0) {$0$};
+		\node[draw,circle,minimum size=9mm] (a) at (5,0.9) {$-1$};
+		\node[draw,circle,minimum size=9mm] (b) at (5,-0.9) {$1$};
+		\draw[->,thick] (s)--node[above,sloped] {$\frac{1}{2}$} (a);
+		\draw[->,thick] (s)--node[below,sloped] {$\frac{1}{2}$} (b);
+		\node[above=8mm] at (s) {Source}; \node[above=5mm] at (a) {Target};
+	\end{tikzpicture}
+	\caption{The Kantorovich plan splits the mass into two equal parts, recovering both marignals}
+	\label{fig:kantorovic-dirac}
+\end{figure}
+%TODO Deutlich schöner machen
 
 Under mild assumptions we can proof the existence of a solution for the static optimal transport problem.
 \begin{theorem}[Existence of Optimal Transport Plans]
@@ -113,11 +139,10 @@ $$
 which implies that $\overline{\gamma}$ is a minimizer.
 
 \end{proof}
-%TODO Hier noch Santambrogio 1.17.
 
 \subsection{Dynamical Optimal Transport}
 \label{sec:dynamical_ot}
-The static formulation of optial transport determines how mass is redistributed between two fixed measures, but does not describe its evolution in time. The dynamical formulation however looks at a family of densities and a respective flux, linked by a conservation law. We first motivate this formluation for regular flows and subsequently introduce the weak formulation used in the following sections.
+The static formulation of optial transport determines how mass is redistributed between two fixed measures, but does not describe its evolution in time. We now introduce particle trajectories, derive the continuity equation and motivate the quadratic density-flux formulation of Benamou and Brenier ~\cite{BB2000}. This section provides a formal derivation for sufficiently regular densities and flows; the rigorous equivalence for measure-valued curves is established in Section~\ref{sec:equivalence_ot}. %The dynamical formulation however looks at a family of densities and a respective flux, linked by a conservation law. We first motivate this formluation for regular flows and subsequently introduce the weak formulation used in the following sections.
 
 Througout this section, let $\Omega\subset \mathbb{R}^n$ be a bounded, convex domain with Lipschitz boundary and let $\rho_0,\rho_1\in L^1(\Omega)$ be probability densities, representing the initial and final densities associated with $\mu$ and $\nu$, respectively. This means that
 $$
@@ -125,7 +150,7 @@ $$
 $$
 for every Borel set $A\subseteq \Omega$. We describe the evolution of the density by a time-dependent function
 $$
-\rho_[0,1]\times \Omega\to[0,\infty),\quad (t,x)\mapsto\rho_t(x),
+\rho_t:[0,1]\times \Omega\to[0,\infty),\quad (t,x)\mapsto\rho_t(x),
 $$
 with prescribed initial and final densities $\rho_{t=0}=\rho_0$ and $\rho_{t=1} = \rho_1$. To continue the study of the concept, we introduce the central metric.
 \begin{definition}[Quadratic Wasserstein Distance]
@@ -135,7 +160,7 @@ with prescribed initial and final densities $\rho_{t=0}=\rho_0$ and $\rho_{t=1} 
 	$$
 	The \emph{quadratic Wasserstein distance} is defined by
 	\begin{align*}
-		W_2(\mu,\nu) := \inf\left\{\left(\int_{\mathbb{R}^n\times \mathbb{R}^n} |x-y|^2\,\mathrm{d}\gamma(x,y)\right)^{\frac{1}{2}}\middle|\gamma\in\Gamma(\mu,\nu)\right\}
+		W_2(\mu,\nu) := \inf\left\{\left(\int_{\mathbb{R}^n\times \mathbb{R}^n} |x-y|^2\,\mathrm{d}\gamma(x,y)\right)^{\frac{1}{2}}\middle|\gamma\in\Gamma(\mu,\nu)\right\}.
 	\end{align*}
 \end{definition}
 The function $W_2$ defines a metric on $\mathscr{P}_2(\mathbb{R}^n)$ and unlike the total variation norm, it takes into account the spatial distance over which mass is transported. Since $\Omega$ is bounded, the measures $\mu_0$ and $\mu_1$ have finite second moments.
@@ -145,7 +170,7 @@ To describe a time-dependent transport, consider a sufficiently regular velocity
 Let $X(t,x)$ denote the position at time $t$ of a particle initially located at $x$. Its trajectory is determined by 
 \begin{equation*}
 	\begin{cases}\frac{\partial X}{\partial t}(t,x) = v_t(X(t,x)),\\
-	X(0,x) = x. \end{cases} \label{eq_particle_flow}
+	X(0,x) = x. \end{cases} \label{eq:particle_flow}
 \end{equation*}
 Assuming that the flow is well-defined and preserves the domain, conservation of mass implies that for every measurable set $A$ we have
 $$
@@ -173,7 +198,7 @@ $$
 $$
 Since this holds for arbitrary smooth test functions, we obtain the \emph{continuity equation}
 \begin{equation*}
-	\partial_t\rho_t+\nabla\cdot(\rho_tv_t)=0\label{eq:ce}
+	\partial_t\rho_t+\nabla\cdot(\rho_tv_t)=0\label{eq:ce}.
 \end{equation*}
 This equation expresses conservation of mass, so that changes in the density are caused by the transport of mass through the velocity field.
 
@@ -190,7 +215,7 @@ the definition of $W_2$ gives
 \end{align*}
 Using the pushforward relation once more, we obtain 
 \begin{equation*}
-	W_2^2(\mu,\nu)\leq \int_0^1\int_\Omega\rho_t(x)|v_t(x)|^2\,\mathrm{d}x\,\mathrm{d}t.\label{eq:wasserstein_energy}
+	W_2^2(\mu,\nu)\leq \int_0^1\int_\Omega\rho_t(x)|v_t(x)|^2\,\mathrm{d}x\,\mathrm{d}t.\label{eq:wasserstein_bound}
 \end{equation*}
 Thus, the squared Wasserstein distance is bounded above by the kinetic energy of any sufficiently regular admissible flow. To understand when equality can be achieved, suppose that an optimal transport map $T:\Omega\to\Omega$ exists for the quadratic transport cost. Consider the linear interpolation
 \begin{equation*}
@@ -210,11 +235,11 @@ Consequently,
 This shows, under the stated assumptions, that the lower bound in \eqref{eq:wasserstein_bound} can be attained by transporting particles along straight lines with constant velocity. These considerations motivate the \emph{dynamical formulation of optimal transport}
 \begin{equation}
 	\begin{aligned}
-		W_2^2(\mu,\nu) = \inf_{(\rho,v)}\quad&
+		W_2^2(\mu,\nu) &= \inf_{(\rho,v)}
 		\int_0^1\int_\Omega\rho_t(x)|v_t(x)|^2\,\mathrm{d}x\,\mathrm{d}t,\\
-		\text{s.t.}\quad&\partial_t\rho_t + \nabla\cdot(\rho_tv_t)=0,\\
-						&\rho_{t=0}=\rho_0,\\
-						&\rho_{t=1}=\rho_1.
+											 &\text{s.t.}\begin{cases}\partial_t\rho_t + \nabla\cdot(\rho_tv_t)=0,\\
+						\rho_{t=0}=\rho_0,\\
+						\rho_{t=1}=\rho_1.\end{cases}
 	\end{aligned}
 	\label{eq:dynamic_ot}
 \end{equation}
@@ -225,740 +250,894 @@ $$
 whenever $\rho_t>0$. Using normalization we obtain the \emph{Benamou-Brenier formulation}
 \begin{equation}
 	\begin{aligned}
-		\frac{1}{2}W_2^2(\mu,\nu) = \inf_{(\rho,J)}\quad&
+		\frac{1}{2}W_2^2(\mu,\nu) &= \inf_{(\rho,J)}
 		\int_0^1\int_\Omega\frac{|J_t|^2}{2\rho_t}\,\mathrm{d}x\,\mathrm{d}t,\\
-		\text{s.t.}\quad&\partial_t\rho_t + \nabla\cdot J_t = 0,\\
-						&J_t\cdot n = 0\quad\text{on }(0,1)\times\partial\Omega,\\
-						&\rho_{t=0}=\rho_0,\\
-						&\rho_{t=1}=\rho_1.
+								  &\text{s.t.}\begin{cases}\partial_t\rho_t + \nabla\cdot J_t = 0,\\
+						J_t\cdot n = 0\quad\text{on }(0,1)\times\partial\Omega,\\
+						\rho_{t=0}=\rho_0,\\
+					\rho_{t=1}=\rho_1.\end{cases}
 	\end{aligned}
 	\label{eq:BB}
 \end{equation}
 The cost is understood through its lower semicontinuous extension, taking the value zero at $(\rho,J) = (0,0)$ and $+\infty$ whenever $\rho=0$ and $J\neq 0$. The main advantage of this formulation is that the nonlinear term in the constraints disappears, while the objective is convex. 
 
 The preceding argument provides the intuition behind the dynamical formulation under appropiate regularity assumptions. Its rigorous validity for general probability measures, including cases in which no optimal transport map exists, will be established in the following section.
-%TODO Cleanup: "Intro" zu dem Chapter - hier soll es nur ein sanfter Einstieg sein! Typos, TODOS, Notation, Übergang zum nächsten Kapitel etc.
+%TODO Cleanup: "Intro" zu dem Chapter - hier soll es nur ein sanfter Einstieg sein! Typos, TODOS, Notation, Übergang zum nächsten Kapitel -- was ist der Unterschied zwischen diesem und dem nächsten Abschnitt???
 
 
 
+
+\subsection{Equivalence of the Static and Dynamic Formulation}
+In the previous section, the dynamical formulation of optimal transport was motivated by transporting particles along regular trajectories. We now justify this formulation without assuming that a classical flow or an optimal transport map exists. Following the approach of Ambrosio and Savar\'e~\cite{AmbrosioSavare2007}, we first realte absolute continuous curves in the Wasserstein space to the continuity equation and then prove the Benamou-Brenier formula. Since our transport cost is quadratic, we restrict the discussion to $W_2$.
+
+Throughout the proofs, measures are considered on $\mathbb{R}^n$. This allows us to use the standard results for the Wasserstein space $\mathscr{P}_2(\mathbb{R}^n)$. The relation to the bounded, convex domain $\Omega$ introduced in Section ~\ref{sec:dynamical_ot} is discussed at the end of this section.
+\begin{definition}[Absolutely Continuous Curve]
+	Let $(X,d)$ be a metric space. A curve $\gamma:[0,1]\to X$ is called \emph{absolutely continuous} if there exists $g\in L^1(0,1)$ such that 
+	\begin{equation*}
+		d(\gamma(s),\gamma(t))\leq\int_s^t g(r)\,\mathrm{d}r\qquad (0\leq s\leq t\leq 1).\label{eq:ac_curve}
+	\end{equation*}
+	We write $\gamma\in AC([0,1];X)$. If $g$ can be chosen in $L^2(0,1)$, we write $\gamma\in AC^2([0,1];X)$.
+\end{definition}
+\begin{definition}[Metric Derivative]
+	Let $\gamma:[0,1]\to X$ be absolutely continuous. At a time $t\in(0,1)$ for which the following limit exists, the \emph{metric derivative} is defined as 
+	\begin{equation*}
+		|\gamma'|(t) := \lim_{h\to0}\frac{d(\gamma(t+h),\gamma(t))}{|h|}.\label{eq:metric_derivative}
+	\end{equation*}	
+\end{definition}
+
+For absolutely continuous curves, the metric derivative exists for almost every $t$ and is the smallest admissible function $g$ in \eqref{eq:ac_curve}. The following estimate will be used repeatedly.
+
+\begin{lemma}[Length Estiamte]
+	\label{lem:metric_length}
+	If $\gamma\in AC([0,1];X)$, then 
+	\begin{equation*}
+		d(\gamma(s),\gamma(t))\leq \int_s^t|\gamma'|(r)\,\mathrm{d}r\qquad (0\leq s \leq t \leq 1).\label{eq:metric_bound}
+	\end{equation*}
+\end{lemma}
+
+\begin{proof}
+	The existence and minimality result for the metric derivative already implies the assertion. To see the underlying argument, fix $s\in[0,1]$ and set $f(r):=d(\gamma(s),\gamma(r))$. By the revers triangle inequality,
+	$$
+	|f(r+h)-f(r)|\leq d(\gamma(r+h),\gamma(r)).
+	$$
+	The function $f$ is absolutely continuous because $\gamma$ is. At almost every $r$ where both derivatives exist, we have $|f'(r)|\leq |\gamma'|(r)$. Since $f(s)=0$, the fundamental theorem of calculus yields
+	$$
+	d(\gamma(s),\gamma(t)) = f(t)-f(s)\leq \int_s^t|f'(r)|\,\mathrm{d}r\leq \int_s^t|\gamma'|(r)\,\mathrm{d}r.
+	$$
+\end{proof}
+
+We next interpret the continuity equation for a curve of measures. If $(\mu_t)_{t\in[0,1]}\subset\mathscr{P}_2(\mathbb{R}^n)$ and $v:(0,1)\times \mathbb{R}^n\to \mathbb{R}^n$ is a Borel velocity field, we say that 
+\begin{equation*}
+	\partial_t\mu_t+\nabla\cdot(v_t\mu_t) = 0 \label{eq_ce_measure}
+\end{equation*}
+holds in the distributional sense if 
+\begin{equation*}
+	\int_0^1\int_{\mathbb{R}^n} \left(\partial_t\varphi(t,x) + v_t(x)\cdot\nabla_x\varphi(t,x)\right)\,\mathrm{d}\mu_t(x)\,\mathrm{d}t = 0\label{eq:ce_weak}
+\end{equation*}
+for all $\varphi\in C_c^\infty((0,1)\times \mathbb{R}^n)$. We assume $\int_0^1\|v_t\|_{L^2(\mu_t)}^2\,\mathrm{d}t<\infty$. The associated vector-valued flux measure is $J_t:=v_t\mu_t$; if $\mu_t$ has a density $\rho_t$, then $J_t$ has the density $\rho_t v_t$.
+
+\begin{lemma}[Lipschitz Reparametrization]
+	\label{lem:arc_length}
+	Every curve $\gamma\in AC([0,1];X)$ admits an arc-length parametrization which is $1$-Lipschitz on $[0,L(\gamma)]$, where 
+	$$
+	L(\gamma):=\int_0^1 |\gamma'|(r)\,\mathrm{d}r.
+	$$
+\end{lemma}
+\begin{proof}
+	Define the accumulated length
+	$$
+	\ell(t) :=\int_0^t|\gamma'|(r)\,\mathrm{d}r.
+	$$
+	By Lemma ~\ref{lem:metric_length}, $d(\gamma(s),\gamma(t))\leq\ell(t)-\ell(s)$ whenever $s\leq t$. In particular, $\gamma$ is constant on each interval on which $\ell$ is constant. If $L(\gamma)=0$, the curve is constant and the assertion is trivial. Otherwise $\ell$ is continuous and maps $[0,1]$ onto $[0,L(\gamma)]$. For $\sigma \in [0,L(\gamma)]$ let
+	$$
+	\tau(\sigma):=\min\{t\in[0,1] \mid \ell(t)=\sigma\}, \qquad \widetilde\gamma(\sigma):=\gamma(\tau(\sigma)).
+	$$
+	For $sigma_1\leq\sigma_2$, we have
+	\begin{align*}
+		d(\widetilde\gamma(\sigma_1),\widetilde\gamma(\sigma_2)) &\leq \int_{\tau(\sigma_1)}^{\tau(\sigma_2)}|\gamma'|(r)\,\mathrm{d}r\\
+																 &=\ell(\tau(\sigma_2))-\ell(\tau(\sigma_1)) = \sigma_2-\sigma_1.
+	\end{align*}
+\end{proof}
+
+The preceding lemma explains why Lipschitz curves often suffice in approximation arguments. We will retain the original time variable below, since estimates in $L^2(0,1)$ allow us to avoid a separate change back from the arc-length parametrization. %TODO Was ist damit gemeint?
+\begin{lemma}[Existence of an Optimal Transport Map]
+	\label{lem:brenier}
+	Let $\mu,\nu\in\mathscr{P}_2(\mathbb{R}^n)$ and suppose that $\mu\ll\mathcal{L}^n$. For the quadratic cost $|x-y|^2$, there exists an optimal transport map $T:\mathbb{R}^n\to \mathbb{R}^n$ such that $T_\#\mu = \nu$ and 
+	$$
+	W_2^2(\mu,\nu) = \int_{\mathbb{R}^n}|T(x)-x|^2\,\mathrm{d}\mu(x)
+	$$
+	It is unique $\mu$-almost everywhere and is the gradient of a convex function $\mu$-almost everywhere
+	%TODO Wurde das nicht schon davor implizit bewiesen?
+\end{lemma}
+
+The proof uses the characterization of optimal plans by cyclical monotonicity and is not reporduced here; for a detailed walkthrough see \cite[Theorem~2.3]{AmbrosioSavare2007}. The assumption on the source measure is essential. We use the lemma only after mollifying the measures, so that the source measures possess densities.
+
+As a preperation for our next core result we first record a useful representation of the quadratic action. It is also a direct application of the convex duality and Riesz representation results recalled in Chapter~2. We introduce a representation of the kinetic energy which allows us to pass the limit in sequences of measure curves and their associated fluxes. For a narrowly continuous curve $(\mu_t)_{t\in[0,1]}$ and a velocity field $c$ we write
+$$
+\mathrm{d}M(t,x):=\mathrm{d}\mu_t(x)\,\mathrm dt,\qquad \mathrm{d}E(t,x):=v_t(x)\,\mathrm dM(t,x).
+$$
+Here, $M$ is a positive space-time measure and $E$ is a vector-valued space-time measure. Thus, the distributional continuity equation reads
+$$
+\int_0^1\int_{\mathbb{R}^n}\partial_t\varphi\,\mathrm dM + \int_0^1\int_{\mathbb{R}^n}\nabla_x\varphi\cdot\mathrm dE=0\qquad \forall\varphi\in C_c^\infty((0,1)\times \mathbb{R}^n).
+$$
+Instead of taking a weak limit of the velocity fields directly, we take a weak-* limit of the vector measures $E$ and recover a velocity field from the limit.
+
+\begin{lemma}
+Let $M\in\mathcal{M}_+((0,1)\times \mathbb{R}^n)$ and $E\in\mathcal{M}((0,1)\times \mathbb{R}^n;\mathbb{R}^n)$ be finite Radon measures. Define the action functional by
+$$
+\mathcal{C}(M,E) := \sup_{b\in C_c((0,1)\times \mathbb{R}^n;\mathbb{R}^n)}\left\{\int_{\mathbb{R}^n} b\cdot \mathrm dE - \frac{1}{2}\int_0^1\int_{\mathbb{R}^n} |b|^2\,\mathrm dM\right\}.
+$$
+Then $\mathcal{C}(M,E)<\infty$ if and only if $E=vM$ for some $v\in L^2(M; \mathbb{R}^n)$. In this case,
+$$
+\mathcal{(}M,E)=\frac{1}{2}\int_0^1\int_{\mathbb{R}^n} |v|^2\,\mathrm dM.
+$$
+Moreover, $\mathcal{C}$ is lower semicontinuous under narrow convergence of $M$ and weak-* convergence of $E$. The same assertions hold with $(0,1)\times \mathbb{R}^n$ being replaced by an open subset.
+%TODO Referenz zu diesem Lemma wo das her ist??? QUELLE
+\end{lemma}
+%TODO nur die Idee vom Beweis und Verweisen, wo das her ist.
+
+We now establish the first coneection between the metric and the dynamic perspectives. Given an absolutely continuous curve in the Wasserstein space, we construct a velocity field which generates this curve through the continuity equation. The construction consists of approximating the curve by piecewise displacement interpolations and passing to the limit. 
+
+\begin{theorem}
+	Let $(\mu_t)_{t\in[0,1]}\in AC^2([0,1];\mathscr{P}_2(\mathbb R^n))$. Then there exists a Borel velocity field $v:(0,1)\times \mathbb{R}^n\to \mathbb{R}^n$ satisfying 
+	\begin{itemize}
+		\item the continuity equation in the distributional sense
+		\item $\lVert v_t\rVert_{L^2(\mu_t)}\leq|\mu'|(t)$ for a.e. $t\in[0,1]$.
+	\end{itemize}
+\end{theorem}
+This theorem can also be proven for $\lVert v_t\rVert_{L^p}$, where $p>1$ (see \cite{AmbrosioSavare2007}), but we want to concern ourselves with the quadratic case. The idea is to construct a sequence of $\mu_t$ and a corresponding sequence for $v_t$ such that the continuity equation holds, $\mu_t^k$ is absolutely continuous for all $k$ and the limit admits the desired inequality.
+\begin{proof}
+	Let $(\eta_k)_{k\in \mathbb{N}}$ be a sequence of mollifiers with support in $B_{1/k}(0)$. We get 
+	$$
+	\widetilde\mu_t^k:=\mu_t*\eta_k.
+	$$
+	The regularized measures are absolutely continuous with respect to the Lebesgue measure, so that Lemma ~\ref{lem:brenier} applies. We distinguish $\widetilde\mu_t^k$ from the piecewise interpolated measures $\mu_t^k$ constructed below.
+
+	Two useful consequences of convolution (with mollifiers) are 
+	\begin{align*}
+		W_2(\widetilde\mu_t^k,\mu_t &\leq \frac{1}{k}\\%TODO wofür
+		W_2(\widetilde\mu_s^k,\widetilde\mu_t^k)&\leq W_2(\mu_s,\mu_t).
+	\end{align*}
+We discretize $[0,1]$ by $t_i:= i/k$, $i=0,\dots,k$. For each $i=0,\dots,k-1$, let $T^{i,k}$ be the optimal transport map from $\widetilde\mu_{t_i}^k$ to $\widetilde\mu_{t_{i+1}}^k$. Thus,
+$$
+(T^{i,k})_\#\widetilde\mu_{t_i}^k=\widetilde\mu_{t_{i+1}}^k,\qquad \int_{\mathbb{R}^n}|T^{i,k}(x)-x|^2\,\mathrm d\widetilde\mu_{t_i}^k(x) = W_2^2(\widetilde\mu_{t_i}^k,\widetilde\mu_{t_{i+1}}^k).
+$$
+For $t\in[t_i,t_{i+1}]$, define
+\begin{align*}
+	T_t^{i,k}(x) &:= (i+1-kt)x+(kt-i)T^{i,k}(x),\\
+	\mu_t^k:=(T_t^{i,k})_\#\widetilde\mu_{t_i}^k.
+\end{align*}
+The coefficients interpolate linearly between $0$ and $1$. In particular, $T_{t_i}^{i,k}=\operatorname{Id}$ and $T_{t_{i+1}}^{i,k}=T^{i,k}$, so that $\mu_{t_i}^k = \widetilde\mu_{t_i}^k$ and $\mu_{t_{i+1}}^k=\widetilde\mu_{t_{i+1}}^k$. The interpolations on adjacent intervals therefore agree at their endpoints.
+
+We differentiate the trajectories with respect to time to obtain the Lagrangian velocity
+$$
+v^{i,k}(x):=\frac{\mathrm d}{\mathrm dt} T_t^{i,k}(x) = k(T^{i,k}(x)-x).
+$$
+This velocity again is expressed in terms of the starting position $x$. For the continuity equation, we define the Eulerian velocity by 
+$$
+v_t^k(y) := v^{i,k}\left((T_t^{i,k})^{-1}(y)\right),\qquad t\in (t_i,t_{i+1}).
+$$
+%Writing $\theta:=kt-i\in(0,1)$, we obtain
+%\begin{align*}
+%	(T_t^{i,k}(x)-T_t^{i,k}(z))\cdot(x-z)
+%\end{align*}
+
+Let $\varphi\in C_c^\infty((0,1)\times \mathbb{R}^n$. On each interval, the pushforward identity and the chain rule yield
+\begin{align*}
+	\frac{\mathrm d}{\mathrm dt}\int_{\mathbb{R}^n}\varphi(t,y)\,\mathrm d\mu_t^k(y) &= \frac{\mathrm d}{\mathrm dt}\int_{\mathbb{R}^n}\varphi(t,T_t^{i,k}(x))\,\mathrm d\widetilde\mu_{t_i}^k(x)\\
+																						   &=\int_{\mathbb{R}^n}\left(\partial_t\varphi(t,T_t^{i,k}(x)) + \nabla_x\varphi(t,T_t^{i,k}(x))\cdot v^{i,k}(x)\right)\,\mathrm d\widetilde\mu_{t_i}^k(x)\\
+																						   &=\int_{\mathbb{R}^n}\left(\partial_t\varphi(t,y) + \nabla_x\varphi(t,y)\cdot v_t^k(y)\right)\,\mathrm d\mu_t^k(y).
+\end{align*}
+Since $\varphi$ is compactly supported, the derivatives are bounded and the endpoints vanish for every derivative and since $v^{i,k}$ is integrable, differentiation under the integral is well-defined. Thus,
+$$
+\int_0^1\int_{\mathbb{R}^n}(\partial_t\phi+\nabla_x\phi\cdot v_t^k)\,\mathrm d\mu_t^k\,\mathrm dt=0.
+$$
+For the upper bound of the velocity, we use for $t\in(t_i,t_{i+1})$ the optimality of the transport map $T^{i,k}$, \eqref{moll-con} and Lemma~\ref{lem:metric-length} to obtain
+\begin{align*}
+	\lVert v_t^k\rVert_{L^2(\mu_t^k)}^2
+	&= \int_{\mathbb{R}^n}|v^{i,k}(x)|^2\,\mathrm d\widetilde\mu_t{t_i}^k(x)\\
+	&=k^2W_2^2(\widetilde\mu_{t_i}^k,\widetilde\mu_{t_{i+1}}^k\\
+	&\leq k^2W_2^2(\mu_{t_i},\mu_{t_{i+1}})\\
+	&\leq k^2\left(\int_{t_i}^{t_{i+1}}|\mu'|(s)\,\mathrm ds\right)^2\\
+	&\leq k\int_{t_i}^{t_{i+1}}|\mu'|^2(s)\,\mathrm ds.
+\end{align*}
+The last inequality follows from Cauchy-Schwarz and the fact, that $t_{i+1}-t_i=\frac{1}{k}$. Integrating over each interval and summing yields
+\begin{equation*}
+	\int_0^1 \lVert v_t^k\rVert_{L^2(\mu_t^k)}^2\,\mathrm dt\leq \int_0^1|\mu'|^2(t)\,\mathrm dt.
+\end{equation*}
+We still need to show the uniform convergence of $\mu_t^k$ in time to $\mu_t$ in the space $W_2$. This is easily shown by a triangle-inequality argument, Lemma~\ref{lem_metric-length} and the convolution properties mentioned above, i.e.
+\begin{align*}
+	W_2(\mu_t^k,\mu_t) &\leq W_2(\mu_t^k,\widetilde\mu_{t_i}^k) + W_2(\widetilde\mu_{t_i}^k,\mu_{t_i})+W_2(\mu_{t_i},\mu_t)\\
+					   &\leq 2\int_{t_i}^{t_{i+1}}|\mu'|(s)\,\mathrm ds+\frac{1}{k}\\
+					   &\leq \frac{2}{\sqrt{k}}\left(\int_0^1|\mu'|^2(s)\,\mathrm ds\right)^{\frac{1}{2}} +\frac{1}{k}.
+\end{align*}
+%TODO Schauen, von wem dieser gesamte Beweis inspiriert ist!!! QUELLE
+%TODO hinschreiben, wieso dieser Schritt noch fehlt
+Define $M^k$ and $E^k$ by 
+$$
+\mathrm{d} M^k(t,x) := \mathrm d\mu_t^k(x)\,\mathrm dt,\qquad \mathrm dE^k(t,x):=v_t^k(x)\,\mathrm dM^k(t,x).
+$$
+Since each $\mu_t^k$ is a probability measure, using Cauchy-Schwarz gives us
+\begin{align*}
+	\lVert E^k\rVert_{\mathrm{TV}} &=\int_0^1\int_{\mathbb{R}^n}|v_t^k|\,\mathrm d\mu_t^k\mathrm dt\\
+								   &\leq\int_0^1 \lVert v_t^k\rVert_{L^2(\mu_t^k)}\,\mathrm dt\\
+								   &\leq \left(\int_0^1 \lVert v_t^k\rVert_{L^2(\mu_t^k)}^2\,\mathrm dt\right)^{\frac{1}{2}}\\
+								   &\leq\left(\int_0^1|\mu|^2(t)\,\mathrm dt\right)^{\frac{1}{2}}.
+\end{align*}
+Hence $(E^k)_k$ is bounded and by Banach-Alaoglu 
+and the separability of $C_0((0,1)\times \mathbb{R}^n;\mathbb{R}^n)$, there exists a subsequence and a finite vectore measure $E$ such that $E^k\rightharpoonup^* E$. Furthermore, uniform convergence in $W_2$ implies narrow convergence for every $t$. By dominated convergence, $M^k$ converges narrowly to $\mathrm dM(t,x)=\mathrm d\mu_t(x)\,\mathrm dt$. Passing the limit to the continuity equation yields
+$$
+\int_0^1\int_{\mathbb{R}^n}\partial_t\varphi\,\mathrm dM + \int_0^1\int_{\mathbb{R}^n} \nabla_x\varphi\cdot\mathrm dE=0 \qquad \forall\varphi \in C_c^\infty((0,1)\times \mathbb{R}^n).
+$$
+
+By Lemma~\ref{lem:quadratic-action} and \eqref{eq:global-energy} we have
+\begin{align*}
+	\mathcal{C}(ME) &\leq\liminf_{k\to\infty}\mathcal{C}(M^k,E^k)\\
+					&=\frac{1}{2}\liminf_{k\to\infty}\int_0^1 \lVert v_t^k\rVert_{L^2(\mu_t^k)}^2\,\mathrm dt\\
+					&\leq\frac{1}{2}\int_0^1 |\mu'|^2(t)\,\mathrm dt<\infty.
+\end{align*}
+Therefore we have the existence of a density $v\in L^2(M; \mathbb{R}^n)$ such that $E=vM$. Substituting this into the continuity equation above yields
+$$
+\int_0^1\int_{\mathbb{R}^n} (\partial_t\varphi+\nabla_x\varphi\cdot v_t)\,\mathrm d\mu_t\,\mathrm dt = 0.
+$$
+This proves that $(\mu_t,v_t)$ satisfies the continuity equation. To obtain the desired estimate for almost every $t$ can be seen by a lower semicontinuity argument on a subset of $(0,1)\times \mathbb{R}^n$ with the same argumentation. 
+\end{proof}
+%TODO Einzelne Schritte begründen, Big-picture behalten und dem Leser klar machen, mehr an die Hand nehmen
+For the converse direction, we start with a solution of the continuity equation and show that its kinetic enrgy controls the metric speed of the measure curve. Since the velocity field does not need to be sufficiently regular to define trajectories, we first reulgarize the pair consisting of the measure and its flux.
+
+\begin{lemma}
+	Let $(\mu_t)_{t\in[0,1]}\subset\mathscr{P}_2(\mathbb{R}^n)$ be narrowly continuous and let $v$ be a Borel velocity field satisfying
+	$$
+	\partial_t\mu_t+\nabla\cdot(v_t\mu_t)=0,\qquad\int_0^1\ \lVert v_t\rVert_{L^2(\mu_t)}^2\,\mathrm dt<\infty.	
+	$$
+	Let $\eta$ be a smooth probability density with finite second moment and for $\varepsilon$ define the approximation to identiy $\eta^\varepsilon$ and define
+	$$
+	E_t:=v_t\mu_t,\qquad\mu_t^\varepsilon:=\eta^\varepsilon*\mu_t,\qquad E_t^\varepsilon:=\eta^\varepsilon*E_t,\qquad v_t^\varepsilon:=\frac{E_t^\varepsilon}{\mu_t^\varepsilon}
+	$$
+	Then
+	\begin{enumerate}
+		\item $(\mu_t^\varepsilon,v_t^\varepsilon)$ satisfies the continuity equation.
+		\item $v_t^\varepsilon$ is locally Lipschitz in space. We can write $\mu_t^\varepsilon=(T_t)_\#\mu_0^\varepsilon$ for all $t\in[0,1]$ and interpolation $T_t$.
+		\item For a.e. $t,\, \lVert v_t^\varepsilon\rVert_{L^2(\mu_t^\varepsilon)}\leq \lVert v_t\rVert_{L^2(\mu_t)}$.
+		\item $W_2(\mu_t^\varepsilon,\mu_t)\leq\varepsilon\sqrt{m_2(\eta)}$ for every $t$, where $m_2(\eta):=\int_{\mathbb{R}^n}|z|^2\eta(z)\,\mathrm dz$.
+	\end{enumerate}	
+\end{lemma}
+%TODO Beweis verweisen QUELLE
+
+\begin{theorem}
+ Let$(\mu_t)_{t\in[0,1]}\subset\mathscr{P}_2(\mathbb{R}^n)$ be narrowly continuous and let $v$ be a Borel velocity field satisfying
+ $$
+ \partial_t\mu_t+\nabla\cdot(v_t\mu_t)=0,\qquad \int_0^1 \lVert v_t\rVert_{L^2(\mu_t)}^2\,\mathrm dt<\infty.
+ $$
+ Then $(\mu_t)_{t\in[0,1]}\in AC^2([0,1];\mathscr{P}_2(\mathbb{R}^n))$ and 
+ $$
+ |\mu'|(t)\leq \lVert v_t\rVert_{L^2(\mu_t)}\qquad \text{for a.e. }t\in(0,1).
+ $$
+\end{theorem}
+
+\begin{proof}
+	Let $(\mu_t^\varepsilon,v_t^\varepsilon)$ be the refularized pair from Lemma~\ref{lem:ce-regularization} and let $T_t$ be its characteristic flow.%TODO es wurde noch nirgends erwähnt, was ein characteristic flow überhaupt ist
+	Fix $0\leq s<t\leq 1$. Since $\mu_s^\varepsilon = (T_s)_\#\mu_0^\varepsilon$ and $\mu_t^\varepsilon=(T_t)_\#\mu_0^\varepsilon$, the measure
+	$$
+	\gamma^\varepsilon:=(T_s,T_t)_\#\mu_0^\varepsilon\in\Gamma(\mu_s^\varepsilon,\mu_t^\varepsilon)
+	$$
+	is an admissible transport plan. It couples the positions of each particle at time $s$ and time $t$ respectively. Hence
+\begin{align*}
+	W_2^2(\mu_s^\varepsilon,\mu_t^\varepsilon)&\leq\int_{\mathbb{R}^n\times \mathbb{R}^n}|x-y|^2\,\mathrm d\gamma^\varepsilon(x,y)\\
+											  &=\int_{\mathbb{R}^n}|T_t(x)-T_s(x)|^2\,\mathrm d\mu_0^\varepsilon(x)\\
+											  &=\int_{\mathbb{R}^n}\left|\int_s^t v_r^\varepsilon(T_r(x))\,\mathrm dr\right|^2\,\mathrm d\mu_0^\varepsilon(x)\\
+											  &\leq(t-s)\int_s^t\int_{\mathbb{R}^n}|v_r^\varepsilon(T_r(x))|^2\,\mathrm d\mu_0^\varepsilon(x)\,\mathrm dr\\
+											  &=(t-s)\int_s^t\int_{\mathbb{R}^n}|v_r^\varepsilon(y)|^2\,\mathrm d\mu_r^\varepsilon(y)\,\mathrm dr\\
+											  &\leq(t-s)\int_s^t \lVert v_r\rVert_{L^2(\mu_r)}^2\,\mathrm dr.
+\end{align*}
+For the third line we used the differential equation defining $T_t$, in the inequality afterwards we applied Cauchy-Schwarz. The final inequality is the estimate of Lemma~\ref{lem:ce-regularization}. By the triangle inequality and the convergence in that lemma, we have
+\begin{align*}
+	W_2(\mu_s,\mu_t)&\leq2\varepsilon\sqrt{m_2(\eta)}+\left((t-s)\int_s^t \lVert v_t\rVert_{L^2(\mu_r)}^2\,\mathrm dr\right)^{\frac{1}{2}}\\
+					&\longrightarrow (t-s)\int_s^t \lVert v_r\rVert_{L^2(\mu_r)}^2\,\mathrm dr.
+\end{align*}
+Before taking a difference quotient, we establish absolute continuity of the measure curve, so that the metric derivative exists almost everywhere. For this purpose, we use the Minkowski inequality for the estimae
+\begin{align*}
+	W_2(\mu_s^\varepsilon,\mu_t^\varepsilon) &\leq\left \lVert \int_s^t v_r^\varepsilon(T_r(\cdot))\,\mathrm dr\right\rVert_{L^2(\mu_0^\varepsilon)}\\
+											 &\leq\int_s^t \lVert v_r^\varepsilon(T_r(\cdot))\rVert_{L^2(\mu_0^\varepsilon)}\,\mathrm dr\\
+											 &=\int_s^t \lVert v_r^\varepsilon\rVert_{L^2(\mu_r^\varepsilon)}\,\mathrm dr\\
+											 &\leq\int_s^t \lVert v_r\rVert_{L^2(\mu_r)}\,\mathrm dr.
+\end{align*}
+For the limit as before %TODO which limit?
+we obtain
+\begin{equation*}
+	W_2(\mu_s,\mu_t)\leq\int_s^t \lVert v_r\rVert_{L^2(\mu_r)}\,\mathrm dr.
+\end{equation*}
+Since $r\mapsto \lVert v_r\rVert_{L^2(\mu_r)}$ belongs to $L^2(0,1)$, this is the defining inequality of an $AC^2$ curve in the Wasserstein space. Consequently, the metric derivative exists for almost every $t$. By \eqref{eq:ce-distance}, for $h>0$ with $t+h\leq 1$, we obtain
+$$
+\frac{W_2^2(\mu_{t+h},\mu_t)}{h^2}\leq\frac{1}{h}\int_t^{t+h} \lVert v_r\rVert_{L^2(\mu_r)}^2\,\mathrm dr.	
+$$
+The left-hand side converges to $\mu'|^2(t)$, while the right-hand side converges to $\lVert v_t\rVert_{L^2(\mu_t)}^2$ by the Lebesgue differentiation theorem. This concludes the proof.
+\end{proof}
+\begin{corollary}
+	Let $(\mu_t)_{t\in[0,1]}\in AC^2([0,1];\mathscr{P}_2(\mathbb{R}^n))$. There exists a velocity field $v$ satisfying the continuity equation and 
+	$$
+	\lVert v_t\rVert_{L^2(\mu_t)} = |\mu'|(t)\qquad \text{for a.e. }t\in(0,1).	
+	$$
+	Every other Borel velocity field $w$ with finite quadratic action satisfying the continuity equation for the same curve has $\lVert w\rVert_{L^2(\mu_t)}\geq|\mu'|(t)$ for a.e. $t$.
+\end{corollary}
+
+We can now establish the equivalence between the static and the dynamic formulation of optimal transprot. The first inequality follows from estimating the distance between the endpoints of any admissible measure curve. To attain equality, we construct a measure curve from an optimal transport plan.
+%TODO Quelle für das Theorem mit Beweis?? QUELLE
+\begin{theorem}[Benamou-Brenier Formula]
+	\label{thm:bb}
+	Let $\mu_0,\mu_1\in\mathscr{P}_2(\mathbb{R}^n)$. Then
+	\begin{equation*}
+		\frac{1}{2}W_2^2(\mu_0,\mu_1)=\min_{(\mu,v)}\frac{1}{2}\int_0^1\int_{\mathbb{R}^n}|v_t|^2\,\mathrm d\mu_t\,\mathrm dt
+	\end{equation*}
+	where the minimum is taken over narrowly continuous curves in $\mathscr{P}_2(\mathbb{R}^n)$ with the prescribed endpoints and Borel velocity fields satisfying the distributional continuity equation and having finite quadratic action
+	%TODO Ersetze den Begriff "quadratic action" oder definiere davor
+\end{theorem}
+\begin{proof}
+	First, let $(\mu,v)$ be any admissible pair. By Theorem~\ref{thm:ce-to-ac}, the curve is absolutely continuous in $W_2$ and its metric derivative is bounded by the norm of $v_t$. Lemma ~\ref{lem:metric-length} and Cuachy-Schwarz yied
+	\begin{align*}
+		W_2(\mu_0,\mu_1) &\leq\int_0^1|\mu'|(t)\,\mathrm dt\\
+						 &\leq\int_0^1 \lVert v_t\rVert_{L^2(\mu_t)}\,\mathrm dt\\
+						 &\leq\left(\int_0^1 \lVert v_t\rVert_{L^2(\mu_t)}^2\,\mathrm dt\right)^{\frac{1}{2}}.
+	\end{align*}
+	Conversely, let $\gamma\in\Gamma(\mu_0,\mu_1)$ be an optimal transport plan for the quadratic cost and define the interpolation by
+	$$
+	X_t(x,y):=(1-t)x+ty,\qquad \mu_t:=(X_t)_\#\gamma.
+	$$
+	The endpoint conditions follow from the marginal conditions of $\gamma$. For $0\leq s<t\leq 1$, the transport plan $(X_s,X_t)_\#\gamma$ couples $\mu_s$ and $\mu_t$ and consequently
+	\begin{align*}
+		W_2^2(\mu_s,\mu_t) &\leq\int_{\mathbb{R}^n\times \mathbb{R}^n}|X_t(x,y)-X_s(x,y)|^2\,\mathrm d\gamma(x,y)\\
+						   &=(t-s)^2\int_{\mathbb{R}^n \times \mathbb{R}^n}|y-x|^2\,\mathrm d\gamma(x,y)\\
+						   &=(t-s)^2W_2^2(\mu_0,\mu_1).
+	\end{align*}
+	In particular, we can assume the curve to by Lipschitz and by the triangle equality we get
+	\begin{align*}
+	W_2(\mu_0,\mu_1)&\leq W_2(\mu_0,\mu_s)+W_2(\mu_s,\mu_t)+W_2(\mu_t,\mu_1)\\&\leq sW_2(\mu_0,\mu_1) + (t-s)W_2(\mu_0,\mu_1)+(1-t)W_2(\mu_0,\mu_1) = W_2(\mu_0,\mu_1). 
+\end{align*}
+Hence $|\mu'|(t)= W_2(\mu_0,\mu_1)$ for a.e. $t$. By Corollary~\ref{cor:min}, there exists a velocity field $v$ satisfying the continuity equation and $\lVert v_t\rVert_{L^2(\mu_t)}=W_2(\mu_0,\mu_1)$ for a.e. $t$. For this admissible pair it follows
+$$
+\frac{1}{2}\int_0^1\int_{\mathbb{R}^n}|v_t|^2\,\mathrm d\mu_t\,\mathrm dt = \frac{1}{2} W_2^2(\mu_0,\mu_1).
+$$
+\end{proof}
+
+\newpage
 \newpage
 
 
-\begin{align*}
-	\frac{\mathrm{d}}{\mathrm{d}t}X_t(x) = v_t(X_t(x)),\quad X_0(x)=x.
-\end{align*}
-The transported measures are defined by
-$$
-\mu_t := (X_t)_\#\mu_0.
-$$
-Assuming that $\mu_t=\rho_t\mathcal{L}^d\!\restriction_\Omega$, the
-pushforward identity means that
-\[
-    \int_\Omega\zeta(y)\rho_t(y)\,\mathrm{d}y
-    =\int_\Omega\zeta(X_t(x))\rho_0(x)\,\mathrm{d}x
-\]
-for every bounded measurable function $\zeta$.
-%TODO das klingt irgendwie weird.
-For $\zeta\in C^1(\overline\Omega)$, differentiating this identity
-with respect to time yields
-\begin{align*}
-    \frac{\mathrm{d}}{\mathrm{d}t}
-    \int_\Omega\zeta(y)\rho_t(y)\,\mathrm{d}y
-    &=\int_\Omega
-      \nabla\zeta(X_t(x))\cdot v_t(X_t(x))
-      \rho_0(x)\,\mathrm{d}x\\
-    &=\int_\Omega
-      \nabla\zeta(y)\cdot v_t(y)\rho_t(y)\,\mathrm{d}y.
-\end{align*}
-
-
-%TODO Hier fast komplett umformulieren. Auch die Notation an Kapitel 4 anpassen (z.B. J statt m)
-We want to introduce the concept of dynamical optimal transport. In contrast to static optimal transport, we do not only care about finding an optimal map or optimal coupling to transport one distribution to another but are interested in a sense of flow in time, where for each time step $t\in (0,T)$ the flow along a vector field is optimal. The necessary tools for that are a definition of a new metric, namely the Wasserstein metric, a new sense of derivative, namely a metric derivative and a little bit of convex analysis. We show that solutions of dynamic and static optimal transport are in fact equivalent and present a numerical method for solving the dynamical optimal transport problem, including an implementation.
-
-While the total variation measure indeed takes into account the difference between two probability measures, it ignores a spacial distance, making it unfit for our purposes. A better choice is the Wasserstein-Distance.
-%TODO es fehlt P_p(X), die Notation hier ist komisch, da d nicht definiert ist
-\begin{definition}[Wasserstein Distance]
-	Let $X$ be a separable metric space, where each element $\mathscr{P}(X)$ is a probability measure and hence a Radon measure and let $p\geq 1$. We define the $p$-th Wasserstein distance between two probability measures $\mu,\nu\in\mathscr{P}(X)$ as 
-	$$
-	W_p^p(\mu,\nu) := \inf\left\{\int_{X^2}d(x,y)^p\,\mathrm{d}\gamma(x,y)\ \middle|\ \gamma\in\Gamma(\mu,\nu)\right\}.
-	$$
-\end{definition}
-%TODO $W$ ist eine Metrik
-
-The concept of dynamic optimal transport is linked to the continuity equation, that can be interpreted as a condition to preserve mass during the flow of particles across a given velocity field and also allows us to then follow each single time step. Introducing the variable $\rho(t,x)$ with $t\in(0,1)$ and $x\in\Omega$ is essentialy the flow of our density in time-space with $\rho(0,x) = \mu(x)$ and $\rho(1,x) = \nu(x)$. TODO schöner formulieren
-
-The direction of a possible flow at time $t$ and in $x$ is given by a velocity field $v(t,x)$. We introduce lagrangian coordinates and denote by $X(t,x),\, x\mapsto x_t$ the map of the position of some particle $x$ to its position at time $t$, which can easily be applied to sets as well. The flow of each particle can be obtained by following the particle along the velocity field and we write 
-$$
-\frac{\partial X}{\partial t}(t,x) = v(t, X(t,x)),\quad X(0,x) = x
-$$
-and when using sets specifically
-$$
-\int_E \mu(x)\,\mathrm{d}x = \int_{X(t,E)}\rho(t,x)\,\mathrm{d}x\quad \forall t\in(0,1).
-$$
-The above formulation leads us to the realization that by change of variables we have 
-$$X(t,\cdot)_\#\mu=\rho(t, \cdot),\,\, X(1,\cdot)_\#\mu = \nu.$$ 
-Our goal is to rewrite the Wasserstein distance such that it merely depends on $\rho,v$ and has the form
-
-\begin{align*}
-	W_2^2(\mu,\nu) &= \underset{\rho,v}{\inf}\int_0^1\int_\Omega\rho(t,x)|v(t,x)|^2\mathrm{d}x\mathrm{d}t\\
-				   &\text{s.t.} \begin{cases}\partial_t\rho_t+\nabla \cdot(\rho v)=0,\\
-				   \rho(0,x)=\mu,\\
-			   \rho(1,x)=\nu.\end{cases}
-\end{align*}
-
-The first constraint is known as he continuity equation that can be interpreted as mass conservation. We begin to show the equivalence by calculating
-\begin{align*}
-	W_2^2(\mu,\nu) \leq &\int_\Omega\mu(x) | X(1,x)-X(0,x) |^2\,\mathrm{d}x\\
-	\overset{\text{FTC}}{=} &\int_\Omega\mu(x) \left\vert\int_0^1 \frac{\partial X}{\partial t} (t,x)\mathrm{d}t\right\vert^2\,\mathrm{d}x\\
-						\overset{\Delta}{\leq} &\int_\Omega\int_0^1 \mu(x)\left|\frac{\partial X}{\partial t} (t,x)\right|^2\mathrm{d}t\mathrm{d}x\\
-						= &\int_0^1\int_\Omega\mu(x)| v(t,X(t,x))|^2\,\mathrm{d}x\mathrm{d}t.
-\end{align*}
-
-%This is a valid coupling since choosing $\gamma := (\mathrm{id}, X(1,\cdot))_\#\mu$ leads to $\gamma\in\Gamma(\mu,\nu)$. To see that, we need $\mu$ and $\nu$ to be marginals of $\gamma$. Obviously, $\mu$ is a correct marginal of $\gamma$. Let $X(t,x)$ be the flow along the velocity field $v$ and let $\rho$ be such that it satisfies the continuity equation. We have 
-%$$
-%\rho(t,\cdot) = X(t,\cdot)_\#\mu \implies \nu = \rho(1,\cdot) = X(1,\cdot)_\#\mu
-%$$
-%for the second marignal. Unnötig?
-
-To evaluate the inner integral more easily, we define 
-$$
-S(x) = X(t,x),\quad S_\#\mu = \rho(t,x), \quad \varphi(y) = |v(t,y)|^2
-$$
-and using change of variables yields
-\begin{align*}
-	\int_\Omega \mu(x)|v(t,X(t,x))|^2\,\mathrm{d}x &=\int_\Omega\mu(x)\varphi(S(x))\,\mathrm{d}x\\
-									 &=\int_\Omega\rho(t,y)\varphi(y)\,\mathrm{d}y\\
-									 &=\int_\Omega\rho(t,y)|v(t,y)|^2\,\mathrm{d}y
-\end{align*}
-and hence we have 
-$$
-W_2^2(\mu,\nu) \leq\int_0^1\int_\Omega\rho(t,x)|v(t,x)|^2\,\mathrm{d}x\mathrm{d}t
-$$
-for all $\rho, v$ that satisfy
-$$
-\begin{cases}\partial_t\rho_t + \nabla \cdot (\rho v) = 0,\\ \rho(0,x) = \mu,\\\rho(1,x) = \nu.
-\end{cases}
-$$
-Equality is obtained, if $X(1,x)$ is an optimal transport from $\mu$ to $\nu$ and $\frac{\partial X}{\partial t} = u(x)$ is constant in time. Assuming constant flow in time we simplify
-\begin{align*}
-	X(t,x) = x + u(x)t \implies X(1,x) = x + u(x) =: T(x)
-\end{align*}
-and solving for $u$ gives us 
-\begin{align*}
-	u(x) = T(x)-x &\implies X(t,x) = x + (T(x) - x)t = x(1-t) + tT(x)\\
-				  &\implies v(t,X(t,x)) = u(x) = (T-I)(x).
-\end{align*}
-Therefore we found a formulation for an optimal transportation by 
-$$
-v(t,y) = (T-I)[(1-t)I + tT]^{-1}(y)
-$$
-and validated the problem formulation above. We can therefore write the optimization problem as
-\begin{align*}
-	W_2^2(\mu,\nu) &= \inf_{\rho,v}\int_0^1\int_\Omega \rho(t,x)|v(t,x)|^2\,\mathrm{d}x\mathrm{d}t\\
-				   &s.t.\begin{cases}\partial_t\rho_t+\nabla \cdot (\rho v) = 0,\\
-					   \rho(0,x) = \mu,\\
-				   \rho(1,x) = \nu.\end{cases}
-\end{align*}
-TODO Das untere brauchen wir hier nicht mehr?
-
-We try to solve the Lagrangian saddle-point problem. Note that by multiplying test functions $\varphi\in C_c^\infty((0,1)\times\Omega)$ and partial integration, we obtain the weak form of the continuity equation
-$$
-\int_\Omega \left(\nu\varphi(1,x) - \mu\varphi(0,x)\right)\,\mathrm{d}x\mathrm{d}t - \int_0^1\int_\Omega(\rho\varphi_t +\rho v \cdot \nabla\varphi)\,\mathrm{d}x\mathrm{d}t
-$$
-and hence the Lagrangian has the form 
-$$
-\mathcal{L}(\varphi,\rho,v) = \int_0^1\int_\Omega \left(\frac{\rho|v|^2}{2} - \rho\varphi_t - \rho v \cdot \nabla\varphi\right)\,\mathrm{d}x\mathrm{d}t + \underbrace{\int_\Omega \left(\nu\varphi(1,x) - \mu\varphi(0,x)\right)\,\mathrm{d}x}_{G(\varphi)}.
-$$
-By defining $m:=\rho v$ we rewrite
-$$
-\mathcal{L}(\varphi,\rho,m) = \int_0^1\int_\Omega\left(\frac{|m|^2}{2\rho} - \rho\varphi_t - m \cdot \nabla\varphi\right)\mathrm{d}x\mathrm{d}t + G(\varphi).
-$$
-
-\subsection{Equivalence of the Static and Dynamic Formulation}
-%Hier Ambrosio citen; Scheinbar ist der eigentliche Benamou-Brenier-Satz noch gar nicht gestatet
-
-The goal here is to show the relationship between static optimal transport, that is the Monge-Kantorovich formulation, and dynamical optimal transport. We will find that having a solution for one of these problems will then give us a solution to the other, making the problems equivalent. For this purpose, we define a few key terms.
-\begin{definition}[Metric Derivative]
-	Let $(X,d)$ be a metric space. We define the derivative of a curve $\gamma:[0,1]\to X$ as 
-	\begin{equation}\label{def:md}
-	|\gamma'|(t) := \lim_{h\to0}\frac{d(\gamma(t+h)-\gamma(t))}{|h|}.
-\end{equation}
-\end{definition}
-Note that the absolute value of the denominator is necessary for the expression to be well-defined. \begin{definition}[Absolutely Continuous Curves]
-	A curve $\gamma:[0,1]\to X$ is said to be absolutely continuous, if there exists a $g\in L^1([0,1])$ such that the inequality 
-	\begin{equation}\label{def:ac}
-	d(\gamma(t),\gamma(s)) \leq \int_t^s g(x)dx
-\end{equation}
-	holds for all $t<s$. If this property holds, we write $\gamma\in \mathrm{AC}([0,1],X)$.
-\end{definition}
-To show the first main result of this chapter, we need some auxiliary results.
-\begin{lemma}
-	Let $\gamma\in \mathrm{AC}([0,1],X)$ and $|\gamma'|$ be its metric derivative almost everywhere. For $t<s$ we get
-$$
-d(\gamma(t),\gamma(s)) \leq \int_t^s|\gamma'|(x)\mathrm{d}x.
-$$
-%Further, from the Rademacher-Theorem, we conclude that the metric derivative may exist for a.e. $t\in[0,1]$ if the curve is Lipschitz-continuous. 
-\end{lemma}
-\begin{proof}
-	Let $\gamma\in \mathrm{AC}([0,1],X)$. Fix $t<s$ and define 
-	$$
-	f(r) := d(\gamma(t),\gamma(r)),\quad r\in[t,s].
-	$$
-	Notice that by absolute continuity of $\gamma$ and Lipschitz continuity of $x\mapsto d(\gamma(t),x)$ the map $f$ is also absolutely continuous. By the reverse triangle equality we obtain
-	\begin{align*}
-	|f(r+h) - f(r) | = |d(\gamma(r+h), \gamma(t)) - d(\gamma(t),\gamma(r))| \leq d(\gamma(r+h),\gamma(r))
-	\end{align*}
-	and therefore
-	\begin{align*}
-		\lim_{|h|\to 0}\left\lvert\frac{f(r+h) - f(r)}{h}\right\lvert\leq \lim_{|h|\to0} \frac{d(\gamma(r+h),\gamma(r))}{|h|} \implies &|f'(r)|\leq |\gamma'|(r)
-\end{align*}
-which holds for almost every $r\in [t,s]$. By absolute continuity and the fundamental theorem of calculus we get 
-$$
-\int_t^sf'(r)\,\mathrm{d}r = f(s) - f(t) = d(\gamma(t),\gamma(s))
-$$
-and it follows
-$$
-d(\gamma(t),\gamma(s)) = \int_t^sf'(r)\,\mathrm{d}r\leq \int_t^s|f'(r)|\,\mathrm{d}r\leq\int_t^s|\gamma'(r)|\,\mathrm{d}r.
-$$
-
-\end{proof}
-	%TODO BOX: By the Rademacher-Theorem we conclude that the metric dericative may exist for a.e. $t\in[0,1]$ if the curve is Lipschitz-continuous. The next results guarantees us that it is possible to reparametrize absolutely continuous curves to be Lipschitz-curves.
-
-	\begin{lemma}\label{lipschitz}
-	If $\gamma\in \mathrm{AC}([0,1],X)$, then $\gamma$ admits a Lipschitz reparametrization.
-\end{lemma}
-\begin{proof}
-	Let $\gamma:[0,1]\to X$ be absolutely continuous and define its accumulated length by  
-	$$\ell(t) = \int_0^t|\gamma'|(r)\,\mathrm{d}r\quad t\in[0,1].$$
-	Then $\ell$ is continuous, nondecreasing and 
-	$$
-	\ell(0) = 0,\quad \ell(1) = L(\gamma).
-	$$
-	If $L(\gamma)=0$, then $\gamma$ is constant, hence already Lipschitz. Therefore we may assume $L(\gamma)>0.$
-	For $\sigma\in[0,L(\gamma)]$, define
-	$$
-	\tau(\sigma) := \min\{t\in[0,1]:\, \ell(t)=\sigma\}.
-	$$
-	By continuity of $\ell$ this is well-defined. Now define the reparametrized curve
-	$$
-	\tilde{\gamma}:[0,L(\gamma)]\to X,\quad \tilde{\gamma}(\sigma) := \gamma(\tau(\sigma)).
-	$$
-	Let $0\leq\sigma_1\leq\sigma_2\leq L(\gamma)$. Since $\ell$ is non-decreasing and $\gamma$ is absolutely continuous, we obtain
-	\begin{align*}
-		d(\tilde{\gamma}(\sigma_1),\tilde{\gamma}(\sigma_2)) &=d(\gamma(\tau(\sigma_1)),\gamma(\tau(\sigma_2)))\\
-															 &\leq \int_{\tau(\sigma_1)}^{\tau(\sigma_2)} |\gamma'|(r)\,\mathrm{d}r\\
-															 &=\ell(\tau(\sigma_2))-\ell(\tau(\sigma_1))\\
-															 &=\sigma_2-\sigma_1.
-	\end{align*}
-
-	%The arc-lenght is defined by $s(t) := \int_0^t |\gamma'|(t)\,\mathrm{d}t$ with $s(0) = 0$ and $s(1) = L(\gamma)$. Reparametrizing by arc-length is defined by 
-	%$$\tilde{\gamma}(s) := \gamma(\tau(s)),\, s\in [0,T],\quad \tau(k) := \inf\{t\in [0,1] \big\lvert s(t)>k\}.$$ 
-		%We compute 
-%\begin{align*}
-%	d(\tilde{\gamma}(a),\tilde{\gamma}(b)) &= d(\gamma(\tau(a)), \gamma(\tau(b)))\\
-%										   &\leq \int_{\tau(a)}^{\tau(b)}|\gamma'|(r)dr\\
-%										   &= s(\tau(b)) - s(\tau(a)) \leq b-a
-%\end{align*}
-\end{proof}
-
-%TODO
-\begin{lemma}\label{ac_solution}
-	For $p>1$ the optimal Transport map between two absolutely continuous measures exists. TODO?
-\end{lemma}
-\begin{proof}
-	Beweis in 3.1 mit Kantorovich Dualität / Subdifferential -- bereits im Seminar gemacht
-\end{proof}
-
-TODO hier noch Lemmata für das Theorem: Weak und Distributional ist gleich (Prop 4.2 Sant bzw ganzes Kapitel 4.1), Lemma 5.2
-%TODO Übergang zum Grenzfluss
-One of the main theorems of this chapter is the following.
-\begin{theorem}
-	Let $(\gamma_t)_{t\in[0,1]}\subset\mathrm{AC}(\mathscr{P}_p(X))$ be a family of absolutely continuous curves on the space of probability measures. For a.e. $t\in[0,1]$ there exists a velocity field $v_t\in L^p(c_t, \mathbb{R}^d)$ with the properties
-	\begin{itemize}
-		\item the continuity equation is satisfied in the distributional sense
-		\item we have $\lVert v_t\rVert_{L^p}\leq |\gamma'|(t)$ for a.e. $t\in[0,1].$
-	\end{itemize}
-\end{theorem}
-The idea of the proof is to construct a sequence of $\gamma_t$ and a corresponding sequence for $v_t$ such that the continuity equation holds, $\gamma_t^k$ is absolutely continuous for all $k$ and the limit admits the desired inequality.
-\begin{proof}
-	By Lemma \ref{lipschitz} we assume $\mu$ to be Lipschitz. We define the sequence $\mu_t^k:= \mu_t * \eta_k$, where $\eta_k$ is a Dirac sequence supported on $B\left(0,\frac{1}{k}\right)$. This is a necessary step, since for example $\delta_x \in \mathscr{P}_2(X)$ is not absolutely continuous. Since
-	$$
-	\mathrm{supp}(\mu_t*\eta_k) \subset \Omega + B\left(0,\frac{1}{k}\right)
-	$$
-	we extend the domain to a convex set $\Omega'\supset \Omega$. According to Lemma \ref{ac_solution}, for $t=\frac{i}{k},\, i = 0,\dots,k$ the optimal transport map $T^{i,k}:\Omega'\to\Omega'$ from $\mu_{\frac{i}{k}}^k$ to $\mu_{\frac{i+1}{k}}^k$ exists as a consequence of absolute continuity. Defining the linear interpolation with constant speed 
-	$$
-	\mu_t^k := \left((i+1-tk)\mathrm{id} + (kt - i)T^{i,k}\right)_\#\mu_{\frac{i}{k}}^k
-	$$
-and deriving with respect to $t$ yields the velocity 
-$$
-v^{i,k} := k(T^{i,k}(x)-x).
-$$
-Since the continuity equation expects us not to have a particle indexed by its starting position but by the current position, we define 
-$$
-T_t^{i,k} := (i+1-kt)\mathrm{id} + (kt-i)T_k^{ik},
-$$
-giving us the desired velocity field 
-$$
-v_t^k:= v_{i,k}((T_t^{i,k})^{-1}).
-$$
-For the interval $\left(\frac{i}{k},\frac{i+1}{k}\right)$, define
-$$
-X_t(x) := T_t^{i,k},\quad \mu_t^k = (X_t)_\#\mu_{\frac{i}{k}}^k
-$$
-and by definition we obtain the ordinary differential equation
-$$
-v_t^k(X_t(x)) = v_{i,k} = X'_t(x).
-$$
- Taking test functions and integrating by parts gives
-\begin{align*}
-	&\int\varphi(y)\,\mathrm{d}\mu_t^k(y) = \int\varphi(X_t(x))\,\mathrm{d}\mu_{\frac{i}{k}}^k(x)\\
-	\iff&\frac{d}{dt}\int\varphi(y)\,\mathrm{d}\mu_t^k(y) = \int\nabla\varphi(X_t(x)) \cdot v_t^k(X_t(x))\,\mathrm{d}\mu_{\frac{i}{k}}^k(x)\\
-	\iff&\frac{d}{dt} \int \varphi \,\mathrm{d} \mu_t^k = \int \nabla\varphi(y) \cdot v_t^k(y)\,\mathrm{d}\mu_t^k(y),
-\end{align*}
-which is the weak form of the continuity equation, hence the pair $(\mu_t^k, v_t^k)$ satisfies $$\partial_t\mu_t^k + \nabla \cdot (v_t^k\mu_t^k) = 0$$ in the distributional sense.
-
-To estimate an upper-bound for the newly obtained veloctiy field in order to extract a weak limit, we compute
-\begin{align*}
-	\lVert v_t^k\rVert_{L^p(\mu_t^k)}^p &= \int_\Omega |v^{i,k}|^p\, \mathrm{d}\mu_{\frac{i}{k}}^k = k^p W_p^p\left(\mu_{\frac{i}{k}}^k,\mu_{\frac{i+1}{k}}^k\right)\\
-										&\leq k^pW_p^p\left(\mu_{\frac{i}{k}},\mu_{\frac{i+1}{k}}\right)\\
-										&\leq k^p\left(\int_{\frac{i}{k}}^{\frac{i+1}{k}} |\mu'|(s)\,\mathrm{d}s\right)^p\\
-										&\overset{(*)}{\leq} k\int_{\frac{i}{k}}^{\frac{i+1}{k}} |\mu'|^p(s)\,\mathrm{d}s\leq \mathrm{Lip}(\mu)
-\end{align*}
-$(*)$ is obtained by the Jensen inequality where the last inequality by the assumtption that the curve is Lipschitz. Also we can estimate 
-$$
-\int_a^b \lVert v_t^k\rVert_{L^p(\mu_t^k)}^p\,\mathrm{d}t\leq \int_a^b|\mu'|^p(s)\,\mathrm{d}s + \frac{2\mathrm{Lip}(\mu)}{k}.
-$$
-This can be seen by taking an equidistant partition $\left\{\frac{i_a}{k},\dots,\frac{i_b}{k}\right\}\subset [a,b]$ and splitting the integral into $\int_a^{i_a}+\int_{i_a}^{i_b}+\int_{i_b}^b$. The middle integral uses the estimate $(*)$, the other two use the Lipschitz-bound provided in the previous calculation. Adding the fact, that $i_a-a,\, b-i_b\leq \frac{1}{k}$ gives the desired result. We conclude that $v_t^k\in L^p(\mu_t^k)$. 
-
-Define now vector measures $E^k$ with test velocity field $\phi:\Omega'\times[0,1] \to \mathbb{R}^d$ by
-$$
-\int\phi(t,x) \cdot \,\mathrm{d}E^k(t,x) := \int_0^1\int_{\Omega'}\phi(t,x) \cdot v_t^k(x)\,\mathrm{d}\mu_t^k(x)\mathrm{d}t
-$$
-and compute the total variation
-$$
-\lVert E\rVert = \int_0^1 \lVert v_t^k\rVert_{L^1(\mu_t^k)}\,\mathrm{d}t \overset{\text{Hölder}}{\leq} \int_0^1 \lVert v_t^k\rVert_{L^p(\mu_t^k)}\,\mathrm{d}t \overset{\text{Hölder}}{\leq} \left(\int_0^1 \lVert v_t^k\rVert_{L^p(\mu_t^k)}^p\,\mathrm{d}t\right)^{\frac{1}{p}}\leq C.
-$$
-%TODO
-Since for $p>1$ $L^p$ is reflexive, $E^k$ as a bounded sequence has a weakly converging subsequence FALSCHES ARGUMENT (eher Banach Alaoglu). Also, by a triangle inequality argument, we can show that $\mu_t^k$ converges uniformly in time to $\mu_t$ in $W_p$ Explizit berechnen?. This gives us 
-$$
-\partial_t\mu_t + \nabla \cdot E = 0
-$$
-in the distributional sense. 
-
-Action Functional noch definieren, Prop 5.18, eq 5.4 und Rest einfach noch hinschreiben. 
-REST TODO
-
-\end{proof}
-As the goal is to show that a solution of the static problem admits one to the dynamic problem and vice-versa, we also want to show a converse result.
-%TODO Lemma 5.21 staten
-%TODO Bedingung an Zeitstetigkeit der Maßkurve; h\to0 und \epsilon\to 0 nicht vertauschen
-\begin{theorem}
-	If $(\mu_t)_{t\in[0,1]}\subset\mathscr{P}(\Omega)$ and for arbitrary $t$ there exists $v_t\in L^p(\mu_t)$ satisfying $\int_0^1 \lVert v_t\rVert_{L^p(\mu_t)}dt<\infty$ and $\partial_t\mu_t + \nabla \cdot (v_t\mu_t) = 0$, then $|\mu'|(t) \leq \lVert v_t\rVert_{L^p(\mu_t)}$ for a.e. $t$ and $(\mu_t)_{t\in[0,1]}$ is absolutely continuous in $W_p(\Omega)$.
-
-\end{theorem}
-
-\begin{proof}
-	Choosing a reparametrization as
-	$$
-	s(t) := \int_0^t \lVert v_\tau\rVert_{L^p(\mu_\tau)}d\tau	
-	$$
-	for a given pair $(\mu,E)$ solving the continuity equation with $E_t = v_t \cdot \mu_t$ and $v_t\in L^p(\mu_t;\mathbb{R}^d)$, we get a uniform bound on $\lVert v_t\rVert_{L^p(\mu_t)}$ by and it also holds $\lVert E_t\rVert = \lVert v_t\rVert_{L^1(\mu_t)}$. Lemma ?? (5.21) guarantees the existence of a family $(\mu_t^\varepsilon)_t$ with a velocity field $v_t^\varepsilon$ with the following properties:
-	\begin{enumerate}
-		\item $\mu^\varepsilon$ is Lipschitz in time and space, $v^\varepsilon$ is Lipschitz in space and bounded, whilst being uniformly (bounded or continuous?) in time. $\mu^\varepsilon > 0$ everywhere.
-		\item We get $\mu_t^\varepsilon$ by following the flow of $v^\varepsilon$ starting from $\mu_0^\varepsilon$ (see eq 5.5)
-		\item $\mu_t^\varepsilon \rightharpoonup \mu_t$ for all $t$ and $E_t^\varepsilon \rightharpoonup E_t$ for a.e. $t$.
-		\item $\lVert v_t^\varepsilon\rVert_{L^p(\mu_t^\varepsilon)}\leq \mathscr{B}_p(\mu_t, E_t)$
-	\end{enumerate}
-	DAS HIER INS LEMMA PACKEN UND HIER NUR STATEN
-
-	Taking a smooth function $\eta:\mathbb{R}^+\to \mathbb{R}^+$ such that $\eta(t) = Ce^{-t}$ for $t\geq 1$ we construct $\eta^\varepsilon(z) = \varepsilon^{-d}\eta\left(\frac{|z|}{\varepsilon}\right)$, which lets us set
-	$$
-	\mu_t^\varepsilon := \eta^\varepsilon * \mu_t,\quad E_t^\varepsilon := \eta^\varepsilon * E_t,\quad v_t^\varepsilon := \frac{E_t^\varepsilon}{\mu_t^\varepsilon}
-	$$
-	With $T_t$ being the flow generated by $v^\varepsilon$, we choose the transport plan between $\mu_t^\varepsilon$ and $\mu_{t+h}^\varepsilon$ as $\gamma = (T_t, T_{t+h})_\#\mu_0^\varepsilon \in \Gamma(\mu_t^\varepsilon,\mu_{t+h}^\varepsilon).$ For the $p$-th Wasserstein-Distance, we compute
-	\begin{align*}
-	W_p^p(\mu_t^\varepsilon,\mu_{t+h}^\varepsilon) &\leq \int_{\Omega^2} |x-y|^pd\gamma(x,y)\\
-												   &= \int_\Omega |T_t(x) - T_{t+h}(x)|^pd\mu_0^\varepsilon(x)\\
-												   &\leq \int_\Omega\left(\int_t^{t+h} \left\lvert \frac{d}{ds}T_s(x) \right\rvert ds\right)^pd\mu_0^\varepsilon(x)\\
-												   &\leq |h|^{\frac{p}{q}}\int_\Omega\int_t^{t+h}|v_s^\varepsilon(T_s(x))|^pdsd\mu_0^\varepsilon(x)\\
-												   &= |h|^{\frac{p}{q}}\int_t^{t+h}\int_\Omega |v_s^\varepsilon(y)|^pd\mu_0^\varepsilon(y)ds\\
-												   &\leq |h|^{\frac{p}{q}}\int_t^{t+h} \lVert v_s\rVert_{L^p(\mu_s)}^pds.
-	\end{align*}
-
-The calculation
-\begin{align*}
-	|\mu'|(t) &= \lim_{h\to 0} \frac{W_p(\mu_{t+h},\mu_t)}{|h|} = \lim_{h\to0}\lim_{\varepsilon\to0}\frac{W_p(\mu_{t+h}^\varepsilon,\mu_t^\varepsilon}{|h|} \\
-			  &\leq \lim_{h\to0}\left(\frac{1}{|h|}\int_t^{t+h} \lVert v_s\rVert_{L^p(\mu_t)}^pds\right)^{\frac{1}{p}} = \lVert v_t\rVert_{L^p(\mu_t)}
-\end{align*}
-yields the desired result and concludes the proof.
-\end{proof}
-\begin{corollary}
-	The vector field $v_t$ in Theorem ?? (das erste) satisfies $\lVert v_t\rVert_{L^p(\mu_t)} = |\mu'|(t)$.
-\end{corollary} 
-
-\subsection{Numerical Analysis of the Saddle-Point Problem}
-Recall the definition of the Lagrangian
-$$
-\mathcal{L}(\varphi,\rho, m) = \int_0^1\int_\Omega\left(\frac{|m|^2}{2\rho} - \rho\varphi_t - m \cdot \nabla\varphi\right)\mathrm{d}x\mathrm{d}t + G(\varphi).
-$$
-We want to solve the saddle-point problem 
-$$
-\inf_{\rho,m}\,\,\sup_{\varphi} \mathcal{L}(\varphi,\rho,m)
-$$
-with $\varphi$ being the designated Lagrange-multiplier.
-
-\begin{lemma}
-	We can rewrite $\frac{|m|^2}{2\rho}$ as the supremum of affine linear convex functions, namely
-	$$\sup_{(a,b)\in K} (a\rho + b \cdot m),\quad K:=\left\{(a,b) \in \mathbb{R}\times \mathbb{R}^n \mid a + \frac{|b|^2}{2} \leq 0 \right\}$$.
-\end{lemma}
-\begin{proof}
-	Let $(a^*,b^*)$ obtain the supremum of the set $K$. This is possible since $K$ is obviously non-empty. Since $\rho\geq0 \in \mathscr{P}(\Omega)$, $a^*$ needs to be as large as possible. Rewriting the constraint of the set, we have 
-	$$
-	a^* = \frac{|b|^2}{2} \implies \sup_{(a,b)\in K}(a\rho + b \cdot m) = \sup_{b\in \mathbb{R}^n}\left(\frac{-\rho|b|^2}{2} + b \cdot m\right)
-	$$
-	Since the last expression is concave, we have the maximum by deriving and setting to zero and as a consequence 
-	$$
-	b^*= \frac{m}{\rho} \implies \sup_{(a,b)\in K}(a\rho + b \cdot m ) = \frac{|m|^2}{2\rho}.
-	$$
-\end{proof}
-
-As a consequence we rewrite the optimization problem as a linear one, that is 
-\begin{align*}
-	\inf_{\rho,m}\,\,\sup_{\varphi,(a,b)\in K}\int_0^1\int_\Omega [(a-\varphi_t)\rho + (b-\nabla\varphi) \cdot m]dxdt
-\end{align*}
-
-Benamou-Brenier introduced an augmented Lagrangian (TODO wieso eigentlich). Define 
-$$
-\mu := \begin{pmatrix}
-\rho\\m
-\end{pmatrix},\quad q:= \begin{pmatrix}
-a\\b
-\end{pmatrix}
-$$
-then we can rewrite
-$$
-\inf_{\rho,m}\,\,\sup_{\varphi} \mathcal{L}(\varphi, \rho,m) = \sup_{\mu}\,\,\inf_{\varphi, q} F(q) + G(\varphi) + \langle\mu, \nabla_{t,x}\varphi-q\rangle
-$$
-where $G(\varphi)$ is defined as above and $F(q) = \begin{cases} 0, \quad q\in K\\\infty\quad \text{else}\end{cases}$
-
-TODO Eq 42 nochmal den Beweis abschreiben
-
-Algorithmus: Erste Update in $\phi$, dann $q$, dann $\mu$.
-
-TODO zu $\phi$ -- was ist das überhaupt für ein Objekt?
-
-Updating the algoritm in $\varphi$ is finding a solution for the expression 
-$$
-\arg\min_\varphi \mathcal{L}_r(\varphi, q^{n-1},\mu) = \arg\min_\varphi G(\varphi) + \langle \mu^n, \nabla\varphi-q^{n-1}\rangle + \frac{r}{2} \lVert \nabla\varphi - q^{n-1}\rVert^2 =: J(\varphi)
-$$
-To avoid confusion, we denote by $\psi$ the test-direction for differentiation. For the optimality condition we compute
-$$
-\frac{d}{d\varepsilon}J(\varphi^n + \varepsilon\psi)\Bigl\vert_{\varepsilon=0} =0
-$$
-and get for each term
-
-\begin{align*}
-	G(\varphi^n+\varepsilon\psi) &= \int_\Omega \left[(\nu(\varphi(1,x) + \varepsilon\psi(1,x)) - \mu(\varphi(0,x) + \varepsilon\psi(0,x))\right]dx\\
-																				 &= G(\varphi) + \varepsilon\int_\Omega(\nu\psi(1,x) - \mu\psi(0,x))dx\\
-	\implies& \frac{d}{d\varepsilon}\Bigl\vert_{\varepsilon=0} G(\varphi^n+\varepsilon\psi)= G(\psi)\\
-	\frac{d}{d\varepsilon}\langle\mu^n,\nabla(\varphi + \varepsilon\psi)-q^{n-1}\rangle &= \frac{d}{d\varepsilon}\langle \mu^n, \nabla\varphi^n + \varepsilon\psi - q^{n-1}\rangle \\
-																						&=\frac{d}{d\varepsilon} \langle \mu^n, \nabla\varphi^n-q^{n-1}\rangle + \varepsilon\langle \mu^n,\nabla\psi\rangle\\
-																						&=\langle\mu^n,\nabla\psi\rangle\\
-	\frac{d}{d\varepsilon} \frac{r}{2}\lVert \nabla(\varphi^n+\varepsilon\psi) - q^{n-1}\rVert^2 &= r\langle\nabla\varphi^n - q^{n-1},\nabla\psi\rangle
-\end{align*}
-
-To solve for $\varphi^n$ we need to integrate by parts. To make notation easier we write
-\begin{align*}
-	&\int_\Omega(\nu\psi(1,x) - \mu\psi(0,x)) + \int(r(\nabla\varphi^n - q^{n-1}) + \mu^n) \cdot \nabla \psi = \int_\Omega (\nu\psi(1) - \mu\psi(0)) + \int A \cdot \nabla\psi = 0\\
-\end{align*}
-with $A = \begin{pmatrix}
-A_t\\A_x
-\end{pmatrix}$. Then 
-\begin{align*}
-	&\int A  \cdot \nabla\psi = -\int (\nabla \cdot A ) \psi + \int_\Omega A_t(1)\psi(1) - \int_\Omega A_t(0)\psi(0)\\
-	&\implies - \int(\nabla \cdot A)\psi + \int_\Omega(\nu + A_t(1))\psi(1) - \int_\Omega ( \mu + A_t(0))\psi(0) = 0
-\end{align*}
-Since we assume periodic boundary conditions in space and Neumann boundary conditions in time, the boundary terms vanish and we calculate
-\begin{align*}
-	&\nabla \cdot (r(\nabla\varphi^n-q^{n-1}) + \mu^n ) = 0\\
-	&\iff r\Delta\varphi^n - r\nabla \cdot q^{n-1} + \nabla \cdot \mu^n = 0\\
-	&\iff \Delta \varphi^n = \nabla \cdot q^{n-1} - \frac{1}{r} \nabla \cdot \mu^n
-\end{align*}
-TODO Jetzt noch Lösungstheorie: Direkte Methode, Sobolev Raum, H1 Skalarprodukt
-
-For practical purposes, Benamou-Brenier proposed a slightly perturbed version with a small $\varepsilon > 0$ given by 
-$$
--r\Delta \varphi^n + r\varepsilon\varphi^n = \nabla \cdot (\mu^n-rq^{n-1})
-$$
-
-Zu $q$:
-
-Äquivalenz zeigen. $q$ is given by solving 
-$$
-\inf_{(a,b)\in K}\{(a-\alpha^n)^2 + |b-\beta|^2 \mid a + \frac{|b|^2}{2}\leq 0\}
-$$
-where $p^n(t,x) = \begin{pmatrix}
-\alpha^n(t,x)\\\beta^n(t,x)
-\end{pmatrix} = \nabla\varphi^n(t,x) + \frac{\mu^n(t,x)}{r}$
-The Lagrangian of this convex problem leads us directly to a analytical solution. Define
-$$
-\mathcal{L}(a,b,\lambda) = (a-\alpha)^2 + (b-\beta)^2 + \lambda\left(a+\frac{|b|^2}{2}\right)
-$$
-then the KKT conditions
-$$
-\begin{cases}\partial_aL=0\\ \partial_bL=0\\ \lambda\geq 0\\ a+\frac{|b|^2}{2}\leq 0\\ \lambda\left(a+\frac{|b|^2}{2}\right)=0\end{cases}
-$$
-are satisfied. Stationarity leads us to 
-$$
-\begin{cases}\partial_aL = 2(a-\alpha)+\lambda \overset{!}{=} 0 \implies a = \alpha - \frac{\lambda}{2}\\
-\partial_bL = 2(b-\beta) \lambda\beta \overset{!}{=} 0 \implies b = \frac{2\beta}{2+\lambda}\end{cases}
-$$
-In the case of $\lambda = 0$, then obviously $q^n = p^n$ (die zwei noch definieren).
-
-For $\lambda > 0$ we need to solve 
-$$
-F(\lambda) := \alpha - \frac{\lambda}{2} + \frac{2 |b|^2}{2 \cdot (2+\lambda)^2} = 0 
-$$
-This problem can be solved iteratively using Newtons method
-$$
-\lambda^{(k+1)} = \lambda^{(k)} - \frac{F(\lambda^{(k)})}{F'(\lambda^(k))}
-$$
-with $F'(\lambda^{(k)}) = -\frac{1}{2} - \frac{4\beta^2}{(2+\lambda)^3}$. Note that in the case $\lambda > 0$ the solution is unique, since the problem is strictly convex.
-
-%\begin{definition}[Wasserstein-Metrik]
-%	Sei $X$ ein separabler metrische Raum, in dem jedes Wahrscheinlichkeitsmaß ein Radon-Maß ist und $p\geq 1$. Wir definieren die $p$-te Wasserstein-Metrik zwischen zwei Wahrscheinlichkeitsmaßen $\mu,\nu \in \mathscr{P}(X)$ mit
-%	$$
-%		W_p^p(\mu,\nu) := \inf\left\{\int_{X^2}d(x,y)^pd\gamma(x,y) \big\vert \gamma \in \Gamma(\mu,\nu)\right\}\\
-%	$$
+%The goal here is to show the relationship between static optimal transport, that is the Monge-Kantorovich formulation, and dynamical optimal transport. We will find that having a solution for one of these problems will then give us a solution to the other, making the problems equivalent. For this purpose, we define a few key terms.
+%\begin{definition}[Metric Derivative]
+%	Let $(X,d)$ be a metric space. We define the derivative of a curve $\gamma:[0,1]\to X$ as 
+%	\begin{equation}\label{def:md}
+%	|\gamma'|(t) := \lim_{h\to0}\frac{d(\gamma(t+h)-\gamma(t))}{|h|}.
+%\end{equation}
 %\end{definition}
+%Note that the absolute value of the denominator is necessary for the expression to be well-defined. \begin{definition}[Absolutely Continuous Curves]
+%	A curve $\gamma:[0,1]\to X$ is said to be absolutely continuous, if there exists a $g\in L^1([0,1])$ such that the inequality 
+%	\begin{equation}\label{def:ac}
+%	d(\gamma(t),\gamma(s)) \leq \int_t^s g(x)dx
+%\end{equation}
+%	holds for all $t<s$. If this property holds, we write $\gamma\in \mathrm{AC}([0,1],X)$.
+%\end{definition}
+%To show the first main result of this chapter, we need some auxiliary results.
 %\begin{lemma}
-%	Für Dichten mit beschränkten Träger können wir schreiben 
-%	$$
-%	W_p^p(\mu,\nu) := 
-%	$$
+%	Let $\gamma\in \mathrm{AC}([0,1],X)$ and $|\gamma'|$ be its metric derivative almost everywhere. For $t<s$ we get
+%$$
+%d(\gamma(t),\gamma(s)) \leq \int_t^s|\gamma'|(x)\mathrm{d}x.
+%$$
+%%Further, from the Rademacher-Theorem, we conclude that the metric derivative may exist for a.e. $t\in[0,1]$ if the curve is Lipschitz-continuous. 
 %\end{lemma}
-%TODO Lemma dass für Dichten mit beschränkten Träger das auch eine andere Form hat inkl Beweis
-%
-%Mit Hilfe der Continuity Equation können wir nun das Konzept von dynamischen optimalen Transport einführen. Hierbei wollen wir nicht nur in einem Schritt Masse von A nach B transportieren, sondern den Massenverlauf zu jedem Zeitpunkt $t\in(0,1)$ betrachten. Der Massenverlauf zum Zeitpunkt $t$ im Raum ist beschrieben mit $\rho(t,x),\quad x\in\Omega\subset \mathbb{R}^n$. Wir betrachten nur das offene Intervall $(0,1)$, da $\rho(0,x) = f(x)$ und $\rho(1,x) = g(x)$ gelten soll. Bzw statt $f,g$ umändern in $\mu,\nu$.
-%
-%Dabei brauchen wir noch ein Geschwindigkeitsfeld $v(t,x)$, was beschreibt, in welche Richtung die Masse jeweils geht (räumliche Komponente) und die CE, welche garantiert, dass wir keine Masse addieren oder verlieren.
-%
-%Dazu einführen: Lagrange-Koordinaten $X(t,x)$ (Position eines Partikels, welches initial an Punkt x war zum Zeitpunkt t). Der Fluss des Partikels lässt sich zum Zeitpunkt $t$ darstellen mit $\frac{\partial X}{\partial t} (t,x) = v(t, X(t,x))$ und $X(0,x) = x$. Wir können die Änderung der Position in der Zeit also durch Informationen über das Geschwindigkeitsfeld bestimmen. 
-%
-%Hat den großen Vorteil: Das geht auch mit Mengen $E$, nicht nur mit Punkten (als Sammlung von Punkten). Das lässt sich dann schreiben mit
-%$$
-%\int_E f(x)dx = \int_{X(t,E)} \rho(t,x)dx \quad \forall t\in(0,1).
-%$$
-%Dabei nochmal deutlichen machen, dass nach wie vor die Masse zu jedem Zeitpunkt erhalten bleibt.
-%
-%Das sieht ja schon so aus wie ein Push-Forward, also $X(t,\cdot)_\# f = \rho(t,\cdot)$ und $X(1,\cdot)_\# f=g$ (wegen Transformationssatz/Change of Variable - hier noch Voraussetzungen prüfen, dass es auch korrekt definiert ist). \\Ziel: Finde $\rho, v$, so dass das dann optimal ist. Wir haben Kosten (für beschränkten Träger)
-%\begin{align*}
-%	W_2^2(f,b) &\leq \int_{\mathbb{R}^n}f(x) | X(1,x)-x |^2dx\\
-%			   &=\int_{\mathbb{R}^n}f(x) |X(1,x)-X(0,x)|^2dx\\
-%			   &= \int_{\mathbb{R}^n}f(x) \left\vert\int_0^1 \frac{\partial X}{\partial t} (t,x)dt\right\vert^2 dx\\
-%			   &\leq \int_{\mathbb{R}^n}\int_0^1 f(x)\left|\frac{\partial X}{\partial t} (t,x)\right|^2dtdx\\
-%			   &= \int_0^1\int_{\mathbb{R}^n}f(x)| v(t,X(t,x))|^2dxdt
-%\end{align*}
-%Die erste Ungleichung folgt aus dem Fakt, dass ein bestimmter Transportplan maximal so gut sein kann wie das Infimum, der Rest sind nur Definitionen. Zulässiger Plan, da $\gamma := (id, X(1,\cdot))_\#f \implies \gamma \in \Gamma(\mu,\nu)$. Korrekte Marginals prüfen: $f$ ist offensichtlich, zweite Marginal: Ist $X(t,x)$ der Fluss eines auf einem Vektorfeld $v$ und durch $\rho$ die CE erfüllt wird (SPRACHE!!), dann ist
-%$$
-%\rho(t) = X(t,\cdot)_\#f \implies g = \rho(1) = X(1,\cdot)_\#f
-%$$
-%und das zweite Marginal passt dann
-%
-%TODO FORMATIERUNG AB HIER
-%Um das Integral evaluieren zu können, definieren wir zu festem $t$ die Ausdrücke 
-%$$S(x) = X(t,x),\, S_\#f=\rho(t,x),\, \varphi(y) = |v(t,y)|^2$$
-%und nutzen die Transformationsformel
-%\begin{align*}
-%	\int_{\mathbb{R}^n}f(x)|v(t,X(t,x))|^2dx &= \int_{\mathbb{R}^n}f(x)\varphi(S(x))dx\\
-%	&=\int_{\mathbb{R}^n}\rho(t,y)\varphi(y)dy\\
-%	&=\int_{\mathbb{R}^n}\rho(t,y)|v(t,y)|^2dy
-%\end{align*}
-%
-%Daraus folgt 
-%$$W_2^2(f,g) \leq \int_0^1 \int_{\mathbb{R}^n}\rho(t,x)|v(t,x)|^2dxdt$$
-%für alle $\rho,v$, die $$\rho_t+\nabla \cdot (\rho v)=0, \quad\rho(0,x) =f(x), \rho(1,x)= g(x)$$
-%erfüllen.
-%
-%Wann gilt Gleichheit? Wenn $X(1,x)$ optimal von $f$ nach $g$.  UND wenn $\frac{\partial X}{\partial t}(t,x) = u(x) $ konstant in Zeit ist. 
-%
-%Wenn also Fluss konstant in Zeit erhalten wir eine simple Formulierung $$X(t,x) = x + u(x)t,\quad X(1,x) = x+u(x) =: T(x)$$
-%Nach $u(x)$ umstellen liefert
-%$$u(x) = T(x)-x, \quad X(t,x) = x+ (T(x)-x)t = x(1-t)+tT(x)$$
-%und für das Geschwindigkeitsfeld
-%$$v(t, X(t,x)) = u(x) = T(x)-x = (T-I)(x)$$
-%
-%Sei $y = X(t,x) = [(1-t)I+tT] (x) \implies v(t,y) = (T-I)[(1-t)I + tT]^{-1}(y)$ löst das Problem optimal, wenn f,g  "nett genug" (das noch ausführen). Wir haben also Ziel erfült (Finde $\rho, v$, die CE lösen und Problem minimiert. Wenn nicht "nett genug" erreichen wir noch das Infimum und können uns bestimmt ne Folge basteln). Das lässt uns dann insgesamt die BB Formulierung beschreiben
-%
-%\begin{align*}
-%	W_2^2(f,g) &= \underset{\rho,v}{\inf}\int_0^1\int_{\mathbb{R}^n}\rho(t,x)|v(t,x)|^2dxdt\\
-%			   &s.t. \begin{cases}\rho_t+\nabla \cdot(\rho v)=0\\
-%				   \rho(0,x)=f(x)\\
-%			   \rho(1,x)=g(x)\end{cases}
-%\end{align*}
-%
-%Das ist die allgemeine Form, das noch an das eigentliche Problem anpassen. Hier haben wir jetzt noch statt Fluss das Geschwindigkeitsfeld und im eigentlichen Problem haben wir noch die Dichte im Bruch (Radon-Nikodym?)
-%
-%Schreibe Lagrangian mit ungefährer Form $L(x,\lambda)=f(x) + \lambda \cdot (Ax-b)$ und suche Sattelpunkt.
-%
-%Sei $\varphi(t,x)$ der Lagrange-Multiplikator. Dadurch erhalten wir schwache formulierung der CE (multiplizieren, partiell integrieren) 
-%$$
-%\int_{\mathbb{R}^n}(g(x)\varphi(x,1)-f(x)\varphi(x,0))dx - \int_0^1\int_{\mathbb{R}^n}(\rho\varphi_t + \rho v \cdot\nabla\varphi)dxdt
-%$$
-%und der Lagrangian sollte die Form haben (bereits zusammengefasst)
-%$$
-%\mathcal{L} = \int_0^1\int_{\mathbb{R}^n} \left(\frac{\rho|v|^2}{2} - \rho\varphi_t - \rho v \cdot \nabla \varphi\right)dxdt + \underbrace{\int_{\mathbb{R}^n} \left(g(x)\varphi(t,1)-f(x)\varphi(t,0)\right)dx}_{G(\varphi)}
-%$$
-%
-%Definiere $m:=\rho v$, dann ist
-%$$
-%\mathcal{L}(\varphi,\rho,m) = \int_0^1\int_{\mathbb{R}^n}\left(\frac{|m|^2}{2\rho} - \rho\varphi_t - m \cdot \nabla \varphi\right)dxdt + G(\varphi)
-%$$
-%Wir wollen also für einen Sattelpunkt lösen
-%$$
-%\underset{\rho, m}{\inf}\,\,\underset{\varphi}{\sup}\,\, \mathcal{L}(\varphi,\rho,m)
-%$$
-%Warum ist das Sup so komisch hä\\
-%
-%Behauptung: Die Funktion $h(\rho,m) = \frac{|m|^2}{2\rho}$ lässt sich darstellen durch $\underset{(a,b)\in K}{\sup} (a\rho + bm)$ mit $K:=\{(a,b)\in \mathbb{R}\times \mathbb{R}^n\mid a + \frac{|b|^2}{2}\leq 0\}$. Resultat, dass sich konvexe Funktionen als Supremum von affin linearen Funktionen darstellen lassen (Beck?)\\
-%
-%Beweis: $(a^*,b^*)$ sind das Supremum. Da $\rho\geq 0$ soll $a^*$ so groß wie möglich sein. Es folgt $a^*=-\frac{|b^*|^2}{2} \implies \underset{(a,b)\in K}{\sup} (a\rho + b \cdot m) = \underset{b\in \mathbb{R}^n}{\sup}(\frac{-\rho|b|^2}{2} + b \cdot m)$. Da konkav (wegen Vorzeichen) einfach Gradient (von b) gleich 0 setzen.
-%
-%$\implies b^* = \frac{m}{\rho} \implies \underset{(a,b)\in K}{\sup} (a\rho + b \cdot m) = \frac{|m|^2}{2\rho} = h(\rho,m)$ und wir sind fertig.
-%
-%Also können wir das als lineares Problem auffassen.
-%
-%\begin{align*}
-%&\underset{\rho,m}{\inf}\underset{\varphi,(a,b)\in K}{\sup}\int_0^1\int_{\mathbb{R}^n} (a\rho + b \cdot m - \rho \varphi_t - m \cdot\nabla \varphi)dxdt + G(\varphi)\\
-%	=&\underset{\rho,m}{\inf}\underset{\varphi,(a,b)\in K}{\sup}\int_0^1\int_{\mathbb{R}^n}[(a-\varphi_t)\rho + (b-\nabla \varphi)\cdot m]dxdt
-%\end{align*}
-%
-%Das hier dann in den Numerik-Teil?
-%
-%Definiere $r = \begin{pmatrix}
-%\rho\\m
-%\end{pmatrix},\quad \xi = \begin{pmatrix}
-%a\\b
-%\end{pmatrix},\quad \nabla_{t,x}\varphi = \begin{pmatrix}
-%\varphi_t\\\nabla\varphi
-%\end{pmatrix}$
-%
-%$\implies \underset{r}{\inf}\underset{\varphi,\xi\in K}{\sup} \langle \xi - \nabla_{t,x}\varphi,r\rangle + G(\varphi)$
-%
-%Benaumou-Brenier eq 30-34 und Kap 4 noch besser nachvollziehen. Ab wo genau gehört das in den Numerik-Teil? AB HIER TODO -- Idee halbwegs klar, Details fehlen; wie ausführlich? Wie dann später abwandeln? Ab hier dann schauen: Was ändert sich mit Quelle f? Da dann IP Theorie, wieso das ggf schlecht gestellt ist und Datenkurve notwendig ist.
-%
-%Lagrangian ein wenig anders schreiben und zeigen, warum wir das dürfen. phi aus eq 7 nachvollziehen und eq 45 vollständig nachvollziehen. Neues Sattelpunktproblem mit 3 unbekannten Parametern $\phi, q, \mu$ mit $q=(a,b),\, \mu = (\rho, m)$ (jeweils Vektoren). Iteriere jetzt so, dass jeder Parameter einzeln angepasst wird:
-%
-%$$
-%L_{aug} = F(q) + G(\phi)  + \langle \mu, \nabla_{t,x}\phi - q\rangle + \frac{r}{2} \langle \nabla_{t,x}\phi-q, \nabla_{t,x}\phi -q\rangle
-%$$
-%
-%Gegeben $(\phi^{n-1},q^{n-1},\mu^{n-1})$. 1. Finde $\phi^n$ mit $L_{aug}(\phi^n,q{n-1},\mu^{n-1})\leq L_{aug}(\phi,q^{n-1},\mu^{n-1})\quad \forall \phi$. 2. Finde ${q^n}$ mit $L_{aug}(\phi^n,q^n,\mu^{n-1})\leq L_{aug}(\phi^n,q,\mu^{n-1})\quad \forall q$. 3. Berechne $\mu^n = \mu^{n-1} + r(\nabla_{t,x}\phi^n-q^n)$, mit $r>0$ Parameter des augmented Lagrangian. Schritt 3 ist Gradientenschritt des dualen Problems.
-%
-%Um Schritt 1 zu erhalten, leite $L_{aug}$ nach $\phi$ ab und erhalte für $\phi^n$:
-%$$
-%G(\phi) + r\langle \nabla_{t,x}\phi^n-q^{n-1},\nabla_{t,x}\phi\rangle + \langle \mu^n,\nabla_{t,x}\phi\rangle = 0 \quad \forall \phi
-%$$
-%
-%Partielle Integration in Raum Zeit gibt Laplace Gleichung in Raum Zeit
-%$$
-%-r\Delta{t,x}\phi^n = \nabla_{t,x} \cdot (\mu^n-rq^{n-1})
-%$$
-%mit periodischen Randbedingungen im Raum und Neumann Randbedingungen in Zeit
-%\begin{align*}
-%	r\partial_t\phi^n(0, \cdot) &= \rho_0 - \rho^n(0, \cdot) + ra^{n-1}(0,\cdot)\\
-%	r\partial_t\phi^n(1, \cdot) &= \rho_1 - \rho^n(0, \cdot) + ra^{n-1}(1,\cdot)
-%\end{align*}
-% 
-%"This Neumann Problem is well-posed, since $\int_D [\rho_0-\rho_1] = 0$ " 
-%
-%In der Praxis wählen wir $-r\Delta{t,x}\phi^n + \varepsilon r\phi^n = \nabla_{t,x} \cdot (\mu^n-rq^{n-1})$ für kleines $\varepsilon >0$.
-%
-%Für Schritt 2, leite $L_{aug}$ nach $q$ ab. $q^n$ erhalten wir durch Lösung von 
-%
-%\begin{align*}
-%	\underset{q}{\inf} [F(q) + \frac{r}{2} \lVert \nabla_{t,x}\phi^n-q\rVert+\langle \mu^n,\nabla_{t,x}\phi^n-q\rangle]\\
-%	&= \underset{q\in K}{\inf} \lVert \nabla_{t,x} \phi^n + \frac{\mu^n}{r} -q\rVert
-%\end{align*}
-% Das kann punktweise in Raum-Zeit gelöst werden. Definiere $p^n(t,x) = \{\alpha^n(t,x),\beta^n(t,x)\} = \nabla_{t,x}\phi^n(t,x) + \frac{\mu^n(t,x)}{r}$. Dann erhalten wir $q^n$ durch lösen von $\inf \{(a-\alpha^n(t,x))^2 + |b-\beta^n(t,x)|^2, a+\frac{|b|^2}{2}\leq 0\}$ durch zB Newton Verfahren
-
-
-
-
-%\subsection{Ambrosio (mit Numerik tauschen)}
-%
-%\begin{definition}[AC-Curves]
-%	Sei $I\subset \mathbb{R}$ und $u:I\to E$. $u$ ist eine absolut-stetige Kurve, wenn ein $m\in L^1(\mu)$ exisitiert mit 
-%	$$
-%	d(u(s),u(t)) \leq \int_s^t m(\tau)d\tau\quad \forall s,t\in I, s\leq t.
-%	$$
-%\end{definition}
-%Was ändert sich, wenn sich die Metrik ändert? Wieso macht $m\in L^1$ Sinn?
-%
-%Zeige: AC -> GLM. Eindeutige Erweiterung auf Abschluss von I. 
-%
-%\begin{definition}[Metrische Ableitung]
-%	Sei $f:\mathbb{R}^n\to (X,d_X)$ eine Funktion von einem euklidischen in einen metrischen Raum. Wir bezeichnen mit 
-%	$$
-%	|u'|(t) := \lim_{h\to 0}\frac{d(u(t+h),u(t))}{|h|}
-%	$$
-%	die metrische Ableitung von $u$ im Punkt $t\in \mathbb{R}^n$, wenn der Grenzwert existiert.
-%\end{definition}
-%
-%Wir zeigen ein paar Eigenschaften von AC und metrischer Ableitung
-%\begin{lemma}
-%	\begin{enumerate}
-%		\item Eine Kurve $u$ ist stetig in $t\in I$, wenn sie in $t$ metrisch differenzierbar ist.
-%		\item Wenn $u$ lipschitz stetig ist, dann ist sie metrisch differenzierbar fast überall und die Abbildung ?? definiert eine Halbnorm
-%		\item Für AC existiert das metrische Differential $\mathcal{L}^1$ fast überall. $|u'|$ erfüllt die Gleichung (für AC) und ist minimal.
-%	\end{enumerate}
-%\end{lemma}
-%
 %\begin{proof}
-%	\begin{enumerate}
-%		\item TODO
-%		\item Sei $u:I\subset \mathbb{R}\to E$ eine Lipschitz-Kurve mit 
-%			$$
-%			d(u(s),u(t))\leq L |s-t|\quad \forall s,t\in I.
-%			$$
-%			Für festes $t_0\in I$, definiere $f_{t_0}(t) := d(u(t), u(t_0))$ mit der selben Lipschitz-Konstante. Nach dem Satz von Rademacher ist $f$ fast überall differenzierbar. Ist also $f_t$ in $t$ differenzierbar, so ergibt sich
-%			$$
-%			\lim_{h\to0}\frac{f_t(t+h)-f_t(t)}{|h|} = \lim_{h\to0}\frac{d(u(t), u(t_0))}{|h|}.
-%			$$
-%			Jetzt fehlt noch ein Argument, dass es nicht nur für festes $t$ für fast alle gilt.
-%		\item Siehe Ambrosio
-%	\end{enumerate}
+%	Let $\gamma\in \mathrm{AC}([0,1],X)$. Fix $t<s$ and define 
+%	$$
+%	f(r) := d(\gamma(t),\gamma(r)),\quad r\in[t,s].
+%	$$
+%	Notice that by absolute continuity of $\gamma$ and Lipschitz continuity of $x\mapsto d(\gamma(t),x)$ the map $f$ is also absolutely continuous. By the reverse triangle equality we obtain
+%	\begin{align*}
+%	|f(r+h) - f(r) | = |d(\gamma(r+h), \gamma(t)) - d(\gamma(t),\gamma(r))| \leq d(\gamma(r+h),\gamma(r))
+%	\end{align*}
+%	and therefore
+%	\begin{align*}
+%		\lim_{|h|\to 0}\left\lvert\frac{f(r+h) - f(r)}{h}\right\lvert\leq \lim_{|h|\to0} \frac{d(\gamma(r+h),\gamma(r))}{|h|} \implies &|f'(r)|\leq |\gamma'|(r)
+%\end{align*}
+%which holds for almost every $r\in [t,s]$. By absolute continuity and the fundamental theorem of calculus we get 
+%$$
+%\int_t^sf'(r)\,\mathrm{d}r = f(s) - f(t) = d(\gamma(t),\gamma(s))
+%$$
+%and it follows
+%$$
+%d(\gamma(t),\gamma(s)) = \int_t^sf'(r)\,\mathrm{d}r\leq \int_t^s|f'(r)|\,\mathrm{d}r\leq\int_t^s|\gamma'(r)|\,\mathrm{d}r.
+%$$
+%
 %\end{proof}
-%Eigenschaften prüfen (in einem Lemma): metrisch differenzierbar -> stetig; Lipschitz -> metrisch diffbar f.ü. und es ist eine Halbnorm; metrisches Differential existiert $\mathcal{L}^1$ f.ü. für AC Kurven. Es ist minimales $m$, aber nicht Eindeutig.
 %
-%Wir definieren die Menge $AC^p(I,E):=\{u:I\to E \mid u \text{ ist absolut-stetig und } |u'|\in L^p(I)\}.$
-%
-%\begin{definition}[Geodäte konstater Geschwindigkeit]
-%	Sei $(E,d)$ ein metrischer Raum. Eine Funktion $\gamma:[0,T]\to E$ heißt Geodäte konstanter Geschwindigkeit, wenn 
+%	\begin{lemma}\label{lipschitz}
+%	If $\gamma\in \mathrm{AC}([0,1],X)$, then $\gamma$ admits a Lipschitz reparametrization.
+%\end{lemma}
+%\begin{proof}
+%	Let $\gamma:[0,1]\to X$ be absolutely continuous and define its accumulated length by  
+%	$$\ell(t) = \int_0^t|\gamma'|(r)\,\mathrm{d}r\quad t\in[0,1].$$
+%	Then $\ell$ is continuous, nondecreasing and 
 %	$$
-%	d(\gamma(s),\gamma(t)) = \frac{(t-s)}{T} d(\gamma(0),\gamma(T)),\quad 0\leq s \leq t\leq T.
+%	\ell(0) = 0,\quad \ell(1) = L(\gamma).
 %	$$
-%\end{definition}
+%	If $L(\gamma)=0$, then $\gamma$ is constant, hence already Lipschitz. Therefore we may assume $L(\gamma)>0.$
+%	For $\sigma\in[0,L(\gamma)]$, define
+%	$$
+%	\tau(\sigma) := \min\{t\in[0,1]:\, \ell(t)=\sigma\}.
+%	$$
+%	By continuity of $\ell$ this is well-defined. Now define the reparametrized curve
+%	$$
+%	\tilde{\gamma}:[0,L(\gamma)]\to X,\quad \tilde{\gamma}(\sigma) := \gamma(\tau(\sigma)).
+%	$$
+%	Let $0\leq\sigma_1\leq\sigma_2\leq L(\gamma)$. Since $\ell$ is non-decreasing and $\gamma$ is absolutely continuous, we obtain
+%	\begin{align*}
+%		d(\tilde{\gamma}(\sigma_1),\tilde{\gamma}(\sigma_2)) &=d(\gamma(\tau(\sigma_1)),\gamma(\tau(\sigma_2)))\\
+%															 &\leq \int_{\tau(\sigma_1)}^{\tau(\sigma_2)} |\gamma'|(r)\,\mathrm{d}r\\
+%															 &=\ell(\tau(\sigma_2))-\ell(\tau(\sigma_1))\\
+%															 &=\sigma_2-\sigma_1.
+%	\end{align*}
 %
-%One can show that for all $\mu,\nu\in \mathscr{P}_2(\mathbb{R}^d)$, $\gamma\in\Gamma_0(\mu,\nu)$ the map $\mu_t=((1-t)\pi^1+t\pi^2)_\#\gamma$ is a constant speed geodesic.
+%	%The arc-lenght is defined by $s(t) := \int_0^t |\gamma'|(t)\,\mathrm{d}t$ with $s(0) = 0$ and $s(1) = L(\gamma)$. Reparametrizing by arc-length is defined by 
+%	%$$\tilde{\gamma}(s) := \gamma(\tau(s)),\, s\in [0,T],\quad \tau(k) := \inf\{t\in [0,1] \big\lvert s(t)>k\}.$$ 
+%		%We compute 
+%%\begin{align*}
+%%	d(\tilde{\gamma}(a),\tilde{\gamma}(b)) &= d(\gamma(\tau(a)), \gamma(\tau(b)))\\
+%%										   &\leq \int_{\tau(a)}^{\tau(b)}|\gamma'|(r)dr\\
+%%										   &= s(\tau(b)) - s(\tau(a)) \leq b-a
+%%\end{align*}
+%\end{proof}
 %
-%Für Existenz einer Lösung siehe Ausarbeitung Theorem 3.3.1 oder Theorem 2.3 Ambrosio Lecture Notes (dort dann auch Darstellung als was ähnliches wie c-Transform. 
-%Lemma 2.6???
+%%TODO
+%\begin{lemma}\label{ac_solution}
+%	For $p>1$ the optimal Transport map between two absolutely continuous measures exists. TODO?
+%\end{lemma}
+%\begin{proof}
+%	Beweis in 3.1 mit Kantorovich Dualität / Subdifferential -- bereits im Seminar gemacht
+%\end{proof}
 %
+%TODO hier noch Lemmata für das Theorem: Weak und Distributional ist gleich (Prop 4.2 Sant bzw ganzes Kapitel 4.1), Lemma 5.2
+%%TODO Übergang zum Grenzfluss
+%One of the main theorems of this chapter is the following.
 %\begin{theorem}
-%	Sei $\mu_t:I\subset \mathbb{R} \to \mathscr{P}_2(\mathbb{R}^d)$ eine absolut-stetige Kurve mit existierender metrischer Ableitung. Es existiert ein Vektorfeld $v:(x,t)\to v_t(x)$ mit 
+%	Let $(\gamma_t)_{t\in[0,1]}\subset\mathrm{AC}(\mathscr{P}_p(X))$ be a family of absolutely continuous curves on the space of probability measures. For a.e. $t\in[0,1]$ there exists a velocity field $v_t\in L^p(c_t, \mathbb{R}^d)$ with the properties
+%	\begin{itemize}
+%		\item the continuity equation is satisfied in the distributional sense
+%		\item we have $\lVert v_t\rVert_{L^p}\leq |\gamma'|(t)$ for a.e. $t\in[0,1].$
+%	\end{itemize}
+%\end{theorem}
+%The idea of the proof is to construct a sequence of $\gamma_t$ and a corresponding sequence for $v_t$ such that the continuity equation holds, $\gamma_t^k$ is absolutely continuous for all $k$ and the limit admits the desired inequality.
+%\begin{proof}
+%	By Lemma \ref{lipschitz} we assume $\mu$ to be Lipschitz. We define the sequence $\mu_t^k:= \mu_t * \eta_k$, where $\eta_k$ is a Dirac sequence supported on $B\left(0,\frac{1}{k}\right)$. This is a necessary step, since for example $\delta_x \in \mathscr{P}_2(X)$ is not absolutely continuous. Since
+%	$$
+%	\mathrm{supp}(\mu_t*\eta_k) \subset \Omega + B\left(0,\frac{1}{k}\right)
+%	$$
+%	we extend the domain to a convex set $\Omega'\supset \Omega$. According to Lemma \ref{ac_solution}, for $t=\frac{i}{k},\, i = 0,\dots,k$ the optimal transport map $T^{i,k}:\Omega'\to\Omega'$ from $\mu_{\frac{i}{k}}^k$ to $\mu_{\frac{i+1}{k}}^k$ exists as a consequence of absolute continuity. Defining the linear interpolation with constant speed 
+%	$$
+%	\mu_t^k := \left((i+1-tk)\mathrm{id} + (kt - i)T^{i,k}\right)_\#\mu_{\frac{i}{k}}^k
+%	$$
+%and deriving with respect to $t$ yields the velocity 
 %$$
-%v_t\in L^2(\mu_t,\mathbb{R}^d),\quad \lVert v_t\rVert_{L^2(\mu_t,\mathbb{R}^d)} \leq |\mu'|(t)
+%v^{i,k} := k(T^{i,k}(x)-x).
 %$$
-%für $\mathcal{L}^1$ fast alle $t\in I$ und CE gilt im distributionellen Sinn. Zusätzlich ist für $\mathcal{L}^1$.fast alle $t\in I$ $v_t\in \overline{\{\nabla\varphi:\varphi\in C_c\infty(\mathbb{R}^d)\}}^{L^2(\mu;\mathbb{R}^d)} =:\mathrm{Tan}_\mu\mathscr{P}_2(\mathbb{R}^d).$
+%Since the continuity equation expects us not to have a particle indexed by its starting position but by the current position, we define 
+%$$
+%T_t^{i,k} := (i+1-kt)\mathrm{id} + (kt-i)T_k^{ik},
+%$$
+%giving us the desired velocity field 
+%$$
+%v_t^k:= v_{i,k}((T_t^{i,k})^{-1}).
+%$$
+%For the interval $\left(\frac{i}{k},\frac{i+1}{k}\right)$, define
+%$$
+%X_t(x) := T_t^{i,k},\quad \mu_t^k = (X_t)_\#\mu_{\frac{i}{k}}^k
+%$$
+%and by definition we obtain the ordinary differential equation
+%$$
+%v_t^k(X_t(x)) = v_{i,k} = X'_t(x).
+%$$
+% Taking test functions and integrating by parts gives
+%\begin{align*}
+%	&\int\varphi(y)\,\mathrm{d}\mu_t^k(y) = \int\varphi(X_t(x))\,\mathrm{d}\mu_{\frac{i}{k}}^k(x)\\
+%	\iff&\frac{d}{dt}\int\varphi(y)\,\mathrm{d}\mu_t^k(y) = \int\nabla\varphi(X_t(x)) \cdot v_t^k(X_t(x))\,\mathrm{d}\mu_{\frac{i}{k}}^k(x)\\
+%	\iff&\frac{d}{dt} \int \varphi \,\mathrm{d} \mu_t^k = \int \nabla\varphi(y) \cdot v_t^k(y)\,\mathrm{d}\mu_t^k(y),
+%\end{align*}
+%which is the weak form of the continuity equation, hence the pair $(\mu_t^k, v_t^k)$ satisfies $$\partial_t\mu_t^k + \nabla \cdot (v_t^k\mu_t^k) = 0$$ in the distributional sense.
 %
-%Für eine narrowly continuos curve $\mu_t:I\to \mathscr{P}_2(\mathbb{R}^d)$, die die CE erfüllt für ein Geschwindigkeitsfeld $w_t$ mit $\lVert w_t\rVert_{L^2}\in L^1(I)$
+%To estimate an upper-bound for the newly obtained veloctiy field in order to extract a weak limit, we compute
+%\begin{align*}
+%	\lVert v_t^k\rVert_{L^p(\mu_t^k)}^p &= \int_\Omega |v^{i,k}|^p\, \mathrm{d}\mu_{\frac{i}{k}}^k = k^p W_p^p\left(\mu_{\frac{i}{k}}^k,\mu_{\frac{i+1}{k}}^k\right)\\
+%										&\leq k^pW_p^p\left(\mu_{\frac{i}{k}},\mu_{\frac{i+1}{k}}\right)\\
+%										&\leq k^p\left(\int_{\frac{i}{k}}^{\frac{i+1}{k}} |\mu'|(s)\,\mathrm{d}s\right)^p\\
+%										&\overset{(*)}{\leq} k\int_{\frac{i}{k}}^{\frac{i+1}{k}} |\mu'|^p(s)\,\mathrm{d}s\leq \mathrm{Lip}(\mu)
+%\end{align*}
+%$(*)$ is obtained by the Jensen inequality where the last inequality by the assumtption that the curve is Lipschitz. Also we can estimate 
+%$$
+%\int_a^b \lVert v_t^k\rVert_{L^p(\mu_t^k)}^p\,\mathrm{d}t\leq \int_a^b|\mu'|^p(s)\,\mathrm{d}s + \frac{2\mathrm{Lip}(\mu)}{k}.
+%$$
+%This can be seen by taking an equidistant partition $\left\{\frac{i_a}{k},\dots,\frac{i_b}{k}\right\}\subset [a,b]$ and splitting the integral into $\int_a^{i_a}+\int_{i_a}^{i_b}+\int_{i_b}^b$. The middle integral uses the estimate $(*)$, the other two use the Lipschitz-bound provided in the previous calculation. Adding the fact, that $i_a-a,\, b-i_b\leq \frac{1}{k}$ gives the desired result. We conclude that $v_t^k\in L^p(\mu_t^k)$. 
+%
+%Define now vector measures $E^k$ with test velocity field $\phi:\Omega'\times[0,1] \to \mathbb{R}^d$ by
+%$$
+%\int\phi(t,x) \cdot \,\mathrm{d}E^k(t,x) := \int_0^1\int_{\Omega'}\phi(t,x) \cdot v_t^k(x)\,\mathrm{d}\mu_t^k(x)\mathrm{d}t
+%$$
+%and compute the total variation
+%$$
+%\lVert E\rVert = \int_0^1 \lVert v_t^k\rVert_{L^1(\mu_t^k)}\,\mathrm{d}t \overset{\text{Hölder}}{\leq} \int_0^1 \lVert v_t^k\rVert_{L^p(\mu_t^k)}\,\mathrm{d}t \overset{\text{Hölder}}{\leq} \left(\int_0^1 \lVert v_t^k\rVert_{L^p(\mu_t^k)}^p\,\mathrm{d}t\right)^{\frac{1}{p}}\leq C.
+%$$
+%%TODO
+%Since for $p>1$ $L^p$ is reflexive, $E^k$ as a bounded sequence has a weakly converging subsequence FALSCHES ARGUMENT (eher Banach Alaoglu). Also, by a triangle inequality argument, we can show that $\mu_t^k$ converges uniformly in time to $\mu_t$ in $W_p$ Explizit berechnen?. This gives us 
+%$$
+%\partial_t\mu_t + \nabla \cdot E = 0
+%$$
+%in the distributional sense. 
+%
+%Action Functional noch definieren, Prop 5.18, eq 5.4 und Rest einfach noch hinschreiben. 
+%REST TODO
+%
+%\end{proof}
+%As the goal is to show that a solution of the static problem admits one to the dynamic problem and vice-versa, we also want to show a converse result.
+%%TODO Lemma 5.21 staten
+%%TODO Bedingung an Zeitstetigkeit der Maßkurve; h\to0 und \epsilon\to 0 nicht vertauschen
+%\begin{theorem}
+%	If $(\mu_t)_{t\in[0,1]}\subset\mathscr{P}(\Omega)$ and for arbitrary $t$ there exists $v_t\in L^p(\mu_t)$ satisfying $\int_0^1 \lVert v_t\rVert_{L^p(\mu_t)}dt<\infty$ and $\partial_t\mu_t + \nabla \cdot (v_t\mu_t) = 0$, then $|\mu'|(t) \leq \lVert v_t\rVert_{L^p(\mu_t)}$ for a.e. $t$ and $(\mu_t)_{t\in[0,1]}$ is absolutely continuous in $W_p(\Omega)$.
+%
 %\end{theorem}
 %
+%\begin{proof}
+%	Choosing a reparametrization as
+%	$$
+%	s(t) := \int_0^t \lVert v_\tau\rVert_{L^p(\mu_\tau)}d\tau	
+%	$$
+%	for a given pair $(\mu,E)$ solving the continuity equation with $E_t = v_t \cdot \mu_t$ and $v_t\in L^p(\mu_t;\mathbb{R}^d)$, we get a uniform bound on $\lVert v_t\rVert_{L^p(\mu_t)}$ by and it also holds $\lVert E_t\rVert = \lVert v_t\rVert_{L^1(\mu_t)}$. Lemma ?? (5.21) guarantees the existence of a family $(\mu_t^\varepsilon)_t$ with a velocity field $v_t^\varepsilon$ with the following properties:
+%	\begin{enumerate}
+%		\item $\mu^\varepsilon$ is Lipschitz in time and space, $v^\varepsilon$ is Lipschitz in space and bounded, whilst being uniformly (bounded or continuous?) in time. $\mu^\varepsilon > 0$ everywhere.
+%		\item We get $\mu_t^\varepsilon$ by following the flow of $v^\varepsilon$ starting from $\mu_0^\varepsilon$ (see eq 5.5)
+%		\item $\mu_t^\varepsilon \rightharpoonup \mu_t$ for all $t$ and $E_t^\varepsilon \rightharpoonup E_t$ for a.e. $t$.
+%		\item $\lVert v_t^\varepsilon\rVert_{L^p(\mu_t^\varepsilon)}\leq \mathscr{B}_p(\mu_t, E_t)$
+%	\end{enumerate}
+%	DAS HIER INS LEMMA PACKEN UND HIER NUR STATEN
 %
-%TODO:
-%Benamou-Brenier fertig machen mit rigorosität, heißt alles was ich schon habe fertig in Englisch plus Pauls Teil
-%Implementierung fertig machen
-%Die erneuerte PDF durchlesen plus Quelle
-%Stochastik fertig
+%	Taking a smooth function $\eta:\mathbb{R}^+\to \mathbb{R}^+$ such that $\eta(t) = Ce^{-t}$ for $t\geq 1$ we construct $\eta^\varepsilon(z) = \varepsilon^{-d}\eta\left(\frac{|z|}{\varepsilon}\right)$, which lets us set
+%	$$
+%	\mu_t^\varepsilon := \eta^\varepsilon * \mu_t,\quad E_t^\varepsilon := \eta^\varepsilon * E_t,\quad v_t^\varepsilon := \frac{E_t^\varepsilon}{\mu_t^\varepsilon}
+%	$$
+%	With $T_t$ being the flow generated by $v^\varepsilon$, we choose the transport plan between $\mu_t^\varepsilon$ and $\mu_{t+h}^\varepsilon$ as $\gamma = (T_t, T_{t+h})_\#\mu_0^\varepsilon \in \Gamma(\mu_t^\varepsilon,\mu_{t+h}^\varepsilon).$ For the $p$-th Wasserstein-Distance, we compute
+%	\begin{align*}
+%	W_p^p(\mu_t^\varepsilon,\mu_{t+h}^\varepsilon) &\leq \int_{\Omega^2} |x-y|^pd\gamma(x,y)\\
+%												   &= \int_\Omega |T_t(x) - T_{t+h}(x)|^pd\mu_0^\varepsilon(x)\\
+%												   &\leq \int_\Omega\left(\int_t^{t+h} \left\lvert \frac{d}{ds}T_s(x) \right\rvert ds\right)^pd\mu_0^\varepsilon(x)\\
+%												   &\leq |h|^{\frac{p}{q}}\int_\Omega\int_t^{t+h}|v_s^\varepsilon(T_s(x))|^pdsd\mu_0^\varepsilon(x)\\
+%												   &= |h|^{\frac{p}{q}}\int_t^{t+h}\int_\Omega |v_s^\varepsilon(y)|^pd\mu_0^\varepsilon(y)ds\\
+%												   &\leq |h|^{\frac{p}{q}}\int_t^{t+h} \lVert v_s\rVert_{L^p(\mu_s)}^pds.
+%	\end{align*}
+%
+%The calculation
+%\begin{align*}
+%	|\mu'|(t) &= \lim_{h\to 0} \frac{W_p(\mu_{t+h},\mu_t)}{|h|} = \lim_{h\to0}\lim_{\varepsilon\to0}\frac{W_p(\mu_{t+h}^\varepsilon,\mu_t^\varepsilon}{|h|} \\
+%			  &\leq \lim_{h\to0}\left(\frac{1}{|h|}\int_t^{t+h} \lVert v_s\rVert_{L^p(\mu_t)}^pds\right)^{\frac{1}{p}} = \lVert v_t\rVert_{L^p(\mu_t)}
+%\end{align*}
+%yields the desired result and concludes the proof.
+%\end{proof}
+%\begin{corollary}
+%	The vector field $v_t$ in Theorem ?? (das erste) satisfies $\lVert v_t\rVert_{L^p(\mu_t)} = |\mu'|(t)$.
+%\end{corollary} 
+
+\subsection{Numerical Analysis of the Saddle-Point Problem}
+\label{sec:alg2}
+
+In this section, we follow the augmented Lagrangian approach introduced by Benamou and Brenier \cite{BB2000} to solve the dynamic optimal transport problem. The main idea is to replace the nonlinear kinetic transport cost by a convex dual representation. The resulting saddle-point problem can then be treated by the ALG2 algorithm, whose iterations consist of solving a linear elliptic equation, performing a pointwise projection, and updating a Lagrange multiplier.
+
+We define the Lagrangian of \eqref{eq:BB} by
+\begin{equation*}
+	\label{eq:alg2_lagrangian}
+	\mathcal{L}(\varphi, \rho, J) = \int_0^1\int_\Omega\left(\frac{|J|^2}{2\rho} - \rho\varphi_t -J \cdot \nabla\varphi\right)\,\mathrm dx\,\mathrm dt + G(\varphi),
+\end{equation*}
+where 
+$$
+G(\varphi):=\int_\Omega\left(\rho_1(x)\varphi(1,x)-\rho_0(x)\varphi(0,x)\right)\,\mathrm dx.
+$$
+The constrained problem is formally equivalent to 
+$$
+\int_{(\rho,J)}\sup_{\varphi}\mathcal L(\rho,J,\varphi).
+$$
+Here $\varphi$ is a scalar function in space-time and acts as the Lagrange multiplier for the continuity equation.
+\begin{lemma}
+	We can rewrite $\frac{|J|^2}{2\rho}$ as the supremum of affine linear convex functions, namely
+	$$
+	\sup_{(a,b)\in K}(a\rho + b \cdot J),\quad K:=\left\{(a,b)\in \mathbb{R}\times \mathbb{R}^n\mid a + \frac{|b|^2}{2}\leq 0\right\}.
+	$$
+\end{lemma}
+
+\begin{proof}
+	First assume $\rho>0$. For fixed $b$ the expression is increasing in $a$, so its supremum under the constraint $a\leq-\frac{|b|^2}{2}$ is attained at $a = -\frac{|b|^2}{2}$. Hence
+	\begin{align*}
+		\sup_{(a,b)\in K}(a\rho + b\cdot J) &= \sup_{b\in \mathbb{R}^n}\left(-\frac{\rho}{2}|b|^2 + b\cdot J \right)\\
+											&=\sup_{b\in \mathbb{R}^n}\left(\frac{|J|^2}{2\rho}-\frac{\rho}{2}\left|b-\frac J\rho\right|^2\right) = \frac{|J|^2}{2\rho}.
+	\end{align*}
+\end{proof}
+For the remainder of the numerical derivation, introduce
+$$
+z:=\begin{pmatrix}
+\rho\\J
+\end{pmatrix}\qquad q:= \begin{pmatrix}
+a\\b
+\end{pmatrix}\qquad \langle z,q\rangle := \int_0^1\int_\Omega z\cdot q\,\mathrm dx\,\mathrm dt.
+$$
+In contrast to the original paper, we use $z$ instead of $\mu$ to avoid confusion with the probability measures considered in the preceding sections. Define the indicator functional
+$$
+F(q) := \begin{cases} 0,&q\in K,\\
+	+\infty,&\text{otherwise}.
+\end{cases}
+$$
+We can rewrite the Lagrangian as %TODO Das kommt noch aus dem nichts. Die Herleitung noch
+$$
+\inf_{(\rho,J)}\sup_\varphi \mathcal{L}(\varphi,\rho,J) = \sup_z\inf_{(\varphi,q)} F(q) + G(\varphi) + \langle z,\nabla_{t,x}\varphi-q\rangle
+$$
+For a parameter $r>0$, define
+\begin{equation*}
+	\label{eq:alg2}
+	\mathcal{L}_r(\varphi,q,z) := F(q)-G(\varphi) + \langle z,D\varphi - q\rangle + \frac r2\|\nabla\varphi - q\|^2
+\end{equation*}
+Starting from $q^0$ and $z^0$, ALG2 alternates minimization with respect to $\varphi$ and $q$, followed by a multiplier update. We now derive these three steps.
+\paragraph{Step A: update of $\varphi$.}
+For fixed $q^k,z^k$, define
+$$
+L_k(\varphi):= -G(\varphi) + \langle z^k,\nabla\varphi - q^k\rangle + \frac r2\|\nabla\varphi - q^k\|^2.
+$$
+We aim to find a solution for the expression
+$$
+\mathrm{arg}\min_\varphi \mathcal{L}_r(\varphi,q^{n-1},z) = \mathrm{arg}\min_\varphi L_k(\varphi).
+$$
+For a test direction $\psi$, its first variation is
+\begin{align*}
+	\frac{\mathrm d}{\mathrm d\varepsilon} L_k(\varphi^{k+1}+\varepsilon\psi)\Big|_{\varepsilon = 0} &=-G(\psi) + \langle z^k,\nabla\psi\rangle+r\langle\nabla\varphi^{k+1}-q^k,\nabla\psi\rangle.
+\end{align*}
+Setting this expression equal to zero yields the weak problem
+\begin{equation*}
+	\label{eq:alg2_weak}
+	r\int_0^1\int_\Omega\nabla\varphi^{k+1}\cdot \nabla\psi\,\mathrm dx\,\mathrm dt = G(\psi) + \int_0^1\int_\Omega(rq^k-z^k)\cdot\nabla\psi\,\mathrm dx\,\mathrm dt
+\end{equation*}
+for every admissible $\psi$.
+
+This weak formulation is preferable for numerical purposes, since it contains the prescribed endpoint data through $G$. To identify its strong form suppose the iterates are smooth and set 
+$$
+A^k := z^k+r(\nabla\varphi^{k+1}-q^k) = \begin{pmatrix}
+A_t^k\\ A_x^k.
+\end{pmatrix}
+$$
+Then \eqref{eq:alg2_weak} is equivalent to 
+$$
+\int_0^1\int_\Omega A^k\cdot \nabla\psi\,\mathrm dx\,\mathrm dt = G(\psi).
+$$
+Integration by parts in space and times gives
+\begin{align*}
+	\int_0^1\int_\Omega A^k\cdot \nabla\psi &= -\int_0^1\int_\Omega\operatorname{div}_{t,x}A^k\,\psi+\int_\Omega\left(A_t^k(1,x)\psi(1,x)-A_t^k(0,x)\psi(0,x)\right)\,\mathrm dx\\
+											&\quad + \int_0^1\int_{\partial\Omega}(A_x^k\cdot n)\psi\,\mathrm dS\,\mathrm dt.
+\end{align*}
+Consequently, the interier equation is 
+\begin{equation*}
+	-r\Delta_{t,x}\varphi^{k+1} = \operatorname{div}_{t,x}(z^k-rq^k)\qquad \text{in }(0,1)\times\Omega.
+\end{equation*}
+The time-boundary conditions are inhomogeneous, in the sense that
+\begin{equation*}
+	A_t^k(0,x) = \rho_0(x),\qquad A_t^k(1,x) = \rho_1(x).
+\end{equation*}
+
+For the no-flux setting in Section ~\ref{sec:dynamical_ot}, the spatial boundary condition is
+$$
+A_x^k\cdot n = 0\qquad \text{on }(0,1)\times\partial\Omega.
+$$
+In particular, the endpoint terms cannot simply be omitted. Benamou and Brenier also considered periodic boundary conditions in space, which replace the spatial boundary condition.
+
+For completeness, we briefly discuss solvability. Assume $\rho_0,\rho_1\in L^2(\Omega)$, $q^k,z^k\in L^2((0,1)\times \Omega)$. Since the trace operator of functions in $H^1((0,1)\times \Omega)$ belong to $L^2(\Omega$, the right-hand side of \eqref{eq:alg2_weak} is continuous on $H^1((0,1)\times\Omega)$. Since the initial and final densities have equal mass, $G(1)=0$, and the right-hand side vanishes on constants. The bilinear form 
+$$
+a(\varphi,\psi) := r\int_0^1\int_\Omega\nabla\varphi\cdot \nabla\psi\,\mathrm dx\,\mathrm dt
+$$
+is continuous and, by the Poincar\'e inequality, coercive on $H^1((0,1)\times\Omega)$. The Lax-Milgram theorem therefore gives a unique solution modulo constants.
+
+For numerical convenience, Benamou and Brenier additionally consider a small pertubation of the Laplace equation,
+$$
+-r\Delta_{t,x}\varphi^{k+1}+r\varepsilon\varphi^{k+1} = \operatorname{div}_{t,x}(z^k-rq^k),\qquad \varepsilon>0,
+$$
+with the corresponding boundary conditions.
+
+\paragraph{Step B: update of $q$.}
+For fixed $\varphi^{k+1}$ and $z^k$, all terms depending on $q$ in \eqref{eq:alg2_augmented_lagrangian} give
+$$
+q^{k+1}\in\operatorname*{arg\,\min}_q\left\{F(q)+\frac r2\left\|q-\left(\nabla\varphi^{k+1}+\frac{z^k}{r}\right)\right\|^2\right\}.
+$$
+Thus, with
+$$
+p^{k+1}:=\nabla\varphi^{k+1}+\frac{z^k}{r},
+$$
+the update is the pointwise projection. We solve
+\begin{equation*}
+	\min_{(a,b)\in K}\left((a-\alpha)^2+|b-\beta|^2\right).
+\end{equation*}
+If $\alpha +\frac{|beta|^2}{2}\leq0$, the point $p$ is already feasible. Otherwise the constraint is active. Introducing a scalar Lagrange multiplier $\lambda>0$, we consider
+$$
+\mathcal{H}(a,b,\lambda) = (a-\alpha)^2+|b-\beta|^2+\lambda\left(a+\frac{|b|^2}{2}\right).
+$$
+The stationarity conditions read
+$$
+2(a-\alpha)+\lambda=0,\qquad 2(b-\beta)+\lambda b=0,
+$$
+so that 
+$$
+a=\alpha-\frac{\lambda}{2},\qquad b=\frac{2\beta}{2+\lambda}.
+$$
+Substitution into the active constraint yields
+\begin{equation*}
+	H(\lambda) := \alpha-\frac\lambda2+\frac{2|\beta|^2}{2+\lambda)^2}=0.
+\end{equation*}
+Since 
+$$
+H'(\lambda) = -\frac12-\frac{4|\beta|^2}{(2+\lambda)^3}<0,
+$$
+$H$ is strictly decreasing. In the active case $H(0) = \alpha+\frac{|\beta|^2}{2}>0$, while $H(\lambda)\to-\infty$ as $\lambda\to\infty$. Hence there exists exactly one positive solution. It can be computed by using Newton's method,
+$$
+\lambda_{j+1}=\lambda_j-\frac{H(\lambda_j)}{H'(\lambda_j)},
+$$
+and in the implementation ensuring $\lambda_j\geq 0$. The projected point for $(a,b)$ is finally given by
+$$
+\left(\alpha-\frac\lambda2,\frac{2\beta}{2+\lambda}\right).
+$$
+
+\paragraph{Setp C: multiplier update.}
+The remaining step is an ascent step for the Lagrange multiplier $z= (\rho,J)$:
+\begin{equation*}
+	z^{k+1}=z^k+r\left(\nabla\varphi^{k+1}-q^{k+1}\right).
+\end{equation*}
+
+\begin{algorithm}[H]
+\caption{ALG2 for quadratic dynamical optimal transport}
+\label{alg:bb_alg2}
+\begin{algorithmic}[1]
+    \Require Initial iterates $q^0,z^0$, parameter $r>0$,
+             tolerance $\mathrm{tol}>0$, maximum iterations $N_{\max}$
+    \For{$k=0,\ldots,N_{\max}-1$}
+        \State Find $\varphi^{k+1}\in H^1((0,1)\times\Omega)$ such that
+        \Statex \hspace{1em}$r\langle \nabla\varphi^{k+1},\nabla\psi\rangle
+          =G(\psi)+\langle rq^k-z^k,\nabla\psi\rangle$
+          for all $\psi\in H^1((0,1)\times\Omega)/$.
+        \State $p^{k+1}\gets \nabla\varphi^{k+1}+z^k/r$
+        \State $q^{k+1}(t,x)\gets P_K(p^{k+1}(t,x))$
+               for all space-time degrees of freedom %TODO Das noch ändern
+        \State $z^{k+1}\gets z^k+r(\nabla\varphi^{k+1}-q^{k+1})$
+        \State $R^{k+1}\gets\|\nabla\varphi^{k+1}-q^{k+1}\|$
+        \If{$R^{k+1}<\mathrm{tol}$}
+            \State \textbf{break}
+        \EndIf
+    \EndFor
+    \Ensure $\varphi^{k+1},q^{k+1},z^{k+1}$
+\end{algorithmic}
+\end{algorithm}
+
+%\newpage
+%Recall the definition of the Lagrangian
+%$$
+%\mathcal{L}(\varphi,\rho, m) = \int_0^1\int_\Omega\left(\frac{|m|^2}{2\rho} - \rho\varphi_t - m \cdot \nabla\varphi\right)\mathrm{d}x\mathrm{d}t + G(\varphi).
+%$$
+%We want to solve the saddle-point problem 
+%$$
+%\inf_{\rho,m}\,\,\sup_{\varphi} \mathcal{L}(\varphi,\rho,m)
+%$$
+%with $\varphi$ being the designated Lagrange-multiplier.
+%
+%\begin{lemma}
+%	We can rewrite $\frac{|m|^2}{2\rho}$ as the supremum of affine linear convex functions, namely
+%	$$\sup_{(a,b)\in K} (a\rho + b \cdot m),\quad K:=\left\{(a,b) \in \mathbb{R}\times \mathbb{R}^n \mid a + \frac{|b|^2}{2} \leq 0 \right\}$$.
+%\end{lemma}
+%\begin{proof}
+%	Let $(a^*,b^*)$ obtain the supremum of the set $K$. This is possible since $K$ is obviously non-empty. Since $\rho\geq0 \in \mathscr{P}(\Omega)$, $a^*$ needs to be as large as possible. Rewriting the constraint of the set, we have 
+%	$$
+%	a^* = \frac{|b|^2}{2} \implies \sup_{(a,b)\in K}(a\rho + b \cdot m) = \sup_{b\in \mathbb{R}^n}\left(\frac{-\rho|b|^2}{2} + b \cdot m\right)
+%	$$
+%	Since the last expression is concave, we have the maximum by deriving and setting to zero and as a consequence 
+%	$$
+%	b^*= \frac{m}{\rho} \implies \sup_{(a,b)\in K}(a\rho + b \cdot m ) = \frac{|m|^2}{2\rho}.
+%	$$
+%\end{proof}
+%
+%As a consequence we rewrite the optimization problem as a linear one, that is 
+%\begin{align*}
+%	\inf_{\rho,m}\,\,\sup_{\varphi,(a,b)\in K}\int_0^1\int_\Omega [(a-\varphi_t)\rho + (b-\nabla\varphi) \cdot m]dxdt
+%\end{align*}
+%
+%Benamou-Brenier introduced an augmented Lagrangian (TODO wieso eigentlich). Define 
+%$$
+%\mu := \begin{pmatrix}
+%\rho\\m
+%\end{pmatrix},\quad q:= \begin{pmatrix}
+%a\\b
+%\end{pmatrix}
+%$$
+%then we can rewrite
+%$$
+%\inf_{\rho,m}\,\,\sup_{\varphi} \mathcal{L}(\varphi, \rho,m) = \sup_{\mu}\,\,\inf_{\varphi, q} F(q) + G(\varphi) + \langle\mu, \nabla_{t,x}\varphi-q\rangle
+%$$
+%where $G(\varphi)$ is defined as above and $F(q) = \begin{cases} 0, \quad q\in K\\\infty\quad \text{else}\end{cases}$
+%
+%TODO Eq 42 nochmal den Beweis abschreiben
+%
+%Algorithmus: Erste Update in $\phi$, dann $q$, dann $\mu$.
+%
+%TODO zu $\phi$ -- was ist das überhaupt für ein Objekt?
+%
+%Updating the algoritm in $\varphi$ is finding a solution for the expression 
+%$$
+%\arg\min_\varphi \mathcal{L}_r(\varphi, q^{n-1},\mu) = \arg\min_\varphi G(\varphi) + \langle \mu^n, \nabla\varphi-q^{n-1}\rangle + \frac{r}{2} \lVert \nabla\varphi - q^{n-1}\rVert^2 =: J(\varphi)
+%$$
+%To avoid confusion, we denote by $\psi$ the test-direction for differentiation. For the optimality condition we compute
+%$$
+%\frac{d}{d\varepsilon}J(\varphi^n + \varepsilon\psi)\Bigl\vert_{\varepsilon=0} =0
+%$$
+%and get for each term
+%
+%\begin{align*}
+%	G(\varphi^n+\varepsilon\psi) &= \int_\Omega \left[(\nu(\varphi(1,x) + \varepsilon\psi(1,x)) - \mu(\varphi(0,x) + \varepsilon\psi(0,x))\right]dx\\
+%																				 &= G(\varphi) + \varepsilon\int_\Omega(\nu\psi(1,x) - \mu\psi(0,x))dx\\
+%	\implies& \frac{d}{d\varepsilon}\Bigl\vert_{\varepsilon=0} G(\varphi^n+\varepsilon\psi)= G(\psi)\\
+%	\frac{d}{d\varepsilon}\langle\mu^n,\nabla(\varphi + \varepsilon\psi)-q^{n-1}\rangle &= \frac{d}{d\varepsilon}\langle \mu^n, \nabla\varphi^n + \varepsilon\psi - q^{n-1}\rangle \\
+%																						&=\frac{d}{d\varepsilon} \langle \mu^n, \nabla\varphi^n-q^{n-1}\rangle + \varepsilon\langle \mu^n,\nabla\psi\rangle\\
+%																						&=\langle\mu^n,\nabla\psi\rangle\\
+%	\frac{d}{d\varepsilon} \frac{r}{2}\lVert \nabla(\varphi^n+\varepsilon\psi) - q^{n-1}\rVert^2 &= r\langle\nabla\varphi^n - q^{n-1},\nabla\psi\rangle
+%\end{align*}
+%
+%To solve for $\varphi^n$ we need to integrate by parts. To make notation easier we write
+%\begin{align*}
+%	&\int_\Omega(\nu\psi(1,x) - \mu\psi(0,x)) + \int(r(\nabla\varphi^n - q^{n-1}) + \mu^n) \cdot \nabla \psi = \int_\Omega (\nu\psi(1) - \mu\psi(0)) + \int A \cdot \nabla\psi = 0\\
+%\end{align*}
+%with $A = \begin{pmatrix}
+%A_t\\A_x
+%\end{pmatrix}$. Then 
+%\begin{align*}
+%	&\int A  \cdot \nabla\psi = -\int (\nabla \cdot A ) \psi + \int_\Omega A_t(1)\psi(1) - \int_\Omega A_t(0)\psi(0)\\
+%	&\implies - \int(\nabla \cdot A)\psi + \int_\Omega(\nu + A_t(1))\psi(1) - \int_\Omega ( \mu + A_t(0))\psi(0) = 0
+%\end{align*}
+%Since we assume periodic boundary conditions in space and Neumann boundary conditions in time, the boundary terms vanish and we calculate
+%\begin{align*}
+%	&\nabla \cdot (r(\nabla\varphi^n-q^{n-1}) + \mu^n ) = 0\\
+%	&\iff r\Delta\varphi^n - r\nabla \cdot q^{n-1} + \nabla \cdot \mu^n = 0\\
+%	&\iff \Delta \varphi^n = \nabla \cdot q^{n-1} - \frac{1}{r} \nabla \cdot \mu^n
+%\end{align*}
+%TODO Jetzt noch Lösungstheorie: Direkte Methode, Sobolev Raum, H1 Skalarprodukt
+%
+%For practical purposes, Benamou-Brenier proposed a slightly perturbed version with a small $\varepsilon > 0$ given by 
+%$$
+%-r\Delta \varphi^n + r\varepsilon\varphi^n = \nabla \cdot (\mu^n-rq^{n-1})
+%$$
+%
+%Zu $q$:
+%
+%Äquivalenz zeigen. $q$ is given by solving 
+%$$
+%\inf_{(a,b)\in K}\{(a-\alpha^n)^2 + |b-\beta|^2 \mid a + \frac{|b|^2}{2}\leq 0\}
+%$$
+%where $p^n(t,x) = \begin{pmatrix}
+%\alpha^n(t,x)\\\beta^n(t,x)
+%\end{pmatrix} = \nabla\varphi^n(t,x) + \frac{\mu^n(t,x)}{r}$
+%The Lagrangian of this convex problem leads us directly to a analytical solution. Define
+%$$
+%\mathcal{L}(a,b,\lambda) = (a-\alpha)^2 + (b-\beta)^2 + \lambda\left(a+\frac{|b|^2}{2}\right)
+%$$
+%then the KKT conditions
+%$$
+%\begin{cases}\partial_aL=0\\ \partial_bL=0\\ \lambda\geq 0\\ a+\frac{|b|^2}{2}\leq 0\\ \lambda\left(a+\frac{|b|^2}{2}\right)=0\end{cases}
+%$$
+%are satisfied. Stationarity leads us to 
+%$$
+%\begin{cases}\partial_aL = 2(a-\alpha)+\lambda \overset{!}{=} 0 \implies a = \alpha - \frac{\lambda}{2}\\
+%\partial_bL = 2(b-\beta) \lambda\beta \overset{!}{=} 0 \implies b = \frac{2\beta}{2+\lambda}\end{cases}
+%$$
+%In the case of $\lambda = 0$, then obviously $q^n = p^n$ (die zwei noch definieren).
+%
+%For $\lambda > 0$ we need to solve 
+%$$
+%F(\lambda) := \alpha - \frac{\lambda}{2} + \frac{2 |b|^2}{2 \cdot (2+\lambda)^2} = 0 
+%$$
+%This problem can be solved iteratively using Newtons method
+%$$
+%\lambda^{(k+1)} = \lambda^{(k)} - \frac{F(\lambda^{(k)})}{F'(\lambda^(k))}
+%$$
+%with $F'(\lambda^{(k)}) = -\frac{1}{2} - \frac{4\beta^2}{(2+\lambda)^3}$. Note that in the case $\lambda > 0$ the solution is unique, since the problem is strictly convex.
 %
